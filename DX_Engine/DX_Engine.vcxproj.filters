@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Code\pch.cpp" />
+    <ClCompile Include="Code\Scene.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\StepTimer.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\SceneObjects\Camera.cpp">
+      <Filter>Code\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Events\Event.cpp">
+      <Filter>Code\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Events\KeyboardEvent.cpp">
+      <Filter>Code\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Events\MouseEvent.cpp">
+      <Filter>Code\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\SceneObjects\SceneObject.cpp">
+      <Filter>Code\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\SceneObjects\GeometryObject.cpp">
+      <Filter>Code\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\D3D11Renderer.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Engine.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Code\pch.h" />
+    <ClInclude Include="Code\ConstBuffer.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Environment.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Helper.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Scene.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\StepTimer.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\VertexFormats.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\SceneObjects\Camera.h">
+      <Filter>Code\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Events\Event.h">
+      <Filter>Code\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Interfaces\IKeyboardEvent.h">
+      <Filter>Code\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Interfaces\IGameObject.h">
+      <Filter>Code\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Interfaces\ISceneObjectFactory.h">
+      <Filter>Code\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Events\KeyboardEvent.h">
+      <Filter>Code\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Events\MouseEvent.h">
+      <Filter>Code\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\SceneObjects\SceneObject.h">
+      <Filter>Code\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\SceneObjects\GeometryObject.h">
+      <Filter>Code\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Interfaces\IRenderer.h">
+      <Filter>Code\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\D3D11Renderer.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Engine.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Code">
+      <UniqueIdentifier>{29947be4-0cef-49f8-9c1a-7084000edc4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\SceneObjects">
+      <UniqueIdentifier>{8ff01d06-6c4d-4aec-a903-91c1e6e17936}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Events">
+      <UniqueIdentifier>{18f8c128-3459-4555-b602-0e8ddcf2f200}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Interfaces">
+      <UniqueIdentifier>{2936b5ee-ad78-4b5c-a29b-74afcb77e104}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
