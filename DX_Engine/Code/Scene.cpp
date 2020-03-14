@@ -23,12 +23,6 @@ std::shared_ptr<SceneObject> Scene::GetSceneObject(const std::string& key)const 
     return nullptr;
 }
 
-void Scene::Initialise() {
-    for (size_t index = 0; index < m_sceneObjects.size(); ++index) {
-        m_sceneObjects[index]->Initialise();
-    }
-}
-
 void Scene::Update(float dt) {
     m_camera.Update(dt);
     for (size_t index = 0; index < m_sceneObjects.size(); ++index) {

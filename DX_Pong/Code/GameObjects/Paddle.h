@@ -11,7 +11,6 @@ public:
 			Paddle(const std::string& name, XMFLOAT3 position);
 			Paddle(const std::string& name);
 
-	void	Initialise()override;
 	void	Update(float dt)override;
 
 	void	SetBall(Ball* pBall);

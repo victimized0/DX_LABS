@@ -17,10 +17,6 @@ Paddle::Paddle(const std::string& name)
 
 }
 
-void Paddle::Initialise() {
-
-}
-
 void Paddle::Update(float dt) {
 	if (m_pBall == nullptr) return;
 

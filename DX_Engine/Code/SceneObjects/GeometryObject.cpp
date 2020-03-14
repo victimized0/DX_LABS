@@ -23,7 +23,7 @@ GeometryObject::GeometryObject(const std::string& name)
 
 }
 
-void GeometryObject::CreateVertices(std::vector<SimpleVertexColour>& vertices) {
+void GeometryObject::CreateVertices(std::vector<DirectX::XMFLOAT3>& vertices) {
 	if (m_vertices.size() > 0) {
 		// GeometryObject isn't supposed to be changed during it's lifespan
 		return;
@@ -43,7 +43,7 @@ void GeometryObject::CreateIndices(std::vector<UINT>& indices) {
 	m_indexBufferId = Engine::GetPtr()->GetRenderer()->CreateIndexBuffer(m_indices.size(), &m_indices[0]);
 }
 
-const std::vector<SimpleVertexColour>& GeometryObject::GetVertices()const {
+const std::vector<DirectX::XMFLOAT3>& GeometryObject::GetVertices()const {
 	return m_vertices;
 }
 
@@ -82,8 +82,7 @@ void GeometryObject::Translate(float dx, float dy, float dz) {
 
 ConstantBuffer* GeometryObject::GetConstBuffer(D3DContext* context, FXMMATRIX viewMat, FXMMATRIX projMat) {
 	CBPerObject bufferData	= {};
-	XMMATRIX world = GetWorldTransform();
-	XMStoreFloat4x4(&bufferData.worldViewProj, world * viewMat * projMat);
+	XMStoreFloat4x4(&bufferData.worldViewProj, GetWorldTransform() * viewMat * projMat);
 
 	m_constBuffer.SetData(context, bufferData);
 	return m_constBuffer.GetBuffer();

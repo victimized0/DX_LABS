@@ -22,7 +22,6 @@ public:
 	pVecSceneObj					GetSceneObjects()const { return m_sceneObjects; }
 	const Camera&					GetMainCamera()const { return m_camera; }
 
-	void							Initialise();
 	void							Update(float dt);
 
 private:

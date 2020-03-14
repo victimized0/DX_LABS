@@ -13,10 +13,10 @@ public:
 											GeometryObject(const std::string& name);
 											~GeometryObject() {}
 
-	void									CreateVertices(std::vector<SimpleVertexColour>& vertices);
+	void									CreateVertices(std::vector<DirectX::XMFLOAT3>& vertices);
 	void									CreateIndices(std::vector<UINT>& indices);
 
-	const std::vector<SimpleVertexColour>&	GetVertices()const;
+	const std::vector<DirectX::XMFLOAT3>&	GetVertices()const;
 	const std::vector<UINT>&				GetIndices()const;
 
 	const int								GetVertexShaderId()	const	{ return m_vertexShaderId;	}
@@ -26,7 +26,7 @@ public:
 	const int								GetInputLayoutId()	const	{ return m_inputLayoutId;	}
 	const int								GetRSStateId()		const	{ return m_rsStateId;		}
 
-	ConstantBuffer*							GetConstBuffer(D3DContext* context, DirectX::XMMATRIX viewMat, DirectX::XMMATRIX projMat);
+	ConstantBuffer*							GetConstBuffer(D3DContext* context, DirectX::FXMMATRIX viewMat, DirectX::FXMMATRIX projMat);
 	DirectX::XMMATRIX						GetWorldTransform() const	{ return XMLoadFloat4x4(&m_transform); }
 
 	void									SetVertexShaderId	(int id)	{ m_vertexShaderId	= id; }
@@ -53,7 +53,7 @@ protected:
 
 	ConstBuffer<CBPerObject>				m_constBuffer;
 
-	std::vector<SimpleVertexColour>			m_vertices;
+	std::vector<DirectX::XMFLOAT3>			m_vertices;
 	std::vector<UINT>						m_indices;
 
 };

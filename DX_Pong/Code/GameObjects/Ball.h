@@ -17,7 +17,6 @@ public:
 	void	SetSpeedX(float value);
 	void	SetSpeedY(float value);
 
-	void	Initialise()override;
 	void	Update(float dt)override;
 
 private:

@@ -20,7 +20,7 @@ protected:
 	void							OnResize(uint32_t, uint32_t);
 	virtual bool					Initialize(int iconId);
 	virtual void					OnEvent(const Event& event) = 0;
-	virtual void					Update(float dt);
+	virtual void					Update(float dt) = 0;
 
 public:
 	static Engine*					GetPtr();

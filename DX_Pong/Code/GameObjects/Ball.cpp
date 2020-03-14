@@ -5,8 +5,8 @@
 Ball::Ball(const std::string& name, DirectX::XMFLOAT3 position)
 	: GeometryObject(name, position)
 	, m_size(0)
-	, m_speedX(0)
-	, m_speedY(0)
+	, m_speedX(DEFAULT_SPEED_X)
+	, m_speedY(DEFAULT_SPEED_Y)
 {
 
 }
@@ -39,11 +39,6 @@ void Ball::SetSpeedX(float value) {
 
 void Ball::SetSpeedY(float value) {
 	m_speedY = value;
-}
-
-void Ball::Initialise() {
-	m_speedX = DEFAULT_SPEED_X;
-	m_speedY = DEFAULT_SPEED_Y;
 }
 
 void Ball::Update(float dt) {

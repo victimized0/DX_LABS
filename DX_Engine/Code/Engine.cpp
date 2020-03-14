@@ -48,8 +48,6 @@ bool Engine::Initialize(int iconId){
 			return false;
 		}
 
-		m_scene.Initialise();
-
 		if (!m_renderer->Initialise()) {
 			return false;
 		}
@@ -107,10 +105,6 @@ bool Engine::InitializeWindow(int iconId) {
 	return true;
 }
 
-void Engine::Update(float dt) {
-	m_scene.Update(dt);
-}
-
 int Engine::Run() {
 	MSG msg = {};
 	m_timer.Reset();
@@ -123,7 +117,9 @@ int Engine::Run() {
 			m_timer.Tick();
 
 			if (!m_isPaused) {
-				Update(m_timer.GetDeltaTime());
+				float dt = m_timer.GetDeltaTime();
+				m_scene.Update(dt);
+				Update(dt);
 				m_renderer->Render();
 			} else {
 				Sleep(100);

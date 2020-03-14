@@ -66,31 +66,31 @@ void Game::CreateScene() {
 	auto player1 = std::make_shared<Paddle>("player1", XMFLOAT3(28.0f, 0.0f, 0.0f));
 	auto player2 = std::make_shared<Paddle>("player2", XMFLOAT3(-28.0f, 0.0f, 0.0f));
 
-	vector<SimpleVertexColour>	player1Vertices =
+	vector<XMFLOAT3>	player1Vertices =
 	{
-		{ XMFLOAT3(-1.0f,	4.0f,	0.0f),	XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{ XMFLOAT3(1.0f,	4.0f,	0.0f),	XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{ XMFLOAT3(-1.0f,	-4.0f,	0.0f),	XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{ XMFLOAT3(1.0f,	-4.0f,	0.0f),	XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) }
+		XMFLOAT3(-1.0f,	4.0f,	0.0f),
+		XMFLOAT3(1.0f,	4.0f,	0.0f),
+		XMFLOAT3(-1.0f,	-4.0f,	0.0f),
+		XMFLOAT3(1.0f,	-4.0f,	0.0f)
 	};
 
-	vector<UINT>				player1Indices =
+	vector<UINT>		player1Indices =
 	{
 		0, 2, 1,
 		2, 3, 1
 	};
 
-	vector<SimpleVertexColour>	player2Vertices(player1Vertices);
-	vector<UINT>				player2Indices(player1Indices);
+	vector<XMFLOAT3>	player2Vertices(player1Vertices);
+	vector<UINT>		player2Indices(player1Indices);
 
-	vector<SimpleVertexColour>	ballVertices =
+	vector<XMFLOAT3>	ballVertices =
 	{
-		{ XMFLOAT3(-0.5f,	0.5f,	0.0f),	XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) },
-		{ XMFLOAT3(0.5f,	0.5f,	0.0f),	XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) },
-		{ XMFLOAT3(-0.5f,	-0.5f,	0.0f),	XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) },
-		{ XMFLOAT3(0.5f,	-0.5f,	0.0f),	XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) }
+		XMFLOAT3(-0.5f,	0.5f,	0.0f),
+		XMFLOAT3(0.5f,	0.5f,	0.0f),
+		XMFLOAT3(-0.5f,	-0.5f,	0.0f),
+		XMFLOAT3(0.5f,	-0.5f,	0.0f)
 	};
-	vector<UINT>				ballIndices(player1Indices);
+	vector<UINT>		ballIndices(player1Indices);
 
 	player1->CreateVertices(player1Vertices);
 	player1->CreateIndices(player1Indices);

@@ -10,19 +10,19 @@ namespace {
 		const float t = (radius + (float)std::sqrt(5.0)) / 2.0f;
 
 		// Vertices
-		std::vector<SimpleVertexColour> vertices = {
-			{ DirectX::XMFLOAT3(-radius, t, 0.0f), DirectX::XMFLOAT4(color, color, color, 1.0f) },
-			{ DirectX::XMFLOAT3(radius, t, 0.0f), DirectX::XMFLOAT4(color, color, color, 1.0f) },
-			{ DirectX::XMFLOAT3(-radius, -t, 0.0f), DirectX::XMFLOAT4(color, color, color, 1.0f) },
-			{ DirectX::XMFLOAT3(radius, -t, 0.0f), DirectX::XMFLOAT4(color, color, color, 1.0f) },
-			{ DirectX::XMFLOAT3(0.0f, -radius, t), DirectX::XMFLOAT4(color, color, color, 1.0f) },
-			{ DirectX::XMFLOAT3(0.0f, radius, t), DirectX::XMFLOAT4(color, color, color, 1.0f) },
-			{ DirectX::XMFLOAT3(0.0f, -radius, -t), DirectX::XMFLOAT4(color, color, color, 1.0f) },
-			{ DirectX::XMFLOAT3(0.0f, radius, -t), DirectX::XMFLOAT4(color, color, color, 1.0f) },
-			{ DirectX::XMFLOAT3(t, 0.0f, -radius), DirectX::XMFLOAT4(color, color, color, 1.0f) },
-			{ DirectX::XMFLOAT3(t, 0.0f, radius), DirectX::XMFLOAT4(color, color, color, 1.0f) },
-			{ DirectX::XMFLOAT3(-t, 0.0f, -radius), DirectX::XMFLOAT4(color, color, color, 1.0f) },
-			{ DirectX::XMFLOAT3(-t, 0.0f, radius), DirectX::XMFLOAT4(color, color, color, 1.0f) }
+		std::vector<DirectX::XMFLOAT3> vertices = {
+			DirectX::XMFLOAT3(-radius, t, 0.0f),
+			DirectX::XMFLOAT3(radius, t, 0.0f),
+			DirectX::XMFLOAT3(-radius, -t, 0.0f),
+			DirectX::XMFLOAT3(radius, -t, 0.0f),
+			DirectX::XMFLOAT3(0.0f, -radius, t),
+			DirectX::XMFLOAT3(0.0f, radius, t),
+			DirectX::XMFLOAT3(0.0f, -radius, -t),
+			DirectX::XMFLOAT3(0.0f, radius, -t),
+			DirectX::XMFLOAT3(t, 0.0f, -radius),
+			DirectX::XMFLOAT3(t, 0.0f, radius),
+			DirectX::XMFLOAT3(-t, 0.0f, -radius),
+			DirectX::XMFLOAT3(-t, 0.0f, radius)
 		};
 
 		// Faces
