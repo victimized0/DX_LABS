@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Paddle.h"
-#include "../Pong.h"
+#include "../Game.h"
 
 Paddle::Paddle(const std::string& name, XMFLOAT3 position)
 	: GeometryObject(name, position)
@@ -30,10 +30,10 @@ void Paddle::Update(float dt) {
 	float ballBottom			= m_pBall->GetPosition().y - ballSizeDiv2;
 	float ballTop				= m_pBall->GetPosition().y + ballSizeDiv2;
 
-	float paddleRight			= m_pos.x - (float)m_sizeX / 2;
-	float paddleLeft			= m_pos.x + (float)m_sizeX / 2;
-	float paddleBottom			= m_pos.y - (float)m_sizeY / 2;
-	float paddleTop				= m_pos.y + (float)m_sizeY / 2;
+	float paddleRight			= GetPosition().x - (float)m_sizeX / 2;
+	float paddleLeft			= GetPosition().x + (float)m_sizeX / 2;
+	float paddleBottom			= GetPosition().y - (float)m_sizeY / 2;
+	float paddleTop				= GetPosition().y + (float)m_sizeY / 2;
 
 	bool collidesLeftPaddle		= fabs(ballLeft - paddleRight) < ballSizeDiv2 + dt;
 	bool collidesRightPaddle	= fabs(ballRight - paddleLeft) < ballSizeDiv2 + dt;
@@ -70,14 +70,4 @@ int Paddle::GetSizeX() {
 
 int Paddle::GetSizeY() {
 	return m_sizeY;
-}
-
-void Paddle::Translate(float dx, float dy, float dz) {
-	float paddleBottom	= m_pos.y - (float)m_sizeY / 2;
-	float paddleTop		= m_pos.y + (float)m_sizeY / 2;
-	bool collisesBorder = fabs(paddleTop + dy - GRID_TOP_BORDER) < 0.1 || fabs(paddleBottom + dy - GRID_BOTTOM_BORDER) < 0.1;
-
-	if (!collisesBorder) {
-		GeometryObject::Translate(dx, dy, dz);
-	}
 }

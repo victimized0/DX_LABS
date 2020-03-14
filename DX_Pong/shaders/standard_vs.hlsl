@@ -2,7 +2,6 @@
 
 cbuffer cbPerObject : register(b0) {
 	float4x4 wvpMatrix;
-	float4x4 wMatrix;
 };
 
 struct APP_INPUT {

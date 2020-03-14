@@ -19,8 +19,6 @@ public:
 	int		GetSizeX();
 	int		GetSizeY();
 
-	void	Translate(float dx, float dy, float dz)override;
-
 private:
 	Ball*	m_pBall;
 	int		m_sizeX;

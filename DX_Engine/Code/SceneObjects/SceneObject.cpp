@@ -5,9 +5,9 @@ using namespace DirectX;
 
 SceneObject::SceneObject(const std::string& name, DirectX::XMFLOAT3 position)
 	: m_name(name)
-	, m_pos(position)
 {
-
+	XMStoreFloat4x4(&m_transform, XMMatrixIdentity());
+	SetPosition(position.x, position.y, position.z);
 }
 
 SceneObject::SceneObject(const std::string& name)
@@ -29,13 +29,31 @@ void SceneObject::Update(float dt) {
 }
 
 void SceneObject::SetPosition(float x, float y, float z) {
-	m_pos = XMFLOAT3(x, y, z);
+	auto pos = GetPosition();
+	float dx = pos.x - x;
+	float dy = pos.y - y;
+	float dz = pos.z - z;
+
+	XMMATRIX translationMat = XMMatrixTranslation(dx, dy, dz);
+	XMMATRIX transform		= XMLoadFloat4x4(&m_transform);
+	XMMATRIX newTransform	= XMMatrixMultiply(transform, translationMat);
+	XMStoreFloat4x4(&m_transform, newTransform);
 }
 
 const std::string& SceneObject::GetName()const {
 	return m_name;
 }
 
-const DirectX::XMFLOAT3& SceneObject::GetPosition()const {
-	return m_pos;
+DirectX::XMFLOAT3 SceneObject::GetPosition()const {
+	XMFLOAT3 translation(0,0,0);
+	XMVECTOR outScale;
+	XMVECTOR outRot;
+	XMVECTOR outTrans;
+
+	XMMATRIX transform = XMLoadFloat4x4(&m_transform);
+	if (XMMatrixDecompose(&outScale, &outRot, &outTrans, transform)) {
+		XMStoreFloat3(&translation, outTrans);
+	}
+
+	return translation;
 }

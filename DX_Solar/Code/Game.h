@@ -2,6 +2,8 @@
 #define _GAME_H_
 
 #include "Engine.h"
+#include "Events/Event.h"
+#include "Events/MouseEvent.h"
 
 #pragma comment(lib, "DX_Engine.lib")
 
@@ -20,10 +22,13 @@ public:
 	virtual bool						Initialize()final;
 
 private:
-	void								OnEvent(const Event& event)final;
-	void								Update(float dt)final;
+	virtual void						OnEvent(const Event& event)final;
+	virtual void						Update(float dt)final;
 
-	void								InitializeBuffers();
+	void								OnMouseDown(const MouseEvent& event);
+	void								OnMouseUp(const MouseEvent& event);
+	void								OnMouseMove(const MouseEvent& event);
+	void								OnMouseScroll(const MouseEvent& event);
 
 private:	
 	POINT								m_lastMousePos;

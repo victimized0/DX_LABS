@@ -1,5 +1,5 @@
 ﻿#include "Code\pch.h"
-#include "Code\Pong.h"
+#include "Code\Game.h"
 
 // Advise notebook graphics drivers to prefer discrete GPU when no explicit application profile exists
 extern "C" {
@@ -18,7 +18,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	UNREFERENCED_PARAMETER(nCmdShow);
 
 	Game game(hInstance);
-	if (!game.Initialize()) {
+	if (!game.Initialize(IDI_ICON1)) {
 		return 0;
 	}
 

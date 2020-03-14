@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Ball.h"
-#include "../Pong.h"
+#include "../Game.h"
 
 Ball::Ball(const std::string& name, DirectX::XMFLOAT3 position)
 	: GeometryObject(name, position)
@@ -48,10 +48,10 @@ void Ball::Initialise() {
 
 void Ball::Update(float dt) {
 	float sizeDiv2		= (float)m_size / 2;
-	float ballLeft		= m_pos.x - sizeDiv2;
-	float ballRight		= m_pos.x + sizeDiv2;
-	float ballBottom	= m_pos.y - sizeDiv2;
-	float ballTop		= m_pos.y + sizeDiv2;
+	float ballLeft		= GetPosition().x - sizeDiv2;
+	float ballRight		= GetPosition().x + sizeDiv2;
+	float ballBottom	= GetPosition().y - sizeDiv2;
+	float ballTop		= GetPosition().y + sizeDiv2;
 
 	bool collidesBorder = fabs(ballTop - GRID_TOP_BORDER) < 0.1
 					   || fabs(ballBottom - GRID_BOTTOM_BORDER) < 0.1;
@@ -73,15 +73,7 @@ void Ball::Update(float dt) {
 }
 
 void Ball::Reset() {
-	for (int i = 0; i < m_vertices.size(); ++i) {
-		m_vertices[i].Position = XMFLOAT3(m_vertices[i].Position.x - m_pos.x,
-										  m_vertices[i].Position.y - m_pos.y,
-										  m_vertices[i].Position.z - m_pos.z);
-	}
-
-	m_pos.x = 0;
-	m_pos.y = 0;
-	m_pos.z = 0;
+	XMStoreFloat4x4(&m_transform, XMMatrixIdentity());
 
 	m_speedX = DEFAULT_SPEED_X;
 	m_speedY = DEFAULT_SPEED_Y;

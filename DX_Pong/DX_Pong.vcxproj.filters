@@ -11,9 +11,6 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Code\pch.cpp" />
-    <ClCompile Include="Code\Pong.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
     <ClCompile Include="Code\GameLogic.cpp">
       <Filter>Code</Filter>
     </ClCompile>
@@ -23,12 +20,12 @@
     <ClCompile Include="Code\GameObjects\Paddle.cpp">
       <Filter>Code\GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Game.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\pch.h" />
-    <ClInclude Include="Code\Pong.h">
-      <Filter>Code</Filter>
-    </ClInclude>
     <ClInclude Include="Code\GameLogic.h">
       <Filter>Code</Filter>
     </ClInclude>
@@ -40,6 +37,9 @@
     </ClInclude>
     <ClInclude Include="Code\GameObjects\Paddle.h">
       <Filter>Code\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Game.h">
+      <Filter>Code</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

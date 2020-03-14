@@ -1,25 +1,23 @@
 #ifndef _CONST_BUFFER_H_
 #define _CONST_BUFFER_H_
 
-struct CameraConstants {
+struct CBPerObject {
     DirectX::XMFLOAT4X4 worldViewProj;
-    DirectX::XMFLOAT4X4 world;
 };
 
-// Strongly typed wrapper around a D3D constant buffer.
-template<typename T>
+template <typename T>
 class ConstBuffer {
 public:
     ConstBuffer()                                   = default;
     ConstBuffer(ConstBuffer const&)                 = delete;
     ConstBuffer& operator= (ConstBuffer const&)     = delete;
 
-    explicit ConstBuffer(_In_ ID3D11Device* device) {
+    explicit ConstBuffer(D3DDevice* device) {
         Create(device);
     }
 
-    void Create(_In_ ID3D11Device* device) {
-        D3D11_BUFFER_DESC desc  = {};
+    void Create(D3DDevice* device) {
+        D3DBufferDesc desc = {};
 
         desc.ByteWidth          = sizeof(T);
         desc.Usage              = D3D11_USAGE_DYNAMIC;
@@ -31,26 +29,25 @@ public:
         );
     }
 
-    void SetData(_In_ ID3D11DeviceContext* deviceContext, T const& value) {
+    void SetData(D3DContext* deviceContext, T const& value) {
         assert(mConstBuffer);
 
-        D3D11_MAPPED_SUBRESOURCE mappedResource;
+        D3DMappedSubres mappedResource;
 
         ThrowIfFailed(
             deviceContext->Map(mConstBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)
         );
 
         *static_cast<T*>(mappedResource.pData) = value;
-
         deviceContext->Unmap(mConstBuffer.Get(), 0);
     }
 
-    ID3D11Buffer* GetBuffer() const noexcept {
+    ConstantBuffer* GetBuffer() const noexcept {
         return mConstBuffer.Get();
     }
 
 private:
-    Microsoft::WRL::ComPtr<ID3D11Buffer> mConstBuffer;
+    Microsoft::WRL::ComPtr<ConstantBuffer>  mConstBuffer;
 };
 
 #endif //_CONST_BUFFER_H_

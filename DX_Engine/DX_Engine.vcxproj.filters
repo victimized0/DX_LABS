@@ -32,6 +32,8 @@
     <ClCompile Include="Code\Engine.cpp">
       <Filter>Code</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Shader.cpp" />
+    <ClCompile Include="Code\VertexFormats.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\pch.h" />
@@ -89,6 +91,7 @@
     <ClInclude Include="Code\Engine.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Code">

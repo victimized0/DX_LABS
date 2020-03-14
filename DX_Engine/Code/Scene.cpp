@@ -30,6 +30,7 @@ void Scene::Initialise() {
 }
 
 void Scene::Update(float dt) {
+    m_camera.Update(dt);
     for (size_t index = 0; index < m_sceneObjects.size(); ++index) {
         m_sceneObjects[index]->Update(dt);
     }

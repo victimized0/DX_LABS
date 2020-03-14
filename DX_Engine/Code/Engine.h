@@ -5,6 +5,7 @@
 #include "StepTimer.h"
 #include "Scene.h"
 #include "Events/Event.h"
+#include "Interfaces/IRenderer.h"
 
 class Engine {
 protected:
@@ -19,19 +20,19 @@ protected:
 	void							OnResize(uint32_t, uint32_t);
 	virtual bool					Initialize(int iconId);
 	virtual void					OnEvent(const Event& event) = 0;
-	virtual void					Update(float dt) = 0;
+	virtual void					Update(float dt);
 
 public:
 	static Engine*					GetPtr();
 	int								Run();
 	LRESULT							WndProc(HWND, UINT, WPARAM, LPARAM);
-	const Scene&					GetScene()const;
-	const IRenderer*				GetRenderer()const;
+	Scene&							GetScene();
+	IRenderer*						GetRenderer()const;
 
 protected:
 	bool							InitializeWindow(int iconId);
 
-	static Engine*					m_pEngine;
+	static Engine*					pEngine;
 	std::wstring					m_wndCaption;
 
 	bool							m_isInit;
@@ -42,7 +43,7 @@ protected:
 
 	Timer							m_timer;
 	Scene							m_scene;
-	std::unique_ptr<D3D11Renderer>	m_renderer;
+	std::unique_ptr<IRenderer>		m_renderer;
 
 };
 

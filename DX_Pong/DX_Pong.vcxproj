@@ -179,7 +179,7 @@
     <ClInclude Include="Code\GameObjects\Ball.h" />
     <ClInclude Include="Code\GameObjects\Paddle.h" />
     <ClInclude Include="Code\GameLogic.h" />
-    <ClInclude Include="Code\Pong.h" />
+    <ClInclude Include="Code\Game.h" />
     <ClInclude Include="Code\pch.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
@@ -187,7 +187,7 @@
     <ClCompile Include="Code\GameObjects\Ball.cpp" />
     <ClCompile Include="Code\GameObjects\Paddle.cpp" />
     <ClCompile Include="Code\GameLogic.cpp" />
-    <ClCompile Include="Code\Pong.cpp" />
+    <ClCompile Include="Code\Game.cpp" />
     <ClCompile Include="main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>

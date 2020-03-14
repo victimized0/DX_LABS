@@ -9,10 +9,10 @@ LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) 
 	return Engine::GetPtr()->WndProc(hwnd, msg, wParam, lParam);
 }
 
-Engine* Engine::m_pEngine = nullptr;
+Engine* Engine::pEngine = nullptr;
 Engine* Engine::GetPtr()
 {
-	return m_pEngine;
+	return pEngine;
 }
 
 Engine::Engine(HINSTANCE hInstance)
@@ -24,9 +24,9 @@ Engine::Engine(HINSTANCE hInstance)
 	, m_isResizing(false)
 {
 #ifdef _DEBUG
-	assert(m_pEngine == nullptr);
+	assert(pEngine == nullptr);
 #endif
-	m_pEngine = this;
+	pEngine = this;
 	m_renderer = std::make_unique<D3D11Renderer>();
 
 	wchar_t buf[MAX_PATH];
@@ -50,7 +50,7 @@ bool Engine::Initialize(int iconId){
 
 		m_scene.Initialise();
 
-		if (!m_renderer->Initialise(m_scene)) {
+		if (!m_renderer->Initialise()) {
 			return false;
 		}
 
@@ -107,6 +107,10 @@ bool Engine::InitializeWindow(int iconId) {
 	return true;
 }
 
+void Engine::Update(float dt) {
+	m_scene.Update(dt);
+}
+
 int Engine::Run() {
 	MSG msg = {};
 	m_timer.Reset();
@@ -120,7 +124,6 @@ int Engine::Run() {
 
 			if (!m_isPaused) {
 				Update(m_timer.GetDeltaTime());
-				m_renderer->Update(m_timer.GetDeltaTime());
 				m_renderer->Render();
 			} else {
 				Sleep(100);
@@ -138,7 +141,7 @@ void Engine::OnResize(uint32_t width, uint32_t height) {
 	//if (m_isFullScreen)
 	//	m_swapChain->SetFullscreenState(true, nullptr);
 	m_renderer->CreateResources();
-	m_renderer->GetCamera()->SetProj(XM_PIDIV4, width, height, 0.1f, 1000.0f);
+	const_cast<Camera&>(m_scene.GetMainCamera()).SetProj(XM_PIDIV4, width, height, 0.1f, 1000.0f);
 }
 
 LRESULT Engine::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -256,19 +259,19 @@ LRESULT Engine::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 		break;
 
 	case WM_RBUTTONDOWN:
-		//OnEvent(MouseEvent(EventType::MouseDown));
+		OnEvent(MouseEvent(EventType::MouseDown, wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		break;
 
 	case WM_RBUTTONUP:
-		//OnEvent(MouseEvent(EventType::MouseUp));
+		OnEvent(MouseEvent(EventType::MouseUp, wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		break;
 
 	case WM_MOUSEMOVE:
-		//OnEvent(MouseEvent(EventType::MouseMove));
+		OnEvent(MouseEvent(EventType::MouseMove, wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		break;
 
 	case WM_MOUSEWHEEL:
-		//OnEvent(MouseEvent(EventType::MouseScroll));
+		OnEvent(MouseEvent(EventType::MouseScroll, wParam));
 		break;
 
 	case WM_KEYDOWN:
@@ -292,10 +295,10 @@ LRESULT Engine::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-const Scene& Engine::GetScene()const {
+Scene& Engine::GetScene() {
 	return m_scene;
 }
 
-const IRenderer* Engine::GetRenderer()const {
+IRenderer* Engine::GetRenderer()const {
 	return m_renderer.get();
 }

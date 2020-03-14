@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "D3D11Renderer.h"
 #include "SceneObjects/GeometryObject.h"
+#include "Engine.h"
 
 D3D11Renderer::D3D11Renderer() 
 	: m_msaa4xQuality(1)
@@ -14,39 +15,27 @@ D3D11Renderer::D3D11Renderer()
 	, m_swapChain(nullptr)
 	, m_renderTargetView(nullptr)
 	, m_depthStencilView(nullptr)
-	, m_rsState(nullptr)
 {
-	m_camera = std::make_shared<Camera>("Main Camera");
+
 }
 
 D3D11Renderer::~D3D11Renderer() {
 
 }
 
-bool D3D11Renderer::Initialise(Scene& scene) {
+bool D3D11Renderer::Initialise() {
 	if (!CreateDevice()) {
 		return false;
 	}
-
-	D3D11_RASTERIZER_DESC rastDesc = {};
-	rastDesc.FillMode = D3D11_FILL_SOLID;
-	rastDesc.CullMode = D3D11_CULL_BACK;
-
-	HRESULT hr = m_device->CreateRasterizerState(&rastDesc, &m_rsState);
-	if (FAILED(hr)) {
+	
+	D3DRSDesc desc = {};
+	desc.CullMode = D3D11_CULL_FRONT;
+	desc.FillMode = D3D11_FILL_WIREFRAME;
+	if (CreateRSState(&desc) == RES_FAILED) {
 		return false;
 	}
 
-	m_scene = &scene;
-	m_scene->AddObject(m_camera);
-	m_constBuffer.Create(m_device.Get());
-
-	InitializeInputLayout();
 	return true;
-}
-
-void D3D11Renderer::Update(float dt) {
-	m_scene->Update(dt);
 }
 
 void D3D11Renderer::Render() {
@@ -55,40 +44,62 @@ void D3D11Renderer::Render() {
 	m_context->ClearRenderTargetView(m_renderTargetView.Get(), backColour);
 	m_context->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
-
-	m_context->RSSetState(m_rsState.Get());
-
-	m_context->IASetInputLayout(m_inputLayout.Get());
-	m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	m_context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
-	m_context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
-
-	CameraConstants cameraConstants = {};
-	XMStoreFloat4x4(&cameraConstants.worldViewProj, m_camera->GetView() * m_camera->GetProj());
-	XMStoreFloat4x4(&cameraConstants.world, DirectX::XMMatrixIdentity());
-
-	m_constBuffer.SetData(m_context.Get(), cameraConstants);
-	auto cameraConstBuffer = m_constBuffer.GetBuffer();
-	m_context->VSSetConstantBuffers(0, 1, &cameraConstBuffer);
-
+	
 	UINT stride = sizeof(SimpleVertexColour);
 	UINT offset = 0;
 
-	// TODO: Implement a proper way of setting shaders
-	m_context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
-	m_context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
-
-	for each ( auto& object in m_scene->GetSceneObjects()) {
+	for each ( auto& object in Engine::GetPtr()->GetScene().GetSceneObjects()) {
 		auto geoObj = dynamic_cast<GeometryObject*>(object.get());
 		if (geoObj != nullptr) {
-			geoObj->UpdateVertexBuffer(m_context.Get());
+			int rsStateId		= geoObj->GetRSStateId();
+			int inputLayoutId	= geoObj->GetInputLayoutId();
+			if (rsStateId < 0 || inputLayoutId < 0) {
+				continue;
+			}
 
-			auto vBuffer = geoObj->GetVertexBuffer();
-			auto iBuffer = geoObj->GetIndexBuffer();
+			auto rsState = m_rsStates[rsStateId].Get();
+			auto inputLayout = m_inputLayouts[inputLayoutId].Get();
+			if (rsState == nullptr || inputLayout == nullptr) {
+				continue;
+			}
+
+			m_context->RSSetState(rsState);
+			m_context->IASetInputLayout(inputLayout);
+			m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+			int vsId = geoObj->GetVertexShaderId();
+			int psId = geoObj->GetPixelShaderId();
+			if (vsId < 0 || psId < 0) {
+				continue;
+			}
+
+			auto vertexShader = m_vertexShaders[vsId].Get();
+			auto pixelShader  = m_pixelShaders[psId].Get();
+			if (vertexShader == nullptr || pixelShader == nullptr) {
+				continue;
+			}
+
+			m_context->VSSetShader(vertexShader, nullptr, 0);
+			m_context->PSSetShader(pixelShader,  nullptr, 0);
+
+			int vbId = geoObj->GetVertexBufferId();
+			int ibId = geoObj->GetIndexBufferId();
+			if (vbId < 0 || ibId < 0) {
+				continue;
+			}
+
+			auto vBuffer = m_vertexBuffers[vbId].Get();
+			auto iBuffer = m_indexBuffers[ibId].Get();
+			
+			auto& camera = Engine::GetPtr()->GetScene().GetMainCamera();
+			auto cBuffer = geoObj->GetConstBuffer(m_context.Get(), camera.GetView(), camera.GetProj());
+			if (vBuffer == nullptr || iBuffer == nullptr || cBuffer == nullptr) {
+				continue;
+			}
 
 			m_context->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 			m_context->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, offset);
+			m_context->VSSetConstantBuffers(0, 1, &cBuffer);
 			m_context->DrawIndexed((UINT)geoObj->GetIndices().size(), 0, 0);
 		}
 	}
@@ -273,12 +284,12 @@ bool D3D11Renderer::CreateResources() {
 	ThrowIfFailed(m_device->CreateTexture2D(&depthStencilDesc, nullptr, &depthStencil));
 	ThrowIfFailed(m_device->CreateDepthStencilView(depthStencil.Get(), nullptr, &m_depthStencilView));
 
-	m_viewport.TopLeftX = 0.0f;
-	m_viewport.TopLeftY = 0.0f;
-	m_viewport.Width	= static_cast<float>(backBufferDesc.Width);
-	m_viewport.Height	= static_cast<float>(backBufferDesc.Height);
-	m_viewport.MinDepth	= D3D11_MIN_DEPTH;
-	m_viewport.MaxDepth	= D3D11_MAX_DEPTH;
+	m_viewport.TopLeftX		= 0.0f;
+	m_viewport.TopLeftY		= 0.0f;
+	m_viewport.Width		= static_cast<float>(backBufferDesc.Width);
+	m_viewport.Height		= static_cast<float>(backBufferDesc.Height);
+	m_viewport.MinDepth		= D3D11_MIN_DEPTH;
+	m_viewport.MaxDepth		= D3D11_MAX_DEPTH;
 	m_context->RSSetViewports(1, &m_viewport);
 
 	return true;
@@ -297,28 +308,89 @@ bool D3D11Renderer::OnDeviceLost() {
 	return true;
 }
 
-void D3D11Renderer::InitializeInputLayout() {
-	ID3DBlob* vsbyteCode = nullptr;
-	ID3DBlob* psbyteCode = nullptr;
+int D3D11Renderer::CreateVertexBuffer(size_t size, size_t strideSize, const void* pData) {
+	ComPtr<VertexBuffer> pBuffer;
+	if (FAILED(CreateBuffer(size, strideSize, pData, D3D11_BIND_VERTEX_BUFFER, &pBuffer))) {
+		return RES_FAILED;
+	}
+	m_vertexBuffers.push_back(pBuffer);
+	return m_vertexBuffers.size() - 1;
+}
 
-	HRESULT result = D3DReadFileToBlob((Environment::Instance().GetExecPath() + L"\\data\\shaders\\standard_vs.cso").c_str(), &vsbyteCode);
-	if (FAILED(result)) {
-		return;
+int D3D11Renderer::CreateIndexBuffer(size_t size, const void* pData) {
+	ComPtr<IndexBuffer> pBuffer;
+	if (FAILED(CreateBuffer(size, sizeof(UINT), pData, D3D11_BIND_INDEX_BUFFER, &pBuffer))) {
+		return RES_FAILED;
+	}
+	m_indexBuffers.push_back(pBuffer);
+	return m_indexBuffers.size() - 1;
+}
+
+int	D3D11Renderer::CreateInputLayout(InputElementDesc* desc, size_t arrSize, D3DBlob* shaderBlob) {
+	ComPtr<InputLayout> pInputLayout;
+	if (FAILED(m_device->CreateInputLayout(desc, arrSize, shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &pInputLayout))) {
+		return RES_FAILED;
+	}
+	m_inputLayouts.push_back(pInputLayout);
+	return m_inputLayouts.size() - 1;
+}
+
+int D3D11Renderer::CreateRSState(D3DRSDesc* desc) {
+	ComPtr<RSState> pRSState;
+	if (FAILED(m_device->CreateRasterizerState(desc, &pRSState))) {
+		return RES_FAILED;
+	}
+	m_rsStates.push_back(pRSState);
+	return m_rsStates.size() - 1;
+}
+
+int D3D11Renderer::CreateVertexShader(const char* path, D3DBlob** ppBlob) {
+	if (FAILED(CreateBlob(path, ppBlob))) {
+		return RES_FAILED;
 	}
 
-	result = D3DReadFileToBlob((Environment::Instance().GetExecPath() + L"\\data\\shaders\\standard_ps.cso").c_str(), &psbyteCode);
-	if (FAILED(result)) {
-		return;
+	ComPtr<VertexShader> pVertexShader;
+	ThrowIfFailed(m_device->CreateVertexShader((*ppBlob)->GetBufferPointer(), (*ppBlob)->GetBufferSize(), nullptr, &pVertexShader));
+	m_vertexShaders.push_back(pVertexShader);
+	return m_vertexShaders.size() - 1;
+}
+
+int D3D11Renderer::CreatePixelShader(const char* path) {
+	D3DBlob* psByteCode;
+	if (FAILED(CreateBlob(path, &psByteCode))) {
+		return RES_FAILED;
 	}
 
-	ThrowIfFailed(m_device->CreateVertexShader(vsbyteCode->GetBufferPointer(), vsbyteCode->GetBufferSize(), nullptr, &m_vertexShader));
-	ThrowIfFailed(m_device->CreatePixelShader(psbyteCode->GetBufferPointer(), psbyteCode->GetBufferSize(), nullptr, &m_pixelShader));
+	ComPtr<PixelShader> pPixelShader;
+	ThrowIfFailed(m_device->CreatePixelShader(psByteCode->GetBufferPointer(), psByteCode->GetBufferSize(), nullptr, &pPixelShader));
+	m_pixelShaders.push_back(pPixelShader);
+	return m_pixelShaders.size() - 1;
+}
 
-	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
-	{
-		{ "POSITION",	0, DXGI_FORMAT_R32G32B32_FLOAT,		0, D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR",		0, DXGI_FORMAT_R32G32B32A32_FLOAT,	0, D3D11_APPEND_ALIGNED_ELEMENT,	D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
+HRESULT D3D11Renderer::CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer) {
+	assert(pBuffer != nullptr);
 
-	m_device->CreateInputLayout(vertexDesc, ARRAYSIZE(vertexDesc), vsbyteCode->GetBufferPointer(), vsbyteCode->GetBufferSize(), &m_inputLayout);
+	uint64_t sizeInBytes = uint64_t(size * strideSize);
+	if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u)) {
+		throw std::exception("Buffer too large for DirectX 11");
+	}
+
+	D3DBufferDesc desc = {};
+	desc.ByteWidth = static_cast<UINT>(sizeInBytes);
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = bindFlag;
+	desc.CPUAccessFlags = 0;
+
+	D3DSubresData data = {};
+	data.pSysMem = pData;
+
+	return m_device->CreateBuffer(&desc, &data, pBuffer);
+}
+
+HRESULT D3D11Renderer::CreateBlob(const char* path, D3DBlob** pBlob) {
+	std::string sPath(path);
+	std::wstring wPath(sPath.begin(), sPath.end());
+	std::wstring fullPath = Environment::Instance().GetExecPath() + wPath;
+	
+	return D3DReadFileToBlob(fullPath.c_str(), pBlob);
 }
