@@ -5,30 +5,36 @@
 using namespace DirectX;
 
 class Ball : public GeometryObject {
-public:
-			Ball(const std::string& name, XMFLOAT3 position);
-			Ball(const std::string& name);
-
-	int		GetSize();
-	float	GetSpeedX();
-	float	GetSpeedY();
-
-	void	SetSize(int value);
-	void	SetSpeedX(float value);
-	void	SetSpeedY(float value);
-
-	void	Update(float dt)override;
-
 private:
 	static constexpr float DEFAULT_SPEED_X = 15.0f;
 	static constexpr float DEFAULT_SPEED_Y = 3.0f;
 
-	void	Reset();
+public:
+					Ball(const std::string& name, XMFLOAT3 position);
+					Ball(const std::string& name);
+
+	int				GetSize();
+	float			GetSpeedX();
+	float			GetSpeedY();
+	BoundingBox		GetBoundingBox() { return m_bb; }
+
+	void			SetSize(int value);
+	void			SetSpeedX(float value);
+	void			SetSpeedY(float value);
+	void			InverseSpeedX();
+	void			InverseSpeedY();
+
+	void			Update(float dt)override;
+	void			Reset();
 
 private:
-	int		m_size;
-	float	m_speedX;
-	float	m_speedY;
+	void			UpdateBB();
+
+private:
+	BoundingBox		m_bb;
+	int				m_size;
+	float			m_speedX;
+	float			m_speedY;
 
 };
 

@@ -47,4 +47,18 @@ inline void ThrowIfFailed(HRESULT hr)
 #endif
 }
 
+struct BoundingBox {
+	float Left;
+	float Right;
+	float Top;
+	float Bottom;
+
+	explicit BoundingBox(float l, float r, float t, float b)
+		: Left(l)
+		, Right(r)
+		, Top(t)
+		, Bottom(b)
+	{}
+};
+
 #endif //_PONG_PCH_H_

@@ -68,7 +68,7 @@ void Game::CreateShaders() {
 }
 
 void Game::CreateScene() {
-	auto ball	 = std::make_shared<Ball>(NAME_BALL, XMFLOAT3(0.0f, 0.0f, 0.0f));
+	auto ball	 = std::make_shared<Ball>(  NAME_BALL,	  XMFLOAT3(0.0f, 0.0f, 0.0f));
 	auto lPaddle = std::make_shared<Paddle>(NAME_LPADDLE, XMFLOAT3(-27.0f, 0.0f, 0.0f));
 	auto rPaddle = std::make_shared<Paddle>(NAME_RPADDLE, XMFLOAT3(27.0f, 0.0f, 0.0f));
 
@@ -109,9 +109,6 @@ void Game::CreateScene() {
 	ball->CreateVertices(ballVertices);
 	ball->CreateIndices(ballIndices);
 	ball->SetSize(1);
-
-	lPaddle->SetBall(ball.get());
-	rPaddle->SetBall(ball.get());
 
 	m_scene.AddObject(lPaddle);
 	m_scene.AddObject(rPaddle);

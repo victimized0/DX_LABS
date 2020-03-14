@@ -7,6 +7,7 @@ Ball::Ball(const std::string& name, DirectX::XMFLOAT3 position)
 	, m_size(0)
 	, m_speedX(DEFAULT_SPEED_X)
 	, m_speedY(DEFAULT_SPEED_Y)
+	, m_bb(0, 0, 0, 0)
 {
 
 }
@@ -41,30 +42,25 @@ void Ball::SetSpeedY(float value) {
 	m_speedY = value;
 }
 
+void Ball::InverseSpeedX() {
+	m_speedX *= -1;
+}
+
+void Ball::InverseSpeedY() {
+	m_speedY *= -1;
+}
+
 void Ball::Update(float dt) {
-	float sizeDiv2		= (float)m_size / 2;
-	float ballLeft		= GetPosition().x - sizeDiv2;
-	float ballRight		= GetPosition().x + sizeDiv2;
-	float ballBottom	= GetPosition().y - sizeDiv2;
-	float ballTop		= GetPosition().y + sizeDiv2;
+	UpdateBB();
+}
 
-	bool collidesBorder = fabs(ballTop - 22) < 0.1
-					   || fabs(ballBottom - -22) < 0.1;
+void Ball::UpdateBB() {
+	float sizeDiv2 = (float)m_size / 2;
 
-	if (collidesBorder) {
-		m_speedY *= -1;
-	}
-
-	float dx = m_speedX * 0.02f;
-	float dy = m_speedY * 0.02f;
-	Translate(dx, dy, 0.0f);
-
-	bool crossedBorderRight = fabs(ballRight - -30) < sizeDiv2 + dt;
-	bool crossedBorderLeft  = fabs(ballLeft  - 30)  < sizeDiv2 + dt;
-
-	if (crossedBorderRight || crossedBorderLeft) {
-		Reset();
-	}
+	m_bb.Left	= GetPosition().x + sizeDiv2;
+	m_bb.Right	= GetPosition().x - sizeDiv2;
+	m_bb.Top	= GetPosition().y + sizeDiv2;
+	m_bb.Bottom = GetPosition().y - sizeDiv2;
 }
 
 void Ball::Reset() {

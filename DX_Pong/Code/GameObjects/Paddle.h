@@ -8,20 +8,24 @@ using namespace DirectX;
 
 class Paddle : public GeometryObject {
 public:
-			Paddle(const std::string& name, XMFLOAT3 position);
-			Paddle(const std::string& name);
+					Paddle(const std::string& name, XMFLOAT3 position);
+					Paddle(const std::string& name);
 
-	void	Update(float dt)override;
+	void			Update(float dt)override;
 
-	void	SetBall(Ball* pBall);
-	void	SetSize(int x, int y);
-	int		GetSizeX();
-	int		GetSizeY();
+	BoundingBox		GetBoundingBox() { return m_bb; }
+	void			SetSize(int x, int y);
+	int				GetSizeX();
+	int				GetSizeY();
+	bool			Collides(BoundingBox objBB, float objSizeX, float objSizeY, float threshold);
 
 private:
-	Ball*	m_pBall;
-	int		m_sizeX;
-	int		m_sizeY;
+	void			UpdateBB();
+
+private:
+	BoundingBox		m_bb;
+	int				m_sizeX;
+	int				m_sizeY;
 };
 
 #endif //_GAME_OBJECT_PADDLE_H_

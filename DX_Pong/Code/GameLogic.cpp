@@ -82,5 +82,31 @@ void GameLogic::OnEvent(const Event& event) {
 }
 
 void GameLogic::Update(float dt) {
+	auto ball    = dynamic_cast<Ball*>(  m_pScene->GetSceneObject(NAME_BALL).get());
+	auto lPaddle = dynamic_cast<Paddle*>(m_pScene->GetSceneObject(NAME_LPADDLE).get());
+	auto rPaddle = dynamic_cast<Paddle*>(m_pScene->GetSceneObject(NAME_RPADDLE).get());
 
+	BoundingBox ballBB = ball->GetBoundingBox();
+	float threshold	   = 0.15f;
+
+	bool collidesBorder = fabs(ballBB.Top - GRID_TOP_BORDER) < threshold || fabs(ballBB.Bottom - GRID_BOTTOM_BORDER) < threshold;
+	if (collidesBorder) {
+		ball->InverseSpeedY();
+	}
+
+	if (lPaddle->Collides(ball->GetBoundingBox(), ball->GetSize(), ball->GetSize(), threshold) ||
+		rPaddle->Collides(ball->GetBoundingBox(), ball->GetSize(), ball->GetSize(), threshold))
+	{
+		ball->InverseSpeedX();
+	}
+
+	float dx = ball->GetSpeedX() * dt;
+	float dy = ball->GetSpeedY() * dt;
+	ball->Translate(dx, dy, 0.0f);
+
+	bool crossedBorderRight = fabs(ballBB.Right - GRID_RIGHT_BORDER) < threshold;
+	bool crossedBorderLeft  = fabs(ballBB.Left  - GRID_LEFT_BORDER)  < threshold;
+	if (crossedBorderRight || crossedBorderLeft) {
+		ball->Reset();
+	}
 }
