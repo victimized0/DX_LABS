@@ -39,10 +39,14 @@ bool Game::Initialize(int iconId) {
 void Game::CreateShaders() {
 	D3DBlob* vsBlob;
 	int vsId = m_renderer->CreateVertexShader("/data/shaders/standard_vs.cso", &vsBlob);
-	int ilId = m_renderer->CreateInputLayout(const_cast<InputElementDesc*>(SimpleVertexColour::InputElements),
-											SimpleVertexColour::ElementsCount, vsBlob);
-
 	int psId = m_renderer->CreatePixelShader("/data/shaders/standard_ps.cso");
+
+	InputElementDesc desc =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+
+	int ilId = m_renderer->CreateInputLayout(&desc, 1, vsBlob);
 
 	auto pBall	= m_scene.GetSceneObject("ball").get();
 	auto pP1	= m_scene.GetSceneObject("player1").get();
