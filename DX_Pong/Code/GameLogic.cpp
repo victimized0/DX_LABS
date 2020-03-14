@@ -3,6 +3,7 @@
 #include "Events/KeyboardEvent.h"
 #include "SceneObjects/GeometryObject.h"
 #include "GameObjects/Ball.h"
+#include "GameObjects/Paddle.h"
 
 GameLogic::GameLogic()
 	: m_pScene(nullptr)
@@ -37,29 +38,41 @@ void GameLogic::OnEvent(const Event& event) {
 			{
 				case KeyCode::W:
 				{
-					auto player = m_pScene->GetSceneObject("player1");
-					dynamic_cast<GeometryObject*>(player.get())->Translate(0.0f, 1.0f, 0.0f);
+					auto player = dynamic_cast<Paddle*>(m_pScene->GetSceneObject(NAME_LPADDLE).get());
+					float distToTop = fabs(player->GetPosition().y + player->GetSizeY() / 2 - GRID_TOP_BORDER);
+					if (distToTop > 0.1f) {
+						player->Translate(0.0f, 1.0f, 0.0f);
+					}
 				}
 				break;
 
 				case KeyCode::S:
 				{
-					auto player = m_pScene->GetSceneObject("player1");
-					dynamic_cast<GeometryObject*>(player.get())->Translate(0.0f, -1.0f, 0.0f);
+					auto paddle = dynamic_cast<Paddle*>(m_pScene->GetSceneObject(NAME_LPADDLE).get());
+					float distToBottom = fabs(paddle->GetPosition().y - paddle->GetSizeY() / 2 - GRID_BOTTOM_BORDER);
+					if (distToBottom > 0.1f) {
+						paddle->Translate(0.0f, -1.0f, 0.0f);
+					}
 				}
 				break;
 
 				case KeyCode::Up:
 				{
-					auto player = m_pScene->GetSceneObject("player2");
-					dynamic_cast<GeometryObject*>(player.get())->Translate(0.0f, 1.0f, 0.0f);
+					auto player = dynamic_cast<Paddle*>(m_pScene->GetSceneObject(NAME_RPADDLE).get());
+					float distToTop = fabs(player->GetPosition().y + player->GetSizeY() / 2 - GRID_TOP_BORDER);
+					if (distToTop > 0.1f) {
+						player->Translate(0.0f, 1.0f, 0.0f);
+					}
 				}
 				break;
 
 				case KeyCode::Down:
 				{
-					auto player = m_pScene->GetSceneObject("player2");
-					dynamic_cast<GeometryObject*>(player.get())->Translate(0.0f, -1.0f, 0.0f);
+					auto paddle = dynamic_cast<Paddle*>(m_pScene->GetSceneObject(NAME_RPADDLE).get());
+					float distToBottom = fabs(paddle->GetPosition().y - paddle->GetSizeY() / 2 - GRID_BOTTOM_BORDER);
+					if (distToBottom > 0.1f) {
+						paddle->Translate(0.0f, -1.0f, 0.0f);
+					}
 				}
 				break;
 			}

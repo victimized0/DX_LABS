@@ -7,7 +7,6 @@
 #include "SceneObjects\GeometryObject.h"
 
 using std::vector;
-using std::wstring;
 
 Game::Game(HINSTANCE hInstance)
 	: Engine(hInstance)
@@ -41,78 +40,81 @@ void Game::CreateShaders() {
 	int vsId = m_renderer->CreateVertexShader("/data/shaders/standard_vs.cso", &vsBlob);
 	int psId = m_renderer->CreatePixelShader("/data/shaders/standard_ps.cso");
 
-	InputElementDesc desc =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
+	int ilId = m_renderer->CreateInputLayout(const_cast<InputElementDesc*>(GeometryObject::VertexType::InputElements),
+											GeometryObject::VertexType::ElementsCount, vsBlob);
 
-	int ilId = m_renderer->CreateInputLayout(&desc, 1, vsBlob);
+	auto pBall	= dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_BALL).get());
+	auto pP1	= dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_LPADDLE).get());
+	auto pP2	= dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_RPADDLE).get());
 
-	auto pBall	= m_scene.GetSceneObject("ball").get();
-	auto pP1	= m_scene.GetSceneObject("player1").get();
-	auto pP2	= m_scene.GetSceneObject("player2").get();
+	pBall->SetVertexShaderId(vsId);
+	pBall->SetPixelShaderId(psId);
+	pBall->SetInputLayoutId(ilId);
 
-	dynamic_cast<GeometryObject*>(pBall)->SetVertexShaderId(vsId);
-	dynamic_cast<GeometryObject*>(pBall)->SetPixelShaderId(psId);
-	dynamic_cast<GeometryObject*>(pBall)->SetInputLayoutId(ilId);
+	pP1->SetVertexShaderId(vsId);
+	pP1->SetPixelShaderId(psId);
+	pP1->SetInputLayoutId(ilId);
 
-	dynamic_cast<GeometryObject*>(pP1)->SetVertexShaderId(vsId);
-	dynamic_cast<GeometryObject*>(pP1)->SetPixelShaderId(psId);
-	dynamic_cast<GeometryObject*>(pP1)->SetInputLayoutId(ilId);
+	pP2->SetVertexShaderId(vsId);
+	pP2->SetPixelShaderId(psId);
+	pP2->SetInputLayoutId(ilId);
 
-	dynamic_cast<GeometryObject*>(pP2)->SetVertexShaderId(vsId);
-	dynamic_cast<GeometryObject*>(pP2)->SetPixelShaderId(psId);
-	dynamic_cast<GeometryObject*>(pP2)->SetInputLayoutId(ilId);
+	//D3DRSDesc desc = {};
+	//desc.CullMode = D3D11_CULL_BACK;
+	//desc.FillMode = D3D11_FILL_WIREFRAME;
+
+	//int wfRSId = m_renderer->CreateRSState(&desc);
+	//pBall->SetRSStateId(wfRSId);
 }
 
 void Game::CreateScene() {
-	auto ball	 = std::make_shared<Ball>("ball", XMFLOAT3(0.0f, 0.0f, 0.0f));
-	auto player1 = std::make_shared<Paddle>("player1", XMFLOAT3(28.0f, 0.0f, 0.0f));
-	auto player2 = std::make_shared<Paddle>("player2", XMFLOAT3(-28.0f, 0.0f, 0.0f));
+	auto ball	 = std::make_shared<Ball>(NAME_BALL, XMFLOAT3(0.0f, 0.0f, 0.0f));
+	auto lPaddle = std::make_shared<Paddle>(NAME_LPADDLE, XMFLOAT3(-27.0f, 0.0f, 0.0f));
+	auto rPaddle = std::make_shared<Paddle>(NAME_RPADDLE, XMFLOAT3(27.0f, 0.0f, 0.0f));
 
-	vector<XMFLOAT3>	player1Vertices =
+	vector<GeometryObject::VertexType> lPaddleVertices =
 	{
-		XMFLOAT3(-1.0f,	4.0f,	0.0f),
-		XMFLOAT3(1.0f,	4.0f,	0.0f),
-		XMFLOAT3(-1.0f,	-4.0f,	0.0f),
-		XMFLOAT3(1.0f,	-4.0f,	0.0f)
+		{ XMFLOAT3(-1.0f,	4.0f,	0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ XMFLOAT3(1.0f,	4.0f,	0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ XMFLOAT3(-1.0f,	-4.0f,	0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ XMFLOAT3(1.0f,	-4.0f,	0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) }
 	};
 
-	vector<UINT>		player1Indices =
+	vector<UINT> lPaddleIndices =
 	{
 		0, 2, 1,
 		2, 3, 1
 	};
 
-	vector<XMFLOAT3>	player2Vertices(player1Vertices);
-	vector<UINT>		player2Indices(player1Indices);
+	vector<GeometryObject::VertexType> rPaddleVertices(lPaddleVertices);
+	vector<UINT> rPaddleIndices(lPaddleIndices);
 
-	vector<XMFLOAT3>	ballVertices =
+	vector<GeometryObject::VertexType> ballVertices =
 	{
-		XMFLOAT3(-0.5f,	0.5f,	0.0f),
-		XMFLOAT3(0.5f,	0.5f,	0.0f),
-		XMFLOAT3(-0.5f,	-0.5f,	0.0f),
-		XMFLOAT3(0.5f,	-0.5f,	0.0f)
+		{ XMFLOAT3(-0.5f,	0.5f,	0.0f), XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) },
+		{ XMFLOAT3(0.5f,	0.5f,	0.0f), XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) },
+		{ XMFLOAT3(-0.5f,	-0.5f,	0.0f), XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) },
+		{ XMFLOAT3(0.5f,	-0.5f,	0.0f), XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) }
 	};
-	vector<UINT>		ballIndices(player1Indices);
+	vector<UINT> ballIndices(lPaddleIndices);
 
-	player1->CreateVertices(player1Vertices);
-	player1->CreateIndices(player1Indices);
-	player1->SetSize(2, 8);
+	lPaddle->CreateVertices(lPaddleVertices);
+	lPaddle->CreateIndices(lPaddleIndices);
+	lPaddle->SetSize(2, 8);
 
-	player2->CreateVertices(player2Vertices);
-	player2->CreateIndices(player2Indices);
-	player2->SetSize(2, 8);
+	rPaddle->CreateVertices(rPaddleVertices);
+	rPaddle->CreateIndices(rPaddleIndices);
+	rPaddle->SetSize(2, 8);
 	
 	ball->CreateVertices(ballVertices);
 	ball->CreateIndices(ballIndices);
 	ball->SetSize(1);
 
-	player1->SetBall(ball.get());
-	player2->SetBall(ball.get());
+	lPaddle->SetBall(ball.get());
+	rPaddle->SetBall(ball.get());
 
-	m_scene.AddObject(player1);
-	m_scene.AddObject(player2);
+	m_scene.AddObject(lPaddle);
+	m_scene.AddObject(rPaddle);
 	m_scene.AddObject(ball);
 }
 

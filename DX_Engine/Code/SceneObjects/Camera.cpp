@@ -3,9 +3,9 @@
 
 using namespace DirectX;
 
-Camera::Camera(/*const std::string& name*/)
-	//: SceneObject(name)
-	: m_pos(0.0f, 0.0f, 3.0f)
+Camera::Camera(const std::string& name)
+	: SceneObject(name)
+	//: m_pos(0.0f, 0.0f, 3.0f)
 	, m_width(800)
 	, m_height(600)
 	, m_target(0.0f, 1.0f, 0.0f)
@@ -43,10 +43,9 @@ void Camera::SetTarget(float x, float y, float z) {
 	m_target = XMFLOAT3(x, y, z);
 }
 
-void Camera::SetPosition(float x, float y, float z) {
-	//SceneObject::SetPosition(x, y, z);
-	m_pos = XMFLOAT3(x, y, z);
-}
+//void Camera::SetPosition(float x, float y, float z) {
+//	m_pos = XMFLOAT3(x, y, z);
+//}
 
 void Camera::Update(float dt) {
 	float sinphi = sinf(m_phi);
@@ -54,8 +53,14 @@ void Camera::Update(float dt) {
 	float cosphi = cosf(m_phi);
 	float sintheta = sin(m_theta);
 
-	SetPosition(m_target.x + m_radius * sinphi * costheta, m_target.y + m_radius * cosphi, m_target.z + m_radius * sinphi * sintheta);
-	SetLookAt(XMLoadFloat3(&m_pos), XMLoadFloat3(&m_target), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+	float x = m_target.x + m_radius * sinphi * costheta;
+	float y = m_target.y + m_radius * cosphi;
+	float z = m_target.z + m_radius * sinphi * sintheta;
+
+	XMFLOAT3 pos = XMFLOAT3(x, y, z);
+
+	SetPosition(x, y, z);
+	SetLookAt(XMLoadFloat3(&pos), XMLoadFloat3(&m_target), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 }
 
 void Camera::Move(float d) {
@@ -93,12 +98,12 @@ XMMATRIX Camera::GetProj()const {
 }
 
 XMVECTOR Camera::GetPositionV()const {
-	return XMLoadFloat3(&m_pos);
+	return XMLoadFloat3(&GetPosition());
 }
 
-XMFLOAT3 Camera::GetPosition()const {
-	return m_pos;
-}
+//XMFLOAT3 Camera::GetPosition()const {
+//	return m_pos;
+//}
 
 XMFLOAT3 Camera::GetTarget()const {
 	return m_target;

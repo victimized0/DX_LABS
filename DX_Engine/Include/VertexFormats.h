@@ -4,8 +4,8 @@
 #include "Interfaces/IRenderer.h"
 
 ///////////////////////////// SimpleVertexColour /////////////////////////////
-struct SimpleVertexColour {
-	SimpleVertexColour(DirectX::XMFLOAT3 position, DirectX::XMFLOAT4 colour)
+struct VertexPositionColour {
+	VertexPositionColour(DirectX::XMFLOAT3 position, DirectX::XMFLOAT4 colour)
 		: Position(position)
 		, Colour(colour)
 	{}

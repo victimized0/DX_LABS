@@ -23,14 +23,14 @@ GeometryObject::GeometryObject(const std::string& name)
 
 }
 
-void GeometryObject::CreateVertices(std::vector<DirectX::XMFLOAT3>& vertices) {
+void GeometryObject::CreateVertices(std::vector<VertexType>& vertices) {
 	if (m_vertices.size() > 0) {
 		// GeometryObject isn't supposed to be changed during it's lifespan
 		return;
 	}
 
 	m_vertices = vertices;
-	m_vertexBufferId = Engine::GetPtr()->GetRenderer()->CreateVertexBuffer(m_vertices.size(), sizeof(SimpleVertexColour), &m_vertices[0]);
+	m_vertexBufferId = Engine::GetPtr()->GetRenderer()->CreateVertexBuffer(m_vertices.size(), sizeof(VertexType), &m_vertices[0]);
 }
 
 void GeometryObject::CreateIndices(std::vector<UINT>& indices) {
@@ -41,14 +41,6 @@ void GeometryObject::CreateIndices(std::vector<UINT>& indices) {
 
 	m_indices = indices;
 	m_indexBufferId = Engine::GetPtr()->GetRenderer()->CreateIndexBuffer(m_indices.size(), &m_indices[0]);
-}
-
-const std::vector<DirectX::XMFLOAT3>& GeometryObject::GetVertices()const {
-	return m_vertices;
-}
-
-const std::vector<UINT>& GeometryObject::GetIndices()const {
-	return m_indices;
 }
 
 const void* GeometryObject::Vertices()const {

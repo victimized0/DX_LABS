@@ -48,8 +48,8 @@ void Ball::Update(float dt) {
 	float ballBottom	= GetPosition().y - sizeDiv2;
 	float ballTop		= GetPosition().y + sizeDiv2;
 
-	bool collidesBorder = fabs(ballTop - GRID_TOP_BORDER) < 0.1
-					   || fabs(ballBottom - GRID_BOTTOM_BORDER) < 0.1;
+	bool collidesBorder = fabs(ballTop - 22) < 0.1
+					   || fabs(ballBottom - -22) < 0.1;
 
 	if (collidesBorder) {
 		m_speedY *= -1;
@@ -59,8 +59,8 @@ void Ball::Update(float dt) {
 	float dy = m_speedY * 0.02f;
 	Translate(dx, dy, 0.0f);
 
-	bool crossedBorderRight = fabs(ballRight - GRID_RIGHT_BORDER) < sizeDiv2 + dt;
-	bool crossedBorderLeft  = fabs(ballLeft  - GRID_LEFT_BORDER)  < sizeDiv2 + dt;
+	bool crossedBorderRight = fabs(ballRight - -30) < sizeDiv2 + dt;
+	bool crossedBorderLeft  = fabs(ballLeft  - 30)  < sizeDiv2 + dt;
 
 	if (crossedBorderRight || crossedBorderLeft) {
 		Reset();

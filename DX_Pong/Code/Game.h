@@ -6,11 +6,6 @@
 
 #pragma comment(lib, "DX_Engine.lib")
 
-static constexpr float GRID_TOP_BORDER		= 22.0f;
-static constexpr float GRID_BOTTOM_BORDER	= -20.0f;
-static constexpr float GRID_RIGHT_BORDER	= -30.0f;
-static constexpr float GRID_LEFT_BORDER		= 30.0f;
-
 using Microsoft::WRL::ComPtr;
 
 class Game final : public Engine {

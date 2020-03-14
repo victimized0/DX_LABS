@@ -29,8 +29,8 @@ bool D3D11Renderer::Initialise() {
 	}
 	
 	D3DRSDesc desc = {};
-	desc.CullMode = D3D11_CULL_FRONT;
-	desc.FillMode = D3D11_FILL_WIREFRAME;
+	desc.CullMode = D3D11_CULL_BACK;
+	desc.FillMode = D3D11_FILL_SOLID;
 	if (CreateRSState(&desc) == RES_FAILED) {
 		return false;
 	}
@@ -44,9 +44,6 @@ void D3D11Renderer::Render() {
 	m_context->ClearRenderTargetView(m_renderTargetView.Get(), backColour);
 	m_context->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
-	
-	UINT stride = sizeof(SimpleVertexColour);
-	UINT offset = 0;
 
 	for each ( auto& object in Engine::GetPtr()->GetScene().GetSceneObjects()) {
 		auto geoObj = dynamic_cast<GeometryObject*>(object.get());
@@ -96,6 +93,9 @@ void D3D11Renderer::Render() {
 			if (vBuffer == nullptr || iBuffer == nullptr || cBuffer == nullptr) {
 				continue;
 			}
+
+			UINT stride = sizeof(GeometryObject::VertexType);
+			UINT offset = 0;
 
 			m_context->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
 			m_context->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, offset);
@@ -309,7 +309,7 @@ bool D3D11Renderer::OnDeviceLost() {
 }
 
 int D3D11Renderer::CreateVertexBuffer(size_t size, size_t strideSize, const void* pData) {
-	ComPtr<VertexBuffer> pBuffer;
+	VertexBuffer* pBuffer;
 	if (FAILED(CreateBuffer(size, strideSize, pData, D3D11_BIND_VERTEX_BUFFER, &pBuffer))) {
 		return RES_FAILED;
 	}
@@ -318,7 +318,7 @@ int D3D11Renderer::CreateVertexBuffer(size_t size, size_t strideSize, const void
 }
 
 int D3D11Renderer::CreateIndexBuffer(size_t size, const void* pData) {
-	ComPtr<IndexBuffer> pBuffer;
+	IndexBuffer* pBuffer;
 	if (FAILED(CreateBuffer(size, sizeof(UINT), pData, D3D11_BIND_INDEX_BUFFER, &pBuffer))) {
 		return RES_FAILED;
 	}
@@ -327,7 +327,7 @@ int D3D11Renderer::CreateIndexBuffer(size_t size, const void* pData) {
 }
 
 int	D3D11Renderer::CreateInputLayout(InputElementDesc* desc, size_t arrSize, D3DBlob* shaderBlob) {
-	ComPtr<InputLayout> pInputLayout;
+	InputLayout* pInputLayout;
 	if (FAILED(m_device->CreateInputLayout(desc, arrSize, shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &pInputLayout))) {
 		return RES_FAILED;
 	}
@@ -336,7 +336,7 @@ int	D3D11Renderer::CreateInputLayout(InputElementDesc* desc, size_t arrSize, D3D
 }
 
 int D3D11Renderer::CreateRSState(D3DRSDesc* desc) {
-	ComPtr<RSState> pRSState;
+	RSState* pRSState;
 	if (FAILED(m_device->CreateRasterizerState(desc, &pRSState))) {
 		return RES_FAILED;
 	}
@@ -349,7 +349,7 @@ int D3D11Renderer::CreateVertexShader(const char* path, D3DBlob** ppBlob) {
 		return RES_FAILED;
 	}
 
-	ComPtr<VertexShader> pVertexShader;
+	VertexShader* pVertexShader;
 	ThrowIfFailed(m_device->CreateVertexShader((*ppBlob)->GetBufferPointer(), (*ppBlob)->GetBufferSize(), nullptr, &pVertexShader));
 	m_vertexShaders.push_back(pVertexShader);
 	return m_vertexShaders.size() - 1;
@@ -361,7 +361,7 @@ int D3D11Renderer::CreatePixelShader(const char* path) {
 		return RES_FAILED;
 	}
 
-	ComPtr<PixelShader> pPixelShader;
+	PixelShader* pPixelShader;
 	ThrowIfFailed(m_device->CreatePixelShader(psByteCode->GetBufferPointer(), psByteCode->GetBufferSize(), nullptr, &pPixelShader));
 	m_pixelShaders.push_back(pPixelShader);
 	return m_pixelShaders.size() - 1;
@@ -370,16 +370,16 @@ int D3D11Renderer::CreatePixelShader(const char* path) {
 HRESULT D3D11Renderer::CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer) {
 	assert(pBuffer != nullptr);
 
-	uint64_t sizeInBytes = uint64_t(size * strideSize);
+	uint64_t sizeInBytes = uint64_t((UINT)size * (UINT)strideSize);
 	if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u)) {
 		throw std::exception("Buffer too large for DirectX 11");
 	}
 
 	D3DBufferDesc desc = {};
-	desc.ByteWidth = static_cast<UINT>(sizeInBytes);
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = bindFlag;
-	desc.CPUAccessFlags = 0;
+	desc.ByteWidth		= static_cast<UINT>(sizeInBytes);
+	desc.Usage			= D3D11_USAGE_DEFAULT;
+	desc.BindFlags		= bindFlag;
+	desc.CPUAccessFlags	= 0;
 
 	D3DSubresData data = {};
 	data.pSysMem = pData;

@@ -6,6 +6,5 @@ struct VS_OUTPUT {
 };
 
 float4 ps_main( in VS_OUTPUT input ) : SV_TARGET {
-	float4 col = input.Color;
-	return col;
+	return input.Color;
 }

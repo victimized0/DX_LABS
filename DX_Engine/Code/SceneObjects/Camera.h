@@ -4,15 +4,15 @@
 #include "SceneObject.h"
 using namespace DirectX;
 
-class Camera /*: public SceneObject*/ {
+class Camera : public SceneObject {
 public:
-				Camera(/*const std::string& name*/);
+				Camera(const std::string& name);
 				~Camera();
 
 	void		SetLookAt(FXMVECTOR& eyePosition, FXMVECTOR& target, FXMVECTOR& up);
 	void		SetProj(float fov, uint32_t width, uint32_t height, float nearZ, float farZ);
 	void		SetTarget(float x, float y, float z);
-	void		SetPosition(float x, float y, float z);
+	//void		SetPosition(float x, float y, float z);
 
 	void		Update(float dt);
 	void		Move(float d);
@@ -24,7 +24,7 @@ public:
 	XMMATRIX	GetProj()const;
 	
 	XMVECTOR	GetPositionV()const;
-	XMFLOAT3	GetPosition()const;
+	//XMFLOAT3	GetPosition()const;
 	XMFLOAT3	GetTarget()const;
 	XMVECTOR	GetTargetV()const;
 
@@ -36,7 +36,7 @@ private:
 	uint32_t	m_height;
 
 	XMFLOAT3	m_target;
-	XMFLOAT3	m_pos;
+	//XMFLOAT3	m_pos;
 
 	float		m_fov;
 	float		m_nearZ;

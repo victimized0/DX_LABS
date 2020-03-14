@@ -6,7 +6,18 @@
 #include "Events/Event.h"
 #include "SceneObjects/Camera.h"
 
+static const char* NAME_LPADDLE				= "lPaddle";
+static const char* NAME_RPADDLE				= "rPaddle";
+static const char* NAME_BALL				= "ball";
+
+static constexpr float GRID_TOP_BORDER		= 22.0f;
+static constexpr float GRID_BOTTOM_BORDER	= -20.0f;
+static constexpr float GRID_LEFT_BORDER		= 30.0f;
+static constexpr float GRID_RIGHT_BORDER	= -30.0f;
+
 class GameLogic {
+public:
+
 public:
 				GameLogic();
 				~GameLogic();

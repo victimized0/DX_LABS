@@ -6,7 +6,7 @@ cbuffer cbPerObject : register(b0) {
 
 struct APP_INPUT {
 	float4 Position	: POSITION;
-	//float4 Color	: COLOR;
+	float4 Color	: COLOR;
 };
 
 struct VS_OUTPUT {
@@ -18,7 +18,7 @@ VS_OUTPUT vs_main(in APP_INPUT input) {
 	VS_OUTPUT output;
 
 	output.Position = mul(input.Position, wvpMatrix);
-	output.Color	= float4(1.0f, 1.0f, 1.0f, 1.0f);
+	output.Color	= input.Color;
 
 	return output;
 }

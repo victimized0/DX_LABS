@@ -9,15 +9,18 @@ using Microsoft::WRL::ComPtr;
 
 class GeometryObject : public SceneObject {
 public:
+
+	using VertexType = VertexPositionColour;
+
 											GeometryObject(const std::string& name, DirectX::XMFLOAT3 position);
 											GeometryObject(const std::string& name);
 											~GeometryObject() {}
 
-	void									CreateVertices(std::vector<DirectX::XMFLOAT3>& vertices);
+	void									CreateVertices(std::vector<VertexType>& vertices);
 	void									CreateIndices(std::vector<UINT>& indices);
 
-	const std::vector<DirectX::XMFLOAT3>&	GetVertices()const;
-	const std::vector<UINT>&				GetIndices()const;
+	const std::vector<VertexType>&			GetVertices()const { return m_vertices; }
+	const std::vector<UINT>&				GetIndices()const { return m_indices; }
 
 	const int								GetVertexShaderId()	const	{ return m_vertexShaderId;	}
 	const int								GetPixelShaderId()	const	{ return m_pixelShaderId;	}
@@ -53,7 +56,7 @@ protected:
 
 	ConstBuffer<CBPerObject>				m_constBuffer;
 
-	std::vector<DirectX::XMFLOAT3>			m_vertices;
+	std::vector<VertexType>					m_vertices;
 	std::vector<UINT>						m_indices;
 
 };
