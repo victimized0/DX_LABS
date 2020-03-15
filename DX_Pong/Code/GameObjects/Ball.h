@@ -13,14 +13,12 @@ public:
 					Ball(const std::string& name, XMFLOAT3 position);
 					Ball(const std::string& name);
 
-	int				GetSize();
 	float			GetSpeedX();
 	float			GetSpeedY();
-	BoundingBox		GetBoundingBox() { return m_bb; }
 
-	void			SetSize(int value);
 	void			SetSpeedX(float value);
 	void			SetSpeedY(float value);
+
 	void			InverseSpeedX();
 	void			InverseSpeedY();
 
@@ -28,11 +26,6 @@ public:
 	void			Reset();
 
 private:
-	void			UpdateBB();
-
-private:
-	BoundingBox		m_bb;
-	int				m_size;
 	float			m_speedX;
 	float			m_speedY;
 

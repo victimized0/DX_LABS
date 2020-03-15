@@ -17,9 +17,6 @@
     <ClCompile Include="Code\GameObjects\Ball.cpp">
       <Filter>Code\GameObjects</Filter>
     </ClCompile>
-    <ClCompile Include="Code\GameObjects\Paddle.cpp">
-      <Filter>Code\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="Code\Game.cpp">
       <Filter>Code</Filter>
     </ClCompile>
@@ -33,9 +30,6 @@
       <Filter>Resources</Filter>
     </ClInclude>
     <ClInclude Include="Code\GameObjects\Ball.h">
-      <Filter>Code\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\GameObjects\Paddle.h">
       <Filter>Code\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Code\Game.h">

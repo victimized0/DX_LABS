@@ -1,6 +1,14 @@
 #ifndef _CONST_BUFFER_H_
 #define _CONST_BUFFER_H_
 
+enum class CBType : unsigned char {
+    CB_PER_OBJECT   = 0,
+    CB_PER_FRAME    = 1,
+    CB_PER_MATERIAL = 2,
+
+    TOTAL
+};
+
 struct CBPerObject {
     DirectX::XMFLOAT4X4 worldViewProj;
 };

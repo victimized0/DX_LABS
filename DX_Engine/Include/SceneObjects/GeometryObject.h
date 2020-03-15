@@ -7,6 +7,39 @@
 
 using Microsoft::WRL::ComPtr;
 
+struct AABB {
+	float X;
+	float Y;
+	float Width;
+	float Height;
+
+	explicit AABB(float x, float y, float w, float h)
+		: X(x)
+		, Y(y)
+		, Width(w)
+		, Height(h)
+	{}
+
+	void Create(float minx, float miny, float maxx, float maxy) {
+		Width  = fabs(maxx - minx);
+		Height = fabs(maxy - miny);
+		X = Width / 2;
+		Y = Height / 2;
+	}
+
+	bool Collides(const AABB& other)const {
+		return	X < other.X + other.Width &&
+				X + Width > other.X &&
+				Y < other.Y + other.Height &&
+				Y + Height > other.Y;
+	}
+
+	void Update(const DirectX::XMFLOAT3& pos) {
+		X = pos.x;
+		Y = pos.y;
+	}
+};
+
 class GeometryObject : public SceneObject {
 public:
 
@@ -31,6 +64,7 @@ public:
 
 	ConstantBuffer*							GetConstBuffer(D3DContext* context, DirectX::FXMMATRIX viewMat, DirectX::FXMMATRIX projMat);
 	DirectX::XMMATRIX						GetWorldTransform() const	{ return XMLoadFloat4x4(&m_transform); }
+	AABB&									GetAABB() { return m_aabb; }
 
 	void									SetVertexShaderId	(int id)	{ m_vertexShaderId	= id; }
 	void									SetPixelShaderId	(int id)	{ m_pixelShaderId	= id; }
@@ -42,9 +76,15 @@ public:
 	const void*								Vertices()const;
 	const void*								Indices()const;
 
+	void									Update(float dt)override;
+
 	void									Scale(float delta);
 	void									Rotate(float dx, float dy, float dz);
 	void									Translate(float dx, float dy, float dz);
+
+private:
+	void									FindMax(const std::vector<VertexType>& verts, float& maxX, float& maxY) const;
+	void									FindMin(const std::vector<VertexType>& verts, float& minX, float& minY) const;
 
 protected:
 	int										m_vertexShaderId;
@@ -58,6 +98,8 @@ protected:
 
 	std::vector<VertexType>					m_vertices;
 	std::vector<UINT>						m_indices;
+
+	AABB									m_aabb;
 
 };
 

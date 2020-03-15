@@ -2,7 +2,6 @@
 #include "Game.h"
 #include "Helper.h"
 
-#include "GameObjects\Paddle.h"
 #include "GameObjects\Ball.h"
 #include "SceneObjects\GeometryObject.h"
 
@@ -69,8 +68,8 @@ void Game::CreateShaders() {
 
 void Game::CreateScene() {
 	auto ball	 = std::make_shared<Ball>(  NAME_BALL,	  XMFLOAT3(0.0f, 0.0f, 0.0f));
-	auto lPaddle = std::make_shared<Paddle>(NAME_LPADDLE, XMFLOAT3(-27.0f, 0.0f, 0.0f));
-	auto rPaddle = std::make_shared<Paddle>(NAME_RPADDLE, XMFLOAT3(27.0f, 0.0f, 0.0f));
+	auto lPaddle = std::make_shared<GeometryObject>(NAME_LPADDLE, XMFLOAT3(-27.0f, 0.0f, 0.0f));
+	auto rPaddle = std::make_shared<GeometryObject>(NAME_RPADDLE, XMFLOAT3(27.0f, 0.0f, 0.0f));
 
 	vector<GeometryObject::VertexType> lPaddleVertices =
 	{
@@ -100,15 +99,12 @@ void Game::CreateScene() {
 
 	lPaddle->CreateVertices(lPaddleVertices);
 	lPaddle->CreateIndices(lPaddleIndices);
-	lPaddle->SetSize(2, 8);
 
 	rPaddle->CreateVertices(rPaddleVertices);
 	rPaddle->CreateIndices(rPaddleIndices);
-	rPaddle->SetSize(2, 8);
 	
 	ball->CreateVertices(ballVertices);
 	ball->CreateIndices(ballIndices);
-	ball->SetSize(1);
 
 	m_scene.AddObject(lPaddle);
 	m_scene.AddObject(rPaddle);

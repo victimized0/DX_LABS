@@ -177,7 +177,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Code\GameObjects\Ball.h" />
-    <ClInclude Include="Code\GameObjects\Paddle.h" />
     <ClInclude Include="Code\GameLogic.h" />
     <ClInclude Include="Code\Game.h" />
     <ClInclude Include="Code\pch.h" />
@@ -185,7 +184,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\GameObjects\Ball.cpp" />
-    <ClCompile Include="Code\GameObjects\Paddle.cpp" />
     <ClCompile Include="Code\GameLogic.cpp" />
     <ClCompile Include="Code\Game.cpp" />
     <ClCompile Include="main.cpp">

@@ -3,7 +3,6 @@
 #include "Events/KeyboardEvent.h"
 #include "SceneObjects/GeometryObject.h"
 #include "GameObjects/Ball.h"
-#include "GameObjects/Paddle.h"
 
 GameLogic::GameLogic()
 	: m_pScene(nullptr)
@@ -38,8 +37,8 @@ void GameLogic::OnEvent(const Event& event) {
 			{
 				case KeyCode::W:
 				{
-					auto player = dynamic_cast<Paddle*>(m_pScene->GetSceneObject(NAME_LPADDLE).get());
-					float distToTop = fabs(player->GetPosition().y + player->GetSizeY() / 2 - GRID_TOP_BORDER);
+					auto player = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE).get());
+					float distToTop = fabs(player->GetPosition().y + player->GetAABB().Height / 2 - GRID_TOP_BORDER);
 					if (distToTop > 0.1f) {
 						player->Translate(0.0f, 1.0f, 0.0f);
 					}
@@ -48,8 +47,8 @@ void GameLogic::OnEvent(const Event& event) {
 
 				case KeyCode::S:
 				{
-					auto paddle = dynamic_cast<Paddle*>(m_pScene->GetSceneObject(NAME_LPADDLE).get());
-					float distToBottom = fabs(paddle->GetPosition().y - paddle->GetSizeY() / 2 - GRID_BOTTOM_BORDER);
+					auto paddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE).get());
+					float distToBottom = fabs(paddle->GetPosition().y - paddle->GetAABB().Height / 2 - GRID_BOTTOM_BORDER);
 					if (distToBottom > 0.1f) {
 						paddle->Translate(0.0f, -1.0f, 0.0f);
 					}
@@ -58,8 +57,8 @@ void GameLogic::OnEvent(const Event& event) {
 
 				case KeyCode::Up:
 				{
-					auto player = dynamic_cast<Paddle*>(m_pScene->GetSceneObject(NAME_RPADDLE).get());
-					float distToTop = fabs(player->GetPosition().y + player->GetSizeY() / 2 - GRID_TOP_BORDER);
+					auto player = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE).get());
+					float distToTop = fabs(player->GetPosition().y + player->GetAABB().Height / 2 - GRID_TOP_BORDER);
 					if (distToTop > 0.1f) {
 						player->Translate(0.0f, 1.0f, 0.0f);
 					}
@@ -68,8 +67,8 @@ void GameLogic::OnEvent(const Event& event) {
 
 				case KeyCode::Down:
 				{
-					auto paddle = dynamic_cast<Paddle*>(m_pScene->GetSceneObject(NAME_RPADDLE).get());
-					float distToBottom = fabs(paddle->GetPosition().y - paddle->GetSizeY() / 2 - GRID_BOTTOM_BORDER);
+					auto paddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE).get());
+					float distToBottom = fabs(paddle->GetPosition().y - paddle->GetAABB().Height / 2 - GRID_BOTTOM_BORDER);
 					if (distToBottom > 0.1f) {
 						paddle->Translate(0.0f, -1.0f, 0.0f);
 					}
@@ -83,19 +82,19 @@ void GameLogic::OnEvent(const Event& event) {
 
 void GameLogic::Update(float dt) {
 	auto ball    = dynamic_cast<Ball*>(  m_pScene->GetSceneObject(NAME_BALL).get());
-	auto lPaddle = dynamic_cast<Paddle*>(m_pScene->GetSceneObject(NAME_LPADDLE).get());
-	auto rPaddle = dynamic_cast<Paddle*>(m_pScene->GetSceneObject(NAME_RPADDLE).get());
+	auto lPaddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE).get());
+	auto rPaddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE).get());
 
-	BoundingBox ballBB = ball->GetBoundingBox();
-	float threshold	   = 0.15f;
+	const AABB& ballAABB = ball->GetAABB();
+	float threshold = 0.1f;
 
-	bool collidesBorder = fabs(ballBB.Top - GRID_TOP_BORDER) < threshold || fabs(ballBB.Bottom - GRID_BOTTOM_BORDER) < threshold;
+	bool collidesBorder = fabs(ballAABB.Y - GRID_TOP_BORDER) < threshold || fabs(ballAABB.Y - GRID_BOTTOM_BORDER) < threshold;
 	if (collidesBorder) {
 		ball->InverseSpeedY();
 	}
 
-	if (lPaddle->Collides(ball->GetBoundingBox(), ball->GetSize(), ball->GetSize(), threshold) ||
-		rPaddle->Collides(ball->GetBoundingBox(), ball->GetSize(), ball->GetSize(), threshold))
+	if (lPaddle->GetAABB().Collides(ball->GetAABB()) ||
+		rPaddle->GetAABB().Collides(ball->GetAABB()))
 	{
 		ball->InverseSpeedX();
 	}
@@ -104,8 +103,8 @@ void GameLogic::Update(float dt) {
 	float dy = ball->GetSpeedY() * dt;
 	ball->Translate(dx, dy, 0.0f);
 
-	bool crossedBorderRight = fabs(ballBB.Right - GRID_RIGHT_BORDER) < threshold;
-	bool crossedBorderLeft  = fabs(ballBB.Left  - GRID_LEFT_BORDER)  < threshold;
+	bool crossedBorderRight = fabs(ballAABB.X - GRID_RIGHT_BORDER) < threshold;
+	bool crossedBorderLeft  = fabs(ballAABB.X - GRID_LEFT_BORDER)  < threshold;
 	if (crossedBorderRight || crossedBorderLeft) {
 		ball->Reset();
 	}
