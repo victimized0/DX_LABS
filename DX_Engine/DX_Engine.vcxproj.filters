@@ -67,9 +67,6 @@
     <ClInclude Include="Code\Interfaces\IGameObject.h">
       <Filter>Code\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Interfaces\ISceneObjectFactory.h">
-      <Filter>Code\Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="Code\Events\KeyboardEvent.h">
       <Filter>Code\Events</Filter>
     </ClInclude>

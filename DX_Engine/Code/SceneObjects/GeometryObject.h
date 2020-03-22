@@ -76,7 +76,7 @@ public:
 
 											GeometryObject(const std::string& name, DirectX::XMFLOAT3 position);
 											GeometryObject(const std::string& name);
-											~GeometryObject() {}
+	virtual									~GeometryObject() {}
 
 	void									CreateVertices(std::vector<VertexType>& vertices);
 	void									CreateIndices(std::vector<UINT>& indices);

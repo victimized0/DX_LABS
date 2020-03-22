@@ -209,7 +209,6 @@
     <ClInclude Include="Code\Engine.h" />
     <ClInclude Include="Code\SceneObjects\GeometryObject.h" />
     <ClInclude Include="Code\Helper.h" />
-    <ClInclude Include="Code\Interfaces\ISceneObjectFactory.h" />
     <ClInclude Include="Code\Scene.h" />
     <ClInclude Include="Code\SceneObjects\SceneObject.h" />
     <ClInclude Include="Code\Shader.h" />

@@ -27,7 +27,6 @@ Engine::Engine(HINSTANCE hInstance)
 	assert(pEngine == nullptr);
 #endif
 	pEngine = this;
-	//m_renderer = std::make_unique<D3D11Renderer>();
 
 	wchar_t buf[MAX_PATH];
 	GetModuleFileNameW(nullptr, buf, MAX_PATH);
@@ -134,8 +133,6 @@ void Engine::OnResize(uint32_t width, uint32_t height) {
 	Environment::Instance().SetWidth(max(width, 1));
 	Environment::Instance().SetWidth(max(height, 1));
 
-	//if (m_isFullScreen)
-	//	m_swapChain->SetFullscreenState(true, nullptr);
 	Environment::Instance().Renderer()->CreateResources();
 	const_cast<Camera&>(m_scene.GetMainCamera()).SetProj(XM_PIDIV4, width, height, 0.1f, 1000.0f);
 }

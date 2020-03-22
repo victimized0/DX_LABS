@@ -15,7 +15,7 @@
 class Engine {
 protected:
 									Engine(HINSTANCE hnstance);
-									virtual ~Engine();
+	virtual							~Engine();
 
 									Engine(const Engine&)				= delete;
 									Engine(Engine&&)					= delete;
@@ -32,7 +32,6 @@ public:
 	int								Run();
 	LRESULT							WndProc(HWND, UINT, WPARAM, LPARAM);
 	Scene&							GetScene();
-	//IRenderer*						GetRenderer()const;
 
 protected:
 	bool							InitializeWindow(int iconId);
@@ -48,7 +47,6 @@ protected:
 
 	Timer							m_timer;
 	Scene							m_scene;
-	//std::unique_ptr<IRenderer>		m_renderer;
 
 };
 

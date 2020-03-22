@@ -9,7 +9,7 @@ using SceneObjects = std::vector<std::shared_ptr<SceneObject>>;
 class Scene {
 public:
 									Scene();
-									~Scene();
+	virtual							~Scene();
 
 									Scene(Scene const&)				= delete;
 									Scene& operator=(Scene const&)	= delete;

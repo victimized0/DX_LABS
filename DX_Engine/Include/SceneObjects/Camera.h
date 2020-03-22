@@ -7,7 +7,7 @@ using namespace DirectX;
 class Camera : public SceneObject {
 public:
 				Camera(const std::string& name);
-				~Camera();
+	virtual		~Camera();
 
 	void		SetLookAt(FXMVECTOR& eyePosition, FXMVECTOR& target, FXMVECTOR& up);
 	void		SetProj(float fov, uint32_t width, uint32_t height, float nearZ, float farZ);

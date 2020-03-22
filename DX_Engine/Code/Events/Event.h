@@ -13,19 +13,20 @@ enum class EventType : unsigned char {
 
 class Event {
 public:
-	Event(EventType type) : m_eventType(type) {}
+				Event(EventType type) : m_eventType(type) {}
+	virtual		~Event() {}
 
-	Event(Event const&)				= delete;
-	Event operator=(Event const&)	= delete;
-	Event(Event&&)					= delete;
-	Event operator=(Event&&)		= delete;
+				Event(Event const&)				= delete;
+				Event operator=(Event const&)	= delete;
+				Event(Event&&)					= delete;
+				Event operator=(Event&&)		= delete;
 
-	EventType GetType()const {
+	EventType	GetType()const {
 		return m_eventType;
 	}
 
 private:
-	EventType m_eventType;
+	EventType	m_eventType;
 };
 
 #endif //_EVENT_H_

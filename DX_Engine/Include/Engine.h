@@ -15,7 +15,7 @@
 class Engine {
 protected:
 									Engine(HINSTANCE hnstance);
-									virtual ~Engine();
+	virtual							~Engine();
 
 									Engine(const Engine&)				= delete;
 									Engine(Engine&&)					= delete;
