@@ -19,23 +19,33 @@ Game::~Game() {
 
 }
 
-bool Game::Initialize() {
-	if (!Engine::Initialize(IDI_ICON1)) {
+bool Game::Initialize(int iconId) {
+	if (!Engine::Initialize(iconId)) {
 		return false;
 	}
 
-	auto sun = std::make_shared<GeometryObject>("TheSun", XMFLOAT3(0,0,0));
-	auto pSun = sun.get();
-	::CreateIcosahedron(&pSun, 2.0f, 1.0f);
+	CreateScene();
+	return true;
+}
 
-	auto earth = std::make_shared<GeometryObject>("Earth", XMFLOAT3(0, 5.0f, 0));
+void Game::CreateScene() {
+	auto sun = std::make_shared<GeometryObject>(NAME_SUN, XMFLOAT3(0, 0, 0));
+	auto pSun = sun.get();
+	::CreateIcosahedron(&pSun, 20.0f, 1.0f, 1.0f, 0.0f);
+
+	auto earth = std::make_shared<GeometryObject>(NAME_EARTH, XMFLOAT3(75, 0, 0));
 	auto pEarth = earth.get();
-	::CreateIcosahedron(&pEarth, 1.0f, 1.0f);
+	::CreateIcosahedron(&pEarth, 5.f, 0.0f, 0.0f, 1.0f);
+	
+	auto moon = std::make_shared<GeometryObject>(NAME_MOON, XMFLOAT3(65, 0, 0));
+	auto pMoon = moon.get();
+	::CreateIcosahedron(&pMoon, 1.f, 0.2f, 0.2f, 0.2f);
 
 	m_scene.AddObject(sun);
 	m_scene.AddObject(earth);
+	m_scene.AddObject(moon);
 
-	return true;
+	m_scene.GetMainCamera().SetRadius(200);
 }
 
 void Game::OnEvent(const Event& event) {
@@ -59,9 +69,14 @@ void Game::OnEvent(const Event& event) {
 }
 
 void Game::Update(float dt) {
-	UNREFERENCED_PARAMETER(dt);
-	auto pSun = dynamic_cast<GeometryObject*>(m_scene.GetSceneObject("TheSun").get());
-	pSun->Translate(dt, 0, 0);
+	auto pSun	= dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_SUN));
+	auto pEarth = dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_EARTH));
+	auto pMoon	= dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_MOON));
+
+	pSun->Rotate(0, dt, 0);
+	pEarth->Rotate(0, dt, 0);
+	pEarth->Rotate(XM_PI / 32.f, pEarth->GetPosition());
+	pMoon->Rotate(XM_PIDIV4 / 8, pEarth->GetPosition());
 }
 
 void Game::OnMouseDown(const MouseEvent& event) {
@@ -71,20 +86,21 @@ void Game::OnMouseDown(const MouseEvent& event) {
 }
 
 void Game::OnMouseUp(const MouseEvent& event) {
+	UNREFERENCED_PARAMETER(event);
 	ReleaseCapture();
 }
 
 void Game::OnMouseMove(const MouseEvent& event) {
-	auto camera = dynamic_cast<Camera*>(m_scene.GetSceneObject("Main Camera").get());
+	auto& camera = m_scene.GetMainCamera();
 
 	if (event.GetKeyState() == MouseKeyState::LButton) {
 		float dx = XMConvertToRadians(0.5f * static_cast<float>(event.GetPosX() - m_lastMousePos.x));
 		float dy = XMConvertToRadians(0.5f * static_cast<float>(event.GetPosY() - m_lastMousePos.y));
-		camera->Rotate(-dx, -dy);
+		camera.Rotate(-dx, -dy);
 	}
 	else if (event.GetKeyState() == MouseKeyState::RButton) {
 		float dy = XMConvertToRadians(0.5f * static_cast<float>(event.GetPosY() - m_lastMousePos.y));
-		camera->Move(dy);
+		camera.Move(dy);
 	}
 
 	m_lastMousePos.x = event.GetPosX();
@@ -92,6 +108,6 @@ void Game::OnMouseMove(const MouseEvent& event) {
 }
 
 void Game::OnMouseScroll(const MouseEvent& event) {
-	auto camera = dynamic_cast<Camera*>(m_scene.GetSceneObject("Main Camera").get());
-	camera->Zoom(-0.002f * GET_WHEEL_DELTA_WPARAM(event.GetParam()));
+	auto& camera = m_scene.GetMainCamera();
+	camera.Zoom(-0.002f * GET_WHEEL_DELTA_WPARAM(event.GetParam()));
 }

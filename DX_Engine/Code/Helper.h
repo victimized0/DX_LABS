@@ -6,23 +6,23 @@
 #include "SceneObjects/GeometryObject.h"
 
 namespace {
-	void CreateIcosahedron(GeometryObject** geoObj, float radius, float colour) {
+	void CreateIcosahedron(GeometryObject** geoObj, float radius, float r = 1.0f, float g = 1.0f, float b = 1.0f) {
 		const float t = (radius + (float)std::sqrt(5.0)) / 2.0f;
 
 		// Vertices
 		std::vector<GeometryObject::VertexType> vertices = {
-			{ DirectX::XMFLOAT3(-radius, t, 0.0f), DirectX::XMFLOAT4(colour, colour, colour, 1.0f) },
-			{ DirectX::XMFLOAT3(radius, t, 0.0f), DirectX::XMFLOAT4(colour, colour, colour, 1.0f) },
-			{ DirectX::XMFLOAT3(-radius, -t, 0.0f), DirectX::XMFLOAT4(colour, colour, colour, 1.0f) },
-			{ DirectX::XMFLOAT3(radius, -t, 0.0f), DirectX::XMFLOAT4(colour, colour, colour, 1.0f) },
-			{ DirectX::XMFLOAT3(0.0f, -radius, t), DirectX::XMFLOAT4(colour, colour, colour, 1.0f) },
-			{ DirectX::XMFLOAT3(0.0f, radius, t), DirectX::XMFLOAT4(colour, colour, colour, 1.0f) },
-			{ DirectX::XMFLOAT3(0.0f, -radius, -t), DirectX::XMFLOAT4(colour, colour, colour, 1.0f) },
-			{ DirectX::XMFLOAT3(0.0f, radius, -t), DirectX::XMFLOAT4(colour, colour, colour, 1.0f) },
-			{ DirectX::XMFLOAT3(t, 0.0f, -radius), DirectX::XMFLOAT4(colour, colour, colour, 1.0f) },
-			{ DirectX::XMFLOAT3(t, 0.0f, radius), DirectX::XMFLOAT4(colour, colour, colour, 1.0f) },
-			{ DirectX::XMFLOAT3(-t, 0.0f, -radius), DirectX::XMFLOAT4(colour, colour, colour, 1.0f) },
-			{ DirectX::XMFLOAT3(-t, 0.0f, radius), DirectX::XMFLOAT4(colour, colour, colour, 1.0f) }
+			{ DirectX::XMFLOAT3(-radius, t, 0.0f), DirectX::XMFLOAT4(r, g, b, 1.0f) },
+			{ DirectX::XMFLOAT3(radius, t, 0.0f), DirectX::XMFLOAT4(r, g, b, 1.0f) },
+			{ DirectX::XMFLOAT3(-radius, -t, 0.0f), DirectX::XMFLOAT4(r, g, b, 1.0f) },
+			{ DirectX::XMFLOAT3(radius, -t, 0.0f), DirectX::XMFLOAT4(r, g, b, 1.0f) },
+			{ DirectX::XMFLOAT3(0.0f, -radius, t), DirectX::XMFLOAT4(r, g, b, 1.0f) },
+			{ DirectX::XMFLOAT3(0.0f, radius, t), DirectX::XMFLOAT4(r, g, b, 1.0f) },
+			{ DirectX::XMFLOAT3(0.0f, -radius, -t), DirectX::XMFLOAT4(r, g, b, 1.0f) },
+			{ DirectX::XMFLOAT3(0.0f, radius, -t), DirectX::XMFLOAT4(r, g, b, 1.0f) },
+			{ DirectX::XMFLOAT3(t, 0.0f, -radius), DirectX::XMFLOAT4(r, g, b, 1.0f) },
+			{ DirectX::XMFLOAT3(t, 0.0f, radius), DirectX::XMFLOAT4(r, g, b, 1.0f) },
+			{ DirectX::XMFLOAT3(-t, 0.0f, -radius), DirectX::XMFLOAT4(r, g, b, 1.0f) },
+			{ DirectX::XMFLOAT3(-t, 0.0f, radius), DirectX::XMFLOAT4(r, g, b, 1.0f) }
 		};
 
 		// Faces

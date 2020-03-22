@@ -177,6 +177,7 @@
     <ClInclude Include="Code\Interfaces\IKeyboardEvent.h" />
     <ClInclude Include="Code\Interfaces\IRenderer.h" />
     <ClInclude Include="Code\D3D11Renderer.h" />
+    <ClInclude Include="Code\Math\SimpleMath.h" />
     <ClInclude Include="Code\SceneObjects\Camera.h" />
     <ClInclude Include="Code\Engine.h" />
     <ClInclude Include="Code\SceneObjects\GeometryObject.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="Code\Events\KeyboardEvent.cpp" />
     <ClCompile Include="Code\Events\MouseEvent.cpp" />
     <ClCompile Include="Code\D3D11Renderer.cpp" />
+    <ClCompile Include="Code\Math\SimpleMath.cpp" />
     <ClCompile Include="Code\SceneObjects\Camera.cpp" />
     <ClCompile Include="Code\Engine.cpp" />
     <ClCompile Include="Code\SceneObjects\GeometryObject.cpp" />
@@ -207,6 +209,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Code\VertexFormats.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Code\Math\SimpleMath.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -34,6 +34,7 @@
     </ClCompile>
     <ClCompile Include="Code\Shader.cpp" />
     <ClCompile Include="Code\VertexFormats.cpp" />
+    <ClCompile Include="Code\Math\SimpleMath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\pch.h" />
@@ -89,6 +90,7 @@
       <Filter>Code</Filter>
     </ClInclude>
     <ClInclude Include="Code\Shader.h" />
+    <ClInclude Include="Code\Math\SimpleMath.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Code">
@@ -103,5 +105,8 @@
     <Filter Include="Code\Interfaces">
       <UniqueIdentifier>{2936b5ee-ad78-4b5c-a29b-74afcb77e104}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Code\Math\SimpleMath.inl" />
   </ItemGroup>
 </Project>

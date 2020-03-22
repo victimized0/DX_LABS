@@ -44,17 +44,16 @@ void Camera::SetTarget(float x, float y, float z) {
 }
 
 void Camera::Update(float dt) {
-	float sinphi = sinf(m_phi);
-	float costheta = cosf(m_theta);
-	float cosphi = cosf(m_phi);
-	float sintheta = sin(m_theta);
+	float sinphi	= sinf(m_phi);
+	float costheta	= cosf(m_theta);
+	float cosphi	= cosf(m_phi);
+	float sintheta	= sinf(m_theta);
 
 	float x = m_target.x + m_radius * sinphi * costheta;
 	float y = m_target.y + m_radius * cosphi;
 	float z = m_target.z + m_radius * sinphi * sintheta;
 
-	XMFLOAT3 pos = XMFLOAT3(x, y, z);
-
+	XMFLOAT3 pos(x, y, z);
 	SetPosition(x, y, z);
 	SetLookAt(XMLoadFloat3(&pos), XMLoadFloat3(&m_target), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 }
@@ -93,10 +92,10 @@ XMMATRIX Camera::GetProj()const {
 	return XMLoadFloat4x4(&m_proj);
 }
 
-XMVECTOR Camera::GetPositionV()const {
-	auto pos = GetPosition();
-	return XMLoadFloat3(&pos);
-}
+//XMVECTOR Camera::GetPositionV()const {
+//	auto pos = GetPosition();
+//	return XMLoadFloat3(&pos);
+//}
 
 XMFLOAT3 Camera::GetTarget()const {
 	return m_target;

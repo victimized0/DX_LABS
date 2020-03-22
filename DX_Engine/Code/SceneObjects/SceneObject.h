@@ -22,6 +22,7 @@ public:
 
 	const std::string&							GetName()const;
 	DirectX::XMFLOAT3							GetPosition()const;
+	DirectX::XMVECTOR							GetPositionV()const;
 
 protected:
 	std::string									m_name;

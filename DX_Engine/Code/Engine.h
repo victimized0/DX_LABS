@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Events/Event.h"
 #include "Interfaces/IRenderer.h"
+#include "Math/SimpleMath.h"
 
 #ifdef _WIN32
 #include "D3D11Renderer.h"

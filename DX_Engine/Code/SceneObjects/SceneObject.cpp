@@ -29,15 +29,9 @@ void SceneObject::Update(float dt) {
 }
 
 void SceneObject::SetPosition(float x, float y, float z) {
-	auto pos = GetPosition();
-	float dx = pos.x - x;
-	float dy = pos.y - y;
-	float dz = pos.z - z;
-
-	XMMATRIX translationMat = XMMatrixTranslation(dx, dy, dz);
-	XMMATRIX transform		= XMLoadFloat4x4(&m_transform);
-	XMMATRIX newTransform	= XMMatrixMultiply(transform, translationMat);
-	XMStoreFloat4x4(&m_transform, newTransform);
+	m_transform._41 = x;
+	m_transform._42 = y;
+	m_transform._43 = z;
 }
 
 const std::string& SceneObject::GetName()const {
@@ -56,4 +50,15 @@ DirectX::XMFLOAT3 SceneObject::GetPosition()const {
 	}
 
 	return translation;
+}
+
+DirectX::XMVECTOR SceneObject::GetPositionV()const {
+	XMVECTOR outScale;
+	XMVECTOR outRot;
+	XMVECTOR outTrans;
+
+	XMMATRIX transform = XMLoadFloat4x4(&m_transform);
+	XMMatrixDecompose(&outScale, &outRot, &outTrans, transform);
+
+	return outTrans;
 }

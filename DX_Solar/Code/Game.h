@@ -9,29 +9,35 @@
 
 using Microsoft::WRL::ComPtr;
 
+static const char* NAME_SUN		= "The Sun";
+static const char* NAME_EARTH	= "The Earth";
+static const char* NAME_MOON	= "The Moon";
+
 class Game final : public Engine {
 public:
-	Game(HINSTANCE hInstance);
-	virtual ~Game();
+					Game(HINSTANCE hInstance);
+	virtual			~Game();
 
-	Game(const Game&)					= delete;
-	Game(Game&&)						= delete;
-	Game& operator=(const Game&)		= delete;
-	Game& operator=(Game&&)				= delete;
+					Game(const Game&)					= delete;
+					Game(Game&&)						= delete;
+					Game& operator=(const Game&)		= delete;
+					Game& operator=(Game&&)				= delete;
 
-	virtual bool						Initialize()final;
+	bool			Initialize(int iconId)final;
 
 private:
-	virtual void						OnEvent(const Event& event)final;
-	virtual void						Update(float dt)final;
+	void			CreateScene();
 
-	void								OnMouseDown(const MouseEvent& event);
-	void								OnMouseUp(const MouseEvent& event);
-	void								OnMouseMove(const MouseEvent& event);
-	void								OnMouseScroll(const MouseEvent& event);
+	void			OnEvent(const Event& event)final;
+	void			Update(float dt)final;
+
+	void			OnMouseDown(const MouseEvent& event);
+	void			OnMouseUp(const MouseEvent& event);
+	void			OnMouseMove(const MouseEvent& event);
+	void			OnMouseScroll(const MouseEvent& event);
 
 private:	
-	POINT								m_lastMousePos;
+	POINT			m_lastMousePos;
 
 };
 

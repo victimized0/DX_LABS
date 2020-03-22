@@ -20,10 +20,12 @@ public:
 	void		Rotate(float angleX, float angleY);
 	void		ResetPosition();
 
+	void		SetRadius(float radius) { m_radius = radius; }
+
 	XMMATRIX	GetView()const;
 	XMMATRIX	GetProj()const;
 	
-	XMVECTOR	GetPositionV()const;
+	//XMVECTOR	GetPositionV()const;
 	//XMFLOAT3	GetPosition()const;
 	XMFLOAT3	GetTarget()const;
 	XMVECTOR	GetTargetV()const;

@@ -115,23 +115,32 @@ const void* GeometryObject::Indices()const {
 
 void GeometryObject::Scale(float delta) {
 	XMMATRIX transform		= XMLoadFloat4x4(&m_transform);
-	XMMATRIX scaleMat		= XMMatrixScaling(delta, delta, delta);
-	XMMATRIX newTransform	= XMMatrixMultiply(transform, scaleMat);
-	XMStoreFloat4x4(&m_transform, newTransform);
+	XMMATRIX scailing		= XMMatrixScaling(delta, delta, delta);
+	XMStoreFloat4x4(&m_transform, transform * scailing);
 }
 
 void GeometryObject::Rotate(float dx, float dy, float dz) {
 	XMMATRIX transform		= XMLoadFloat4x4(&m_transform);
-	XMMATRIX rotMat			= XMMatrixRotationRollPitchYaw(dx, dy, dz);
-	XMMATRIX newTransform	= XMMatrixMultiply(transform, rotMat);
-	XMStoreFloat4x4(&m_transform, newTransform);
+	XMMATRIX rotation		= XMMatrixRotationRollPitchYaw(dx, dy, dz);
+	XMStoreFloat4x4(&m_transform, transform * rotation);
+}
+
+void GeometryObject::Rotate(float dx, const DirectX::XMFLOAT3& target) {
+	XMVECTOR v1 = XMLoadFloat3(&target);
+
+	XMMATRIX transform = XMLoadFloat4x4(&m_transform);
+	XMMATRIX rotation = XMMatrixRotationY(dx);
+
+	transform.r[3]	= XMVectorSubtract(transform.r[3], v1);
+	transform		= transform * rotation;
+	transform.r[3]	= XMVectorAdd(transform.r[3], v1);
+	XMStoreFloat4x4(&m_transform, transform);
 }
 
 void GeometryObject::Translate(float dx, float dy, float dz) {
 	XMMATRIX transform		= XMLoadFloat4x4(&m_transform);
-	XMMATRIX translationMat	= XMMatrixTranslation(dx, dy, dz);
-	XMMATRIX newTransform	= XMMatrixMultiply(transform, translationMat);
-	XMStoreFloat4x4(&m_transform, newTransform);
+	XMMATRIX translation	= XMMatrixTranslation(dx, dy, dz);
+	XMStoreFloat4x4(&m_transform, transform * translation);
 }
 
 ConstantBuffer* GeometryObject::GetConstBuffer(D3DContext* context, FXMMATRIX viewMat, FXMMATRIX projMat) {

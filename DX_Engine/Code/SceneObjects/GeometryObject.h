@@ -102,6 +102,7 @@ public:
 
 	void									Scale(float delta);
 	void									Rotate(float dx, float dy, float dz);
+	void									Rotate(float dx, const DirectX::XMFLOAT3& target);
 	void									Translate(float dx, float dy, float dz);
 
 private:

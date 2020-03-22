@@ -20,7 +20,7 @@ public:
 	void							AddObject(const std::shared_ptr<SceneObject>&);
 	SceneObject*					GetSceneObject(const std::string& key)const;
 	const SceneObjects&				GetSceneObjects()const { return m_sceneObjects; }
-	const Camera&					GetMainCamera()const { return m_camera; }
+	Camera&							GetMainCamera() { return m_camera; }
 
 	void							Update(float dt);
 
