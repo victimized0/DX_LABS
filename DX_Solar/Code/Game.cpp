@@ -26,28 +26,14 @@ bool Game::Initialize() {
 
 	auto sun = std::make_shared<GeometryObject>("TheSun", XMFLOAT3(0,0,0));
 	auto pSun = sun.get();
-	::CreateIcosahedron(&pSun, 2.0f);
-
-	pSun->CreateVertexBuffer(m_renderer->GetDevice(), D3D11_USAGE_DYNAMIC);
-	pSun->CreateIndexBuffer(m_renderer->GetDevice());
+	::CreateIcosahedron(&pSun, 2.0f, 1.0f);
 
 	auto earth = std::make_shared<GeometryObject>("Earth", XMFLOAT3(0, 5.0f, 0));
 	auto pEarth = earth.get();
-	::CreateIcosahedron(&pEarth, 1.0f);
-
-	pEarth->CreateVertexBuffer(m_renderer->GetDevice(), D3D11_USAGE_DYNAMIC);
-	pEarth->CreateIndexBuffer(m_renderer->GetDevice());
+	::CreateIcosahedron(&pEarth, 1.0f, 1.0f);
 
 	m_scene.AddObject(sun);
 	m_scene.AddObject(earth);
-
-	D3D11_RASTERIZER_DESC rastDesc = {};
-	rastDesc.FillMode = D3D11_FILL_WIREFRAME;
-	rastDesc.CullMode = D3D11_CULL_BACK;
-
-	if (!m_renderer->SetRasterizerState(rastDesc)) {
-		return false;
-	}
 
 	return true;
 }

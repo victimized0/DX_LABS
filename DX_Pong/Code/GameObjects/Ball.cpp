@@ -40,10 +40,6 @@ void Ball::InverseSpeedY() {
 	m_speedY *= -1;
 }
 
-void Ball::Update(float dt) {
-
-}
-
 void Ball::Reset() {
 	XMStoreFloat4x4(&m_transform, XMMatrixIdentity());
 

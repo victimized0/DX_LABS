@@ -1,11 +1,16 @@
 #ifndef _ENGINE_H_
 #define _ENGINE_H_
 
-#include "D3D11Renderer.h"
 #include "StepTimer.h"
 #include "Scene.h"
 #include "Events/Event.h"
 #include "Interfaces/IRenderer.h"
+
+#ifdef _WIN32
+#include "D3D11Renderer.h"
+#else
+//#include null renderer
+#endif
 
 class Engine {
 protected:
@@ -27,7 +32,7 @@ public:
 	int								Run();
 	LRESULT							WndProc(HWND, UINT, WPARAM, LPARAM);
 	Scene&							GetScene();
-	IRenderer*						GetRenderer()const;
+	//IRenderer*						GetRenderer()const;
 
 protected:
 	bool							InitializeWindow(int iconId);
@@ -43,7 +48,7 @@ protected:
 
 	Timer							m_timer;
 	Scene							m_scene;
-	std::unique_ptr<IRenderer>		m_renderer;
+	//std::unique_ptr<IRenderer>		m_renderer;
 
 };
 

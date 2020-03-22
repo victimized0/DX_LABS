@@ -16,10 +16,10 @@ void Scene::AddObject(const std::shared_ptr<SceneObject>& pObj) {
     m_sceneObjects.push_back(pObj);
 }
 
-std::shared_ptr<SceneObject> Scene::GetSceneObject(const std::string& key)const {
+SceneObject* Scene::GetSceneObject(const std::string& key)const {
     for (size_t index = 0; index < m_sceneObjects.size(); ++index) {
         if (m_sceneObjects[index]->GetName() == key) {
-            return m_sceneObjects[index];
+            return m_sceneObjects[index].get();
         }
     }
     return nullptr;

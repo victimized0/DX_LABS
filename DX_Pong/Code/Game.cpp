@@ -29,47 +29,13 @@ bool Game::Initialize(int iconId) {
 	}
 
 	CreateScene();
-	CreateShaders();
-
 	return true;
 }
 
-void Game::CreateShaders() {
-	D3DBlob* vsBlob;
-	int vsId = m_renderer->CreateVertexShader("/data/shaders/standard_vs.cso", &vsBlob);
-	int psId = m_renderer->CreatePixelShader("/data/shaders/standard_ps.cso");
-
-	int ilId = m_renderer->CreateInputLayout(const_cast<InputElementDesc*>(GeometryObject::VertexType::InputElements),
-											GeometryObject::VertexType::ElementsCount, vsBlob);
-
-	auto pBall	= dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_BALL).get());
-	auto pP1	= dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_LPADDLE).get());
-	auto pP2	= dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_RPADDLE).get());
-
-	pBall->SetVertexShaderId(vsId);
-	pBall->SetPixelShaderId(psId);
-	pBall->SetInputLayoutId(ilId);
-
-	pP1->SetVertexShaderId(vsId);
-	pP1->SetPixelShaderId(psId);
-	pP1->SetInputLayoutId(ilId);
-
-	pP2->SetVertexShaderId(vsId);
-	pP2->SetPixelShaderId(psId);
-	pP2->SetInputLayoutId(ilId);
-
-	//D3DRSDesc desc = {};
-	//desc.CullMode = D3D11_CULL_BACK;
-	//desc.FillMode = D3D11_FILL_WIREFRAME;
-
-	//int wfRSId = m_renderer->CreateRSState(&desc);
-	//pBall->SetRSStateId(wfRSId);
-}
-
 void Game::CreateScene() {
-	auto ball	 = std::make_shared<Ball>(  NAME_BALL,	  XMFLOAT3(0.0f, 0.0f, 0.0f));
-	auto lPaddle = std::make_shared<GeometryObject>(NAME_LPADDLE, XMFLOAT3(-27.0f, 0.0f, 0.0f));
-	auto rPaddle = std::make_shared<GeometryObject>(NAME_RPADDLE, XMFLOAT3(27.0f, 0.0f, 0.0f));
+	auto ball	 = std::make_shared<Ball>( NAME_BALL, XMFLOAT3(0.0f, 0.0f, 0.0f) );
+	auto lPaddle = std::make_shared<GeometryObject>( NAME_LPADDLE, XMFLOAT3(-27.0f, 0.0f, 0.0f) );
+	auto rPaddle = std::make_shared<GeometryObject>( NAME_RPADDLE, XMFLOAT3(27.0f, 0.0f, 0.0f) );
 
 	vector<GeometryObject::VertexType> lPaddleVertices =
 	{
@@ -116,6 +82,5 @@ void Game::OnEvent(const Event& event) {
 }
 
 void Game::Update(float dt) {
-	UNREFERENCED_PARAMETER(dt);
 	m_gameLogic.Update(dt);
 }

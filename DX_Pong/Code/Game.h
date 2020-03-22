@@ -22,7 +22,6 @@ public:
 
 private:
 	void				CreateScene();
-	void				CreateShaders();
 
 	void				OnEvent(const Event& event)final;
 	void				Update(float dt)final;

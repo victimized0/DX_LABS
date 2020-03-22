@@ -27,7 +27,7 @@ Engine::Engine(HINSTANCE hInstance)
 	assert(pEngine == nullptr);
 #endif
 	pEngine = this;
-	m_renderer = std::make_unique<D3D11Renderer>();
+	//m_renderer = std::make_unique<D3D11Renderer>();
 
 	wchar_t buf[MAX_PATH];
 	GetModuleFileNameW(nullptr, buf, MAX_PATH);
@@ -48,7 +48,7 @@ bool Engine::Initialize(int iconId){
 			return false;
 		}
 
-		if (!m_renderer->Initialise()) {
+		if (!Environment::Instance().Renderer()->Initialise()) {
 			return false;
 		}
 
@@ -120,7 +120,7 @@ int Engine::Run() {
 				float dt = m_timer.GetDeltaTime();
 				m_scene.Update(dt);
 				Update(dt);
-				m_renderer->Render();
+				Environment::Instance().Renderer()->Render();
 			} else {
 				Sleep(100);
 			}
@@ -136,7 +136,7 @@ void Engine::OnResize(uint32_t width, uint32_t height) {
 
 	//if (m_isFullScreen)
 	//	m_swapChain->SetFullscreenState(true, nullptr);
-	m_renderer->CreateResources();
+	Environment::Instance().Renderer()->CreateResources();
 	const_cast<Camera&>(m_scene.GetMainCamera()).SetProj(XM_PIDIV4, width, height, 0.1f, 1000.0f);
 }
 
@@ -157,7 +157,7 @@ LRESULT Engine::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	case WM_SIZE:
 	{
-		if (m_renderer->GetDevice()) {
+		if (Environment::Instance().Renderer()->GetDevice()) {
 			if (wParam == SIZE_MINIMIZED) {
 				m_isPaused = true;
 				m_isMinimized = true;
@@ -293,8 +293,4 @@ LRESULT Engine::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 Scene& Engine::GetScene() {
 	return m_scene;
-}
-
-IRenderer* Engine::GetRenderer()const {
-	return m_renderer.get();
 }

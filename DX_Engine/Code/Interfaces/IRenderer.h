@@ -26,6 +26,14 @@
 #define D3DBufferDesc			D3D11_BUFFER_DESC
 #define D3DSubresData			D3D11_SUBRESOURCE_DATA
 #define D3DMappedSubres			D3D11_MAPPED_SUBRESOURCE
+#define BIND_VERTEX_BUFFER		D3D11_BIND_VERTEX_BUFFER
+#define BIND_INDEX_BUFFER		D3D11_BIND_INDEX_BUFFER
+#define BIND_CONSTANT_BUFFER	D3D11_BIND_CONSTANT_BUFFER
+#define D3D_CULL_FRONT			D3D11_CULL_FRONT
+#define D3D_CULL_BACK			D3D11_CULL_BACK
+#define D3D_CULL_NONE			D3D11_CULL_NONE
+#define D3D_FILL_WIREFRAME		D3D11_FILL_WIREFRAME
+#define D3D_FILL_SOLID			D3D11_FILL_SOLID
 #else
 // TODO: Non-DX defines
 #endif
@@ -41,6 +49,7 @@ enum class ConstBufferType : unsigned char {
 
 class IRenderer {
 public:
+	static IRenderer*		Create();
 	virtual bool			Initialise()				= 0;
 	virtual void			Render()					= 0;
 
@@ -51,19 +60,8 @@ public:
 	virtual D3DDevice*		GetDevice()					= 0;
 	virtual D3DContext*		GetDeviceContext()			= 0;
 
-	virtual VertexBuffer*	GetVertexBuffer(int vbId)	= 0;
-	virtual IndexBuffer*	GetIndexBuffer(int ibId)	= 0;
-	virtual InputLayout*	GetInputLayout(int ilId)	= 0;
-	virtual RSState*		GetRSState(int rssId)		= 0;
-	virtual VertexShader*	GetVertexShader(int vsId)	= 0;
-	virtual PixelShader*	GetPixelShader(int psId)	= 0;
-
-	virtual int				CreateVertexBuffer(size_t size, size_t strideSize, const void* pData)			= 0;
-	virtual int				CreateIndexBuffer(size_t size, const void* pData)								= 0;
-	virtual int				CreateInputLayout(InputElementDesc* desc, size_t arrSize, D3DBlob* shaderBlob)	= 0;
-	virtual int				CreateRSState(D3DRSDesc* desc)													= 0;
-	virtual int				CreateVertexShader(const char* path, D3DBlob** ppBlob)							= 0;
-	virtual int				CreatePixelShader(const char* path)												= 0;
+	virtual HRESULT			CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer) = 0;
+	virtual HRESULT			CreateBlob(const char* path, D3DBlob** pBlob) = 0;
 };
 
 #endif //_INTERFACE_RENDERER_H_

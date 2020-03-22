@@ -28,16 +28,45 @@ struct AABB {
 	}
 
 	bool Collides(const AABB& other)const {
-		return	X < other.X + other.Width &&
-				X + Width > other.X &&
-				Y < other.Y + other.Height &&
-				Y + Height > other.Y;
+		float threshold = 0.1f;
+
+		float a_wDiv2	= Width / 2;
+		float a_hDiv2	= Height / 2;
+		float a_left	= X + a_wDiv2;
+		float a_right	= X - a_wDiv2;
+		float a_top		= Y + a_hDiv2;
+		float a_bottom	= Y - a_hDiv2;
+
+		float b_wDiv2	= other.Width / 2;
+		float b_hDiv2	= other.Height / 2;
+		float b_left	= other.X + b_wDiv2;
+		float b_right	= other.X - b_wDiv2;
+		float b_top		= other.Y + b_hDiv2;
+		float b_bottom	= other.Y - b_hDiv2;
+
+		bool b_left_to_a_right = fabs(b_left - a_right) < threshold;
+		bool b_right_to_a_left = fabs(b_right - a_left) < threshold;
+
+		bool b_bottom_to_a_top = fabs(b_bottom - a_top) < Height;
+		bool b_top_to_a_bottom = fabs(b_top - a_bottom) < Height;
+		bool collides_top = b_bottom_to_a_top && b_top_to_a_bottom;
+
+		return (b_left_to_a_right && collides_top) || (b_right_to_a_left && collides_top);
 	}
 
 	void Update(const DirectX::XMFLOAT3& pos) {
 		X = pos.x;
 		Y = pos.y;
 	}
+};
+
+struct RenderInfo {
+	ComPtr<VertexBuffer>	pVertexBuffer;
+	ComPtr<IndexBuffer>		pIndexBuffer;
+	ComPtr<InputLayout>		pInputLayout;
+	ComPtr<VertexShader>	pVertexShader;
+	ComPtr<PixelShader>		pPixelShader;
+	ComPtr<RSState>			pRSState;
 };
 
 class GeometryObject : public SceneObject {
@@ -55,28 +84,21 @@ public:
 	const std::vector<VertexType>&			GetVertices()const { return m_vertices; }
 	const std::vector<UINT>&				GetIndices()const { return m_indices; }
 
-	const int								GetVertexShaderId()	const	{ return m_vertexShaderId;	}
-	const int								GetPixelShaderId()	const	{ return m_pixelShaderId;	}
-	const int								GetVertexBufferId()	const	{ return m_vertexBufferId;	}
-	const int								GetIndexBufferId()	const	{ return m_indexBufferId;	}
-	const int								GetInputLayoutId()	const	{ return m_inputLayoutId;	}
-	const int								GetRSStateId()		const	{ return m_rsStateId;		}
+	RenderInfo&								GetRenderInfo() { return m_rendInfo;	}
+	const RenderInfo&						GetRenderInfo()const { return m_rendInfo;	}
 
 	ConstantBuffer*							GetConstBuffer(D3DContext* context, DirectX::FXMMATRIX viewMat, DirectX::FXMMATRIX projMat);
 	DirectX::XMMATRIX						GetWorldTransform() const	{ return XMLoadFloat4x4(&m_transform); }
 	AABB&									GetAABB() { return m_aabb; }
 
-	void									SetVertexShaderId	(int id)	{ m_vertexShaderId	= id; }
-	void									SetPixelShaderId	(int id)	{ m_pixelShaderId	= id; }
-	void									SetVertexBufferId	(int id)	{ m_vertexBufferId	= id; }
-	void									SetIndexBufferId	(int id)	{ m_indexBufferId	= id; }
-	void									SetInputLayoutId	(int id)	{ m_inputLayoutId	= id; }
-	void									SetRSStateId		(int id)	{ m_rsStateId		= id; }
+	void									SetRenderInfo(const RenderInfo& ri) { m_rendInfo = ri; }
 
 	const void*								Vertices()const;
 	const void*								Indices()const;
 
 	void									Update(float dt)override;
+	void									Initialise()override;
+	//virtual void							Draw();
 
 	void									Scale(float delta);
 	void									Rotate(float dx, float dy, float dz);
@@ -87,19 +109,12 @@ private:
 	void									FindMin(const std::vector<VertexType>& verts, float& minX, float& minY) const;
 
 protected:
-	int										m_vertexShaderId;
-	int										m_pixelShaderId;
-	int										m_vertexBufferId;
-	int										m_indexBufferId;
-	int										m_inputLayoutId;
-	int										m_rsStateId;
-
+	AABB									m_aabb;
+	RenderInfo								m_rendInfo;
 	ConstBuffer<CBPerObject>				m_constBuffer;
 
 	std::vector<VertexType>					m_vertices;
 	std::vector<UINT>						m_indices;
-
-	AABB									m_aabb;
 
 };
 

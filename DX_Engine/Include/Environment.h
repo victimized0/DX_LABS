@@ -1,6 +1,15 @@
 #ifndef _ENVIRONMENT_H_
 #define _ENVIRONMENT_H_
 
+#include "Interfaces/IRenderer.h"
+#include "Engine.h"
+
+#ifdef _WIN32
+#define USE_DX 1
+#endif
+
+#define SAFE_DELETE(p) { if (p) { delete (p); (p) = nullptr; } }
+
 class Environment {
 private:
 	Environment()
@@ -10,7 +19,9 @@ private:
 		, m_allowFullScreen(false)
 		, m_hInst(nullptr)
 		, m_hWnd(nullptr)
-	{}
+	{
+		m_renderer.reset(IRenderer::Create());
+	}
 
 	Environment(Environment const&)				= delete;
 	Environment& operator=(Environment const&)	= delete;
@@ -30,6 +41,8 @@ public:
 	int GetHeight()const {
 		return m_height;
 	}
+
+	IRenderer* Renderer() { return m_renderer.get(); }
 
 	HINSTANCE GetInstanceHandle() {
 		return m_hInst;
@@ -76,16 +89,18 @@ public:
 	void SetExecPath(std::wstring path) { m_execPath = path; }
 
 private:
-	std::wstring	m_execPath;
+	std::wstring				m_execPath;
 
-	HINSTANCE		m_hInst;
-	HWND			m_hWnd;
+	HINSTANCE					m_hInst;
+	HWND						m_hWnd;
 
-	int				m_width;
-	int				m_height;
+	int							m_width;
+	int							m_height;
 
-	bool			m_isFullScreen;
-	bool			m_allowFullScreen;
+	bool						m_isFullScreen;
+	bool						m_allowFullScreen;
+
+	std::unique_ptr<IRenderer>	m_renderer;
 
 };
 

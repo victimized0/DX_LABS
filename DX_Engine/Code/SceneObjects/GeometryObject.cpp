@@ -8,15 +8,10 @@ using namespace DirectX;
 
 GeometryObject::GeometryObject(const std::string& name, DirectX::XMFLOAT3 position)
 	: SceneObject::SceneObject(name, position)
-	, m_vertexBufferId(-1)
-	, m_indexBufferId(-1)
-	, m_inputLayoutId(-1)
-	, m_vertexShaderId(-1)
-	, m_pixelShaderId(-1)
-	, m_rsStateId(0)
 	, m_aabb(0, 0, 0, 0)
 {
-	m_constBuffer.Create(Engine::GetPtr()->GetRenderer()->GetDevice());
+	m_rendInfo = {};
+	m_constBuffer.Create(Environment::Instance().Renderer()->GetDevice());
 }
 
 GeometryObject::GeometryObject(const std::string& name)
@@ -62,8 +57,9 @@ void GeometryObject::CreateVertices(std::vector<VertexType>& vertices) {
 	}
 
 	m_vertices = vertices;
-	m_vertexBufferId = Engine::GetPtr()->GetRenderer()->CreateVertexBuffer(m_vertices.size(), sizeof(VertexType), &m_vertices[0]);
-	
+
+	Environment::Instance().Renderer()->CreateBuffer(m_vertices.size(), sizeof(VertexType), &m_vertices[0], BIND_VERTEX_BUFFER, &m_rendInfo.pVertexBuffer);
+
 	float maxX = 0, maxY = 0, minX = 0, minY = 0;
 	FindMax(vertices, maxX, maxY);
 	FindMin(vertices, minX, minY);
@@ -77,11 +73,36 @@ void GeometryObject::CreateIndices(std::vector<UINT>& indices) {
 	}
 
 	m_indices = indices;
-	m_indexBufferId = Engine::GetPtr()->GetRenderer()->CreateIndexBuffer(m_indices.size(), &m_indices[0]);
+	Environment::Instance().Renderer()->CreateBuffer(m_indices.size(), sizeof(UINT), &m_indices[0], BIND_INDEX_BUFFER, &m_rendInfo.pIndexBuffer);
 }
 
 void GeometryObject::Update(float dt) {
 	m_aabb.Update(GetPosition());
+}
+
+void GeometryObject::Initialise() {
+	IRenderer* pRend = Environment::Instance().Renderer();
+
+	D3DBlob* pVsBlob;
+	D3DBlob* pPsBlob;
+
+	if (FAILED(pRend->CreateBlob("/data/shaders/standard_vs.cso", &pVsBlob))) return;
+	if (FAILED(pRend->CreateBlob("/data/shaders/standard_ps.cso", &pPsBlob))) return;
+
+	ThrowIfFailed(pRend->GetDevice()->CreateVertexShader(pVsBlob->GetBufferPointer(), pVsBlob->GetBufferSize(), nullptr, &m_rendInfo.pVertexShader));
+	ThrowIfFailed(pRend->GetDevice()->CreatePixelShader(pPsBlob->GetBufferPointer(), pPsBlob->GetBufferSize(), nullptr, &m_rendInfo.pPixelShader));
+
+	pRend->GetDevice()->CreateInputLayout(	VertexType::InputElements,
+											VertexType::ElementsCount,
+											pVsBlob->GetBufferPointer(),
+											pVsBlob->GetBufferSize(),
+											&m_rendInfo.pInputLayout);
+
+	D3DRSDesc rsDesc = {};
+	rsDesc.CullMode = D3D_CULL_BACK;
+	rsDesc.FillMode = D3D_FILL_SOLID;
+
+	if (FAILED(pRend->GetDevice()->CreateRasterizerState(&rsDesc, &m_rendInfo.pRSState))) return;
 }
 
 const void* GeometryObject::Vertices()const {

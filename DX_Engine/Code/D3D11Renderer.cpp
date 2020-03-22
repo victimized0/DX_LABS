@@ -3,6 +3,10 @@
 #include "SceneObjects/GeometryObject.h"
 #include "Engine.h"
 
+IRenderer* IRenderer::Create() {
+	return new D3D11Renderer();
+}
+
 D3D11Renderer::D3D11Renderer() 
 	: m_msaa4xQuality(1)
 	, m_buffersCount(1)
@@ -27,13 +31,6 @@ bool D3D11Renderer::Initialise() {
 	if (!CreateDevice()) {
 		return false;
 	}
-	
-	D3DRSDesc desc = {};
-	desc.CullMode = D3D11_CULL_BACK;
-	desc.FillMode = D3D11_FILL_SOLID;
-	if (CreateRSState(&desc) == RES_FAILED) {
-		return false;
-	}
 
 	return true;
 }
@@ -48,58 +45,36 @@ void D3D11Renderer::Render() {
 	for each ( auto& object in Engine::GetPtr()->GetScene().GetSceneObjects()) {
 		auto geoObj = dynamic_cast<GeometryObject*>(object.get());
 		if (geoObj != nullptr) {
-			int rsStateId		= geoObj->GetRSStateId();
-			int inputLayoutId	= geoObj->GetInputLayoutId();
-			if (rsStateId < 0 || inputLayoutId < 0) {
-				continue;
+			const RenderInfo& rendInfo = geoObj->GetRenderInfo();
+
+			if (rendInfo.pRSState != nullptr) {
+				m_context->RSSetState(rendInfo.pRSState.Get());
 			}
 
-			auto rsState = m_rsStates[rsStateId].Get();
-			auto inputLayout = m_inputLayouts[inputLayoutId].Get();
-			if (rsState == nullptr || inputLayout == nullptr) {
-				continue;
+			if (rendInfo.pInputLayout  == nullptr ||
+				rendInfo.pVertexShader == nullptr ||
+				rendInfo.pPixelShader  == nullptr ||
+				rendInfo.pVertexBuffer == nullptr ||
+				rendInfo.pIndexBuffer  == nullptr ) {
+				return;
 			}
 
-			m_context->RSSetState(rsState);
-			m_context->IASetInputLayout(inputLayout);
+			m_context->IASetInputLayout(rendInfo.pInputLayout.Get());
 			m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-			int vsId = geoObj->GetVertexShaderId();
-			int psId = geoObj->GetPixelShaderId();
-			if (vsId < 0 || psId < 0) {
-				continue;
-			}
+			m_context->VSSetShader(rendInfo.pVertexShader.Get(), nullptr, 0);
+			m_context->PSSetShader(rendInfo.pPixelShader.Get(), nullptr, 0);
 
-			auto vertexShader = m_vertexShaders[vsId].Get();
-			auto pixelShader  = m_pixelShaders[psId].Get();
-			if (vertexShader == nullptr || pixelShader == nullptr) {
-				continue;
-			}
-
-			m_context->VSSetShader(vertexShader, nullptr, 0);
-			m_context->PSSetShader(pixelShader,  nullptr, 0);
-
-			int vbId = geoObj->GetVertexBufferId();
-			int ibId = geoObj->GetIndexBufferId();
-			if (vbId < 0 || ibId < 0) {
-				continue;
-			}
-
-			auto vBuffer = m_vertexBuffers[vbId].Get();
-			auto iBuffer = m_indexBuffers[ibId].Get();
-			
 			auto& camera = Engine::GetPtr()->GetScene().GetMainCamera();
-			auto cBuffer = geoObj->GetConstBuffer(m_context.Get(), camera.GetView(), camera.GetProj());
-			if (vBuffer == nullptr || iBuffer == nullptr || cBuffer == nullptr) {
-				continue;
-			}
+			ConstantBuffer* constBuffer = geoObj->GetConstBuffer(m_context.Get(), camera.GetView(), camera.GetProj());
+			if (constBuffer == nullptr) return;
 
 			UINT stride = sizeof(GeometryObject::VertexType);
 			UINT offset = 0;
 
-			m_context->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
-			m_context->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, offset);
-			m_context->VSSetConstantBuffers(0, 1, &cBuffer);
+			m_context->IASetVertexBuffers(0, 1, rendInfo.pVertexBuffer.GetAddressOf(), &stride, &offset);
+			m_context->IASetIndexBuffer(rendInfo.pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, offset);
+			m_context->VSSetConstantBuffers(0, 1, &constBuffer);
 			m_context->DrawIndexed((UINT)geoObj->GetIndices().size(), 0, 0);
 		}
 	}
@@ -306,65 +281,6 @@ bool D3D11Renderer::OnDeviceLost() {
 	CreateResources();
 
 	return true;
-}
-
-int D3D11Renderer::CreateVertexBuffer(size_t size, size_t strideSize, const void* pData) {
-	VertexBuffer* pBuffer;
-	if (FAILED(CreateBuffer(size, strideSize, pData, D3D11_BIND_VERTEX_BUFFER, &pBuffer))) {
-		return RES_FAILED;
-	}
-	m_vertexBuffers.push_back(pBuffer);
-	return m_vertexBuffers.size() - 1;
-}
-
-int D3D11Renderer::CreateIndexBuffer(size_t size, const void* pData) {
-	IndexBuffer* pBuffer;
-	if (FAILED(CreateBuffer(size, sizeof(UINT), pData, D3D11_BIND_INDEX_BUFFER, &pBuffer))) {
-		return RES_FAILED;
-	}
-	m_indexBuffers.push_back(pBuffer);
-	return m_indexBuffers.size() - 1;
-}
-
-int	D3D11Renderer::CreateInputLayout(InputElementDesc* desc, size_t arrSize, D3DBlob* shaderBlob) {
-	InputLayout* pInputLayout;
-	if (FAILED(m_device->CreateInputLayout(desc, arrSize, shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &pInputLayout))) {
-		return RES_FAILED;
-	}
-	m_inputLayouts.push_back(pInputLayout);
-	return m_inputLayouts.size() - 1;
-}
-
-int D3D11Renderer::CreateRSState(D3DRSDesc* desc) {
-	RSState* pRSState;
-	if (FAILED(m_device->CreateRasterizerState(desc, &pRSState))) {
-		return RES_FAILED;
-	}
-	m_rsStates.push_back(pRSState);
-	return m_rsStates.size() - 1;
-}
-
-int D3D11Renderer::CreateVertexShader(const char* path, D3DBlob** ppBlob) {
-	if (FAILED(CreateBlob(path, ppBlob))) {
-		return RES_FAILED;
-	}
-
-	VertexShader* pVertexShader;
-	ThrowIfFailed(m_device->CreateVertexShader((*ppBlob)->GetBufferPointer(), (*ppBlob)->GetBufferSize(), nullptr, &pVertexShader));
-	m_vertexShaders.push_back(pVertexShader);
-	return m_vertexShaders.size() - 1;
-}
-
-int D3D11Renderer::CreatePixelShader(const char* path) {
-	D3DBlob* psByteCode;
-	if (FAILED(CreateBlob(path, &psByteCode))) {
-		return RES_FAILED;
-	}
-
-	PixelShader* pPixelShader;
-	ThrowIfFailed(m_device->CreatePixelShader(psByteCode->GetBufferPointer(), psByteCode->GetBufferSize(), nullptr, &pPixelShader));
-	m_pixelShaders.push_back(pPixelShader);
-	return m_pixelShaders.size() - 1;
 }
 
 HRESULT D3D11Renderer::CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer) {

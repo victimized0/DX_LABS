@@ -22,7 +22,6 @@ public:
 	void			InverseSpeedX();
 	void			InverseSpeedY();
 
-	void			Update(float dt)override;
 	void			Reset();
 
 private:

@@ -32,23 +32,9 @@ public:
 	D3DDevice*								GetDevice()override { return m_device.Get(); }
 	D3DContext*								GetDeviceContext()override { return m_context.Get(); }
 
-	VertexShader*							GetVertexShader	(int vsId)	override	{ return m_vertexShaders[vsId].Get();	}
-	PixelShader*							GetPixelShader	(int psId)	override	{ return m_pixelShaders	[psId].Get();	}
-	VertexBuffer*							GetVertexBuffer	(int vbId)	override	{ return m_vertexBuffers[vbId].Get();	}
-	IndexBuffer*							GetIndexBuffer	(int ibId)	override	{ return m_indexBuffers	[ibId].Get();	}
-	InputLayout*							GetInputLayout	(int ilId)	override	{ return m_inputLayouts	[ilId].Get();	}
-	RSState*								GetRSState		(int rssId)	override	{ return m_rsStates		[rssId].Get();	}
-
-	int										CreateVertexBuffer(size_t size, size_t strideSize, const void* pData)override;
-	int										CreateIndexBuffer(size_t size, const void* pData)override;
-	int										CreateInputLayout(InputElementDesc* desc, size_t arrSize, D3DBlob* shaderBlob)override;
-	int										CreateRSState(D3DRSDesc* desc)override;
-	int										CreateVertexShader(const char* path, D3DBlob** ppBlob)override;
-	int										CreatePixelShader(const char* path)override;
-
-protected:
-	HRESULT									CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer);
-	HRESULT									CreateBlob(const char* path, D3DBlob** pBlob);
+public:
+	HRESULT									CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer)override;
+	HRESULT									CreateBlob(const char* path, D3DBlob** pBlob)override;
 
 protected:
 	UINT									m_buffersCount;
@@ -64,13 +50,6 @@ protected:
 	ComPtr<D3DSwapChain>					m_swapChain;
 	ComPtr<RenderTargetView>				m_renderTargetView;
 	ComPtr<DepthStencilView>				m_depthStencilView;
-
-	std::vector<ComPtr<VertexBuffer>>		m_vertexBuffers;
-	std::vector<ComPtr<IndexBuffer>>		m_indexBuffers;
-	std::vector<ComPtr<InputLayout>>		m_inputLayouts;
-	std::vector<ComPtr<RSState>>			m_rsStates;
-	std::vector<ComPtr<VertexShader>>		m_vertexShaders;
-	std::vector<ComPtr<PixelShader>>		m_pixelShaders;
 
 };
 

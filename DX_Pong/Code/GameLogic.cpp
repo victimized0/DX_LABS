@@ -37,7 +37,7 @@ void GameLogic::OnEvent(const Event& event) {
 			{
 				case KeyCode::W:
 				{
-					auto player = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE).get());
+					auto player = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE));
 					float distToTop = fabs(player->GetPosition().y + player->GetAABB().Height / 2 - GRID_TOP_BORDER);
 					if (distToTop > 0.1f) {
 						player->Translate(0.0f, 1.0f, 0.0f);
@@ -47,7 +47,7 @@ void GameLogic::OnEvent(const Event& event) {
 
 				case KeyCode::S:
 				{
-					auto paddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE).get());
+					auto paddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE));
 					float distToBottom = fabs(paddle->GetPosition().y - paddle->GetAABB().Height / 2 - GRID_BOTTOM_BORDER);
 					if (distToBottom > 0.1f) {
 						paddle->Translate(0.0f, -1.0f, 0.0f);
@@ -57,7 +57,7 @@ void GameLogic::OnEvent(const Event& event) {
 
 				case KeyCode::Up:
 				{
-					auto player = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE).get());
+					auto player = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE));
 					float distToTop = fabs(player->GetPosition().y + player->GetAABB().Height / 2 - GRID_TOP_BORDER);
 					if (distToTop > 0.1f) {
 						player->Translate(0.0f, 1.0f, 0.0f);
@@ -67,7 +67,7 @@ void GameLogic::OnEvent(const Event& event) {
 
 				case KeyCode::Down:
 				{
-					auto paddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE).get());
+					auto paddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE));
 					float distToBottom = fabs(paddle->GetPosition().y - paddle->GetAABB().Height / 2 - GRID_BOTTOM_BORDER);
 					if (distToBottom > 0.1f) {
 						paddle->Translate(0.0f, -1.0f, 0.0f);
@@ -81,9 +81,9 @@ void GameLogic::OnEvent(const Event& event) {
 }
 
 void GameLogic::Update(float dt) {
-	auto ball    = dynamic_cast<Ball*>(  m_pScene->GetSceneObject(NAME_BALL).get());
-	auto lPaddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE).get());
-	auto rPaddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE).get());
+	auto ball    = dynamic_cast<Ball*>(m_pScene->GetSceneObject(NAME_BALL));
+	auto lPaddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE));
+	auto rPaddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE));
 
 	const AABB& ballAABB = ball->GetAABB();
 	float threshold = 0.1f;

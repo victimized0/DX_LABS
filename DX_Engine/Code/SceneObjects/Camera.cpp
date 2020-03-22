@@ -43,10 +43,6 @@ void Camera::SetTarget(float x, float y, float z) {
 	m_target = XMFLOAT3(x, y, z);
 }
 
-//void Camera::SetPosition(float x, float y, float z) {
-//	m_pos = XMFLOAT3(x, y, z);
-//}
-
 void Camera::Update(float dt) {
 	float sinphi = sinf(m_phi);
 	float costheta = cosf(m_theta);
@@ -98,12 +94,9 @@ XMMATRIX Camera::GetProj()const {
 }
 
 XMVECTOR Camera::GetPositionV()const {
-	return XMLoadFloat3(&GetPosition());
+	auto pos = GetPosition();
+	return XMLoadFloat3(&pos);
 }
-
-//XMFLOAT3 Camera::GetPosition()const {
-//	return m_pos;
-//}
 
 XMFLOAT3 Camera::GetTarget()const {
 	return m_target;
