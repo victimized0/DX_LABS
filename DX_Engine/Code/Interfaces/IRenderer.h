@@ -34,8 +34,41 @@
 #define D3D_CULL_NONE			D3D11_CULL_NONE
 #define D3D_FILL_WIREFRAME		D3D11_FILL_WIREFRAME
 #define D3D_FILL_SOLID			D3D11_FILL_SOLID
+#define HRES					HRESULT
 #else
-// TODO: Non-DX defines
+#define D3DDevice				
+#define D3DContext				
+#define D3DSwapChain			
+#define RenderTargetView		
+#define DepthStencilView		
+#define D3DViewport				
+#define D3DDriverType			
+#define D3DFeatureLevel			
+#define InputLayout				
+#define RSState					
+#define D3DBuffer				
+#define VertexBuffer			
+#define IndexBuffer				
+#define ConstantBuffer			
+#define D3DBlob					
+#define D3DUsage				
+#define D3DBindFlag				
+#define D3DRSDesc				
+#define InputElementDesc		
+#define VertexShader			
+#define PixelShader				
+#define D3DBufferDesc			
+#define D3DSubresData			
+#define D3DMappedSubres			
+#define BIND_VERTEX_BUFFER		
+#define BIND_INDEX_BUFFER		
+#define BIND_CONSTANT_BUFFER	
+#define D3D_CULL_FRONT			
+#define D3D_CULL_BACK			
+#define D3D_CULL_NONE			
+#define D3D_FILL_WIREFRAME		
+#define D3D_FILL_SOLID			
+#define HRES					
 #endif
 
 #define MAX_BUFFERS_COUNT 512
@@ -50,6 +83,8 @@ enum class ConstBufferType : unsigned char {
 class IRenderer {
 public:
 	static IRenderer*		Create();
+
+	virtual					~IRenderer() {}
 	virtual bool			Initialise()				= 0;
 	virtual void			Render()					= 0;
 
@@ -60,8 +95,8 @@ public:
 	virtual D3DDevice*		GetDevice()					= 0;
 	virtual D3DContext*		GetDeviceContext()			= 0;
 
-	virtual HRESULT			CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer) = 0;
-	virtual HRESULT			CreateBlob(const char* path, D3DBlob** pBlob) = 0;
+	virtual HRES			CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer) = 0;
+	virtual HRES			CreateBlob(const char* path, D3DBlob** pBlob) = 0;
 };
 
 #endif //_INTERFACE_RENDERER_H_

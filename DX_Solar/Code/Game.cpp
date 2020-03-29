@@ -19,8 +19,8 @@ Game::~Game() {
 
 }
 
-bool Game::Initialize(int iconId) {
-	if (!Engine::Initialize(iconId)) {
+bool Game::Initialize(int iconId, int width, int height) {
+	if (!Engine::Initialize(iconId, width, height)) {
 		return false;
 	}
 
@@ -82,7 +82,7 @@ void Game::Update(float dt) {
 void Game::OnMouseDown(const MouseEvent& event) {
 	m_lastMousePos.x = event.GetPosX();
 	m_lastMousePos.y = event.GetPosY();
-	SetCapture(Environment::Instance().GetWindowHandle());
+	SetCapture(gEnv.HWnd);
 }
 
 void Game::OnMouseUp(const MouseEvent& event) {
@@ -109,5 +109,5 @@ void Game::OnMouseMove(const MouseEvent& event) {
 
 void Game::OnMouseScroll(const MouseEvent& event) {
 	auto& camera = m_scene.GetMainCamera();
-	camera.Zoom(-0.002f * GET_WHEEL_DELTA_WPARAM(event.GetParam()));
+	camera.Zoom(10 * -0.002f * GET_WHEEL_DELTA_WPARAM(event.GetParam()));
 }

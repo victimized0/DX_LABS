@@ -157,11 +157,7 @@ bool D3D11Renderer::CreateResources() {
 		m_depthStencilView.Reset();
 		m_context->Flush();
 
-		HRESULT hr = m_swapChain->ResizeBuffers(m_buffersCount,
-												Environment::Instance().GetWidth(),
-												Environment::Instance().GetHeight(),
-												DXGI_FORMAT_B8G8R8A8_UNORM,
-												DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+		HRESULT hr = m_swapChain->ResizeBuffers(m_buffersCount, gEnv.Width, gEnv.Height, DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
 
 		if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
 			if (!OnDeviceLost()) {
@@ -182,11 +178,11 @@ bool D3D11Renderer::CreateResources() {
 		ThrowIfFailed(dxgiAdapter->GetParent(IID_PPV_ARGS(&dxgiFactory)));
 
 		ComPtr<IDXGIFactory2> dxgiFactory2;
-		if (dxgiFactory.As(&dxgiFactory2)) {
+		if (dxgiFactory.As(&dxgiFactory2) != S_OK) {
 			// DirectX 11.1 or later
 			DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-			swapChainDesc.Width						= Environment::Instance().GetWidth();
-			swapChainDesc.Height					= Environment::Instance().GetHeight();
+			swapChainDesc.Width						= gEnv.Width;
+			swapChainDesc.Height					= gEnv.Height;
 			swapChainDesc.Format					= DXGI_FORMAT_R8G8B8A8_UNORM;
 			swapChainDesc.SampleDesc.Count			= m_enable4xMSAA ? 4 : 1;
 			swapChainDesc.SampleDesc.Quality		= m_enable4xMSAA ? (m_msaa4xQuality - 1) : 0;
@@ -202,18 +198,18 @@ bool D3D11Renderer::CreateResources() {
 			sd_fullscreen.RefreshRate.Denominator	= 1;
 			sd_fullscreen.ScanlineOrdering			= DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 			sd_fullscreen.Scaling					= DXGI_MODE_SCALING_UNSPECIFIED;
-			sd_fullscreen.Windowed					= !Environment::Instance().GetIsFullscreen();
+			sd_fullscreen.Windowed					= !gEnv.IsFullScreen;
 
 			ThrowIfFailed(dxgiFactory2->CreateSwapChainForHwnd(	m_device.Get(),
-																Environment::Instance().GetWindowHandle(),
+																gEnv.HWnd,
 																&swapChainDesc,
 																&sd_fullscreen,
 																nullptr,
 																&m_swapChain));
 		} else {
 			DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
-			swapChainDesc.BufferDesc.Width						= Environment::Instance().GetWidth();
-			swapChainDesc.BufferDesc.Height						= Environment::Instance().GetHeight();
+			swapChainDesc.BufferDesc.Width						= gEnv.Width;
+			swapChainDesc.BufferDesc.Height						= gEnv.Height;
 			swapChainDesc.BufferDesc.RefreshRate.Numerator		= 60;
 			swapChainDesc.BufferDesc.RefreshRate.Denominator	= 1;
 			swapChainDesc.BufferDesc.Format						= DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -223,8 +219,8 @@ bool D3D11Renderer::CreateResources() {
 			swapChainDesc.SampleDesc.Quality					= m_enable4xMSAA ? (m_msaa4xQuality - 1) : 0;
 			swapChainDesc.BufferUsage							= DXGI_USAGE_RENDER_TARGET_OUTPUT;
 			swapChainDesc.BufferCount							= m_buffersCount;
-			swapChainDesc.OutputWindow							= Environment::Instance().GetWindowHandle();
-			swapChainDesc.Windowed								= !Environment::Instance().GetIsFullscreen();
+			swapChainDesc.OutputWindow							= gEnv.HWnd;
+			swapChainDesc.Windowed								= !gEnv.IsFullScreen;
 			swapChainDesc.SwapEffect							= DXGI_SWAP_EFFECT_DISCARD;
 			swapChainDesc.Flags									= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
@@ -232,7 +228,7 @@ bool D3D11Renderer::CreateResources() {
 			ThrowIfFailed(swapChain.As(&m_swapChain));
 		}
 
-		ThrowIfFailed(dxgiFactory->MakeWindowAssociation(Environment::Instance().GetWindowHandle(), DXGI_MWA_NO_WINDOW_CHANGES));
+		ThrowIfFailed(dxgiFactory->MakeWindowAssociation(gEnv.HWnd, DXGI_MWA_NO_WINDOW_CHANGES));
 	}
 
 	ComPtr<ID3D11Texture2D> backBuffer;
@@ -244,8 +240,8 @@ bool D3D11Renderer::CreateResources() {
 
 	CD3D11_TEXTURE2D_DESC depthStencilDesc = {};
 	depthStencilDesc.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.Width				= Environment::Instance().GetWidth();
-	depthStencilDesc.Height				= Environment::Instance().GetHeight();
+	depthStencilDesc.Width				= gEnv.Width;
+	depthStencilDesc.Height				= gEnv.Height;
 	depthStencilDesc.ArraySize			= 1;
 	depthStencilDesc.MipLevels			= 1;
 	depthStencilDesc.SampleDesc.Count	= m_enable4xMSAA ? 4 : 1;
@@ -283,10 +279,10 @@ bool D3D11Renderer::OnDeviceLost() {
 	return true;
 }
 
-HRESULT D3D11Renderer::CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer) {
+HRES D3D11Renderer::CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer) {
 	assert(pBuffer != nullptr);
 
-	uint64_t sizeInBytes = uint64_t((UINT)size * (UINT)strideSize);
+	uint64_t sizeInBytes = uint64_t(size * strideSize);
 	if (sizeInBytes > uint64_t(D3D11_REQ_RESOURCE_SIZE_IN_MEGABYTES_EXPRESSION_A_TERM * 1024u * 1024u)) {
 		throw std::exception("Buffer too large for DirectX 11");
 	}
@@ -303,10 +299,10 @@ HRESULT D3D11Renderer::CreateBuffer(size_t size, size_t strideSize, const void* 
 	return m_device->CreateBuffer(&desc, &data, pBuffer);
 }
 
-HRESULT D3D11Renderer::CreateBlob(const char* path, D3DBlob** pBlob) {
+HRES D3D11Renderer::CreateBlob(const char* path, D3DBlob** pBlob) {
 	std::string sPath(path);
 	std::wstring wPath(sPath.begin(), sPath.end());
-	std::wstring fullPath = Environment::Instance().GetExecPath() + wPath;
+	std::wstring fullPath = gEnv.WorkingPath + wPath;
 	
 	return D3DReadFileToBlob(fullPath.c_str(), pBlob);
 }

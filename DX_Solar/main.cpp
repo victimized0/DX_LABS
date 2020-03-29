@@ -18,7 +18,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	UNREFERENCED_PARAMETER(nCmdShow);
 
 	Game game(hInstance);
-	if (!game.Initialize(IDI_ICON1)) {
+	if (!game.Initialize(IDI_ICON1, 800, 600)) {
 		return 0;
 	}
 

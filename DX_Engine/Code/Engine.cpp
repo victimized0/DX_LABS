@@ -29,29 +29,28 @@ Engine::Engine(HINSTANCE hInstance)
 	pEngine = this;
 
 	wchar_t buf[MAX_PATH];
-	GetModuleFileNameW(nullptr, buf, MAX_PATH);
-	std::wstring m_execPath = std::wstring(buf);
-	m_execPath = m_execPath.substr(0, m_execPath.find_last_of(L"/\\"));
+	GetModuleFileName(nullptr, buf, MAX_PATH);
+	std::wstring execPath = std::wstring(buf);
 
-	Environment::Instance().SetExecPath(m_execPath);
-	Environment::Instance().SetInstanceHandle(hInstance);
+	gEnv.WorkingPath	= execPath.substr(0, execPath.find_last_of(L"/\\"));
+	gEnv.HInstance		= hInstance;
 }
 
 Engine::~Engine() {
 
 }
 
-bool Engine::Initialize(int iconId){
+bool Engine::Initialize(int iconId, int width, int height){
 	if (!m_isInit) {
-		if (!InitializeWindow(iconId)) {
+		if (!InitializeWindow(iconId, width, height)) {
 			return false;
 		}
 
-		if (!Environment::Instance().Renderer()->Initialise()) {
+		if (!gEnv.Renderer()->Initialise()) {
 			return false;
 		}
 
-		OnResize(Environment::Instance().GetWidth(), Environment::Instance().GetHeight() - 20);
+		OnResize(width, height);
 		m_isInit = true;
 
 		return true;
@@ -60,48 +59,63 @@ bool Engine::Initialize(int iconId){
 	}
 }
 
-bool Engine::InitializeWindow(int iconId) {
-	WNDCLASSEX wcex		= {};
-	wcex.cbSize			= sizeof(WNDCLASSEX);
-	wcex.style			= CS_HREDRAW | CS_VREDRAW;
+bool Engine::InitializeWindow(int iconId, int width, int height) {
+	DWORD style		= WS_OVERLAPPEDWINDOW | WS_VISIBLE & ~(WS_MAXIMIZEBOX | WS_THICKFRAME);
+	DWORD exstyle	= WS_EX_APPWINDOW;
+
+	MONITORINFO monitorInfo;
+	monitorInfo.cbSize = sizeof(monitorInfo);
+	GetMonitorInfo(MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY), &monitorInfo);
+	int x = monitorInfo.rcMonitor.left;
+	int y = monitorInfo.rcMonitor.top;
+	const int monitorWidth = monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left;
+	const int monitorHeight = monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top;
+
+	RECT wndrect;
+	SetRect(&wndrect, 0, 0, width, height);
+	AdjustWindowRectEx(&wndrect, style, FALSE, exstyle);
+
+	width	= wndrect.right - wndrect.left;
+	height	= wndrect.bottom - wndrect.top;
+
+	x += (monitorWidth - width) / 2;
+	y += (monitorHeight - height) / 2;
+
+	LPCWSTR className = L"MainWnd";
+
+	WNDCLASSEXW wcex	= {};
+	wcex.cbSize			= sizeof(WNDCLASSEXW);
+	wcex.style			= CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
 	wcex.lpfnWndProc	= MainWndProc;
-	wcex.cbClsExtra		= 0;
-	wcex.cbWndExtra		= 0;
-	wcex.hInstance		= Environment::Instance().GetInstanceHandle();
+	wcex.hInstance		= gEnv.HInstance;
 	wcex.hIcon			= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(iconId));
-	wcex.hCursor		= LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground	= (HBRUSH)GetStockObject(NULL_BRUSH);
-	wcex.lpszMenuName	= nullptr;
-	wcex.lpszClassName	= L"MainWnd";
 	wcex.hIconSm		= LoadIcon(wcex.hInstance, MAKEINTRESOURCE(iconId));
+	wcex.hCursor		= LoadCursor(nullptr, IDC_ARROW);
+	wcex.hbrBackground	= (HBRUSH)GetStockObject(BLACK_BRUSH);
+	wcex.lpszClassName	= className;
 
 	if (!RegisterClassEx(&wcex)) {
-		MessageBoxW(0, L"RegisterClass Failed.", 0, 0);
+		MessageBox(0, L"RegisterClass Failed.", 0, 0);
 		return false;
 	}
 
-	// Compute window rectangle dimensions based on requested client area dimensions.
-	RECT R = { 0, 0, static_cast<LONG>(Environment::Instance().GetWidth()), static_cast<LONG>(Environment::Instance().GetHeight()) };
-	AdjustWindowRect(&R, WS_OVERLAPPEDWINDOW, false);
-	int width = R.right - R.left;
-	int height = R.bottom - R.top;
-
-	HWND hWnd = CreateWindowExW(0, L"MainWnd", m_wndCaption.c_str(),
-		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, Environment::Instance().GetInstanceHandle(), 0);
+	HWND hWnd = CreateWindowExW(exstyle, className, m_wndCaption.c_str(), style, x, y, width, height, NULL, NULL, wcex.hInstance, NULL);
 
 	if (hWnd == nullptr) {
-		MessageBoxW(0, L"CreateWindow Failed.", 0, 0);
+		MessageBox(0, L"CreateWindow Failed.", 0, 0);
 		return false;
 	}
 
-	ShowWindow(hWnd, SW_SHOW);
+	ShowWindow(hWnd, SW_SHOWNORMAL);
+	SetFocus(hWnd);
 	UpdateWindow(hWnd);
 
-	Environment::Instance().SetWidth(width);
-	Environment::Instance().SetHeight(height);
-	Environment::Instance().SetWindowHandle(hWnd);
+	gEnv.Width		= width;
+	gEnv.Height		= height;
+	gEnv.HWnd		= hWnd;
+	gEnv.HInstance	= wcex.hInstance;
 
-	return true;
+	return hWnd != nullptr;
 }
 
 int Engine::Run() {
@@ -119,7 +133,7 @@ int Engine::Run() {
 				float dt = m_timer.GetDeltaTime();
 				m_scene.Update(dt);
 				Update(dt);
-				Environment::Instance().Renderer()->Render();
+				gEnv.Renderer()->Render();
 			} else {
 				Sleep(100);
 			}
@@ -130,10 +144,10 @@ int Engine::Run() {
 }
 
 void Engine::OnResize(uint32_t width, uint32_t height) {
-	Environment::Instance().SetWidth(max(width, 1));
-	Environment::Instance().SetWidth(max(height, 1));
+	gEnv.Width = max(width, 1);
+	gEnv.Height = max(height, 1);
 
-	Environment::Instance().Renderer()->CreateResources();
+	gEnv.Renderer()->CreateResources();
 	const_cast<Camera&>(m_scene.GetMainCamera()).SetProj(XM_PIDIV4, width, height, 0.1f, 1000.0f);
 }
 
@@ -154,7 +168,7 @@ LRESULT Engine::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	case WM_SIZE:
 	{
-		if (Environment::Instance().Renderer()->GetDevice()) {
+		if (gEnv.Renderer()->GetDevice()) {
 			if (wParam == SIZE_MINIMIZED) {
 				m_isPaused = true;
 				m_isMinimized = true;
@@ -224,9 +238,9 @@ LRESULT Engine::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	case WM_SYSKEYDOWN:
 	{
 		if (wParam == VK_RETURN && (lParam & 0x60000000) == 0x20000000) {
-			if (Environment::Instance().GetAllowFullscreen()) {
+			if (gEnv.AllowFullScreen) {
 				// Implements the classic ALT+ENTER fullscreen toggle
-				if (Environment::Instance().GetIsFullscreen()) {
+				if (gEnv.IsFullScreen) {
 					SetWindowLongPtr(hWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
 					SetWindowLongPtr(hWnd, GWL_EXSTYLE, 0);
 
@@ -246,7 +260,7 @@ LRESULT Engine::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 					ShowWindow(hWnd, SW_SHOWMAXIMIZED);
 				}
 
-				Environment::Instance().SetIsFullscreen(!Environment::Instance().GetIsFullscreen());
+				gEnv.IsFullScreen = !gEnv.IsFullScreen;
 			}
 		}
 		break;

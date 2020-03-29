@@ -36,7 +36,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="DX_Solar.rc">
+    <ResourceCompile Include="DX_Katamari.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
   </ItemGroup>

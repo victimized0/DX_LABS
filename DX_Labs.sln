@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DX_Solar", "DX_Solar\DX_Sol
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DX_Engine", "DX_Engine\DX_Engine.vcxproj", "{EEAEDD05-C601-4D89-8DE3-DE5469D0275C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DX_Katamari", "DX_Katamari\DX_Katamari.vcxproj", "{DE22BFAC-34EE-45CD-AAAD-AB1A81866AEF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -47,6 +49,14 @@ Global
 		{EEAEDD05-C601-4D89-8DE3-DE5469D0275C}.Release|x64.Build.0 = Release|x64
 		{EEAEDD05-C601-4D89-8DE3-DE5469D0275C}.Release|x86.ActiveCfg = Release|Win32
 		{EEAEDD05-C601-4D89-8DE3-DE5469D0275C}.Release|x86.Build.0 = Release|Win32
+		{DE22BFAC-34EE-45CD-AAAD-AB1A81866AEF}.Debug|x64.ActiveCfg = Debug|x64
+		{DE22BFAC-34EE-45CD-AAAD-AB1A81866AEF}.Debug|x64.Build.0 = Debug|x64
+		{DE22BFAC-34EE-45CD-AAAD-AB1A81866AEF}.Debug|x86.ActiveCfg = Debug|Win32
+		{DE22BFAC-34EE-45CD-AAAD-AB1A81866AEF}.Debug|x86.Build.0 = Debug|Win32
+		{DE22BFAC-34EE-45CD-AAAD-AB1A81866AEF}.Release|x64.ActiveCfg = Release|x64
+		{DE22BFAC-34EE-45CD-AAAD-AB1A81866AEF}.Release|x64.Build.0 = Release|x64
+		{DE22BFAC-34EE-45CD-AAAD-AB1A81866AEF}.Release|x86.ActiveCfg = Release|Win32
+		{DE22BFAC-34EE-45CD-AAAD-AB1A81866AEF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

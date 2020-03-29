@@ -64,7 +64,7 @@ void Camera::Move(float d) {
 
 void Camera::Zoom(float d) {
 	m_radius += d;
-	m_radius > 50.0f ? m_radius = 50.0f : m_radius < m_nearZ + 0.5f ? m_radius = m_nearZ + 0.5f : m_radius;
+	//m_radius > 50.0f ? m_radius = 50.0f : m_radius < m_nearZ + 0.5f ? m_radius = m_nearZ + 0.5f : m_radius;
 }
 
 void Camera::Rotate(float angleX, float angleY) {

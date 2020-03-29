@@ -18,7 +18,7 @@ public:
 						Game& operator=(const Game&)	= delete;
 						Game& operator=(Game&&)			= delete;
 
-	bool				Initialize(int iconId)final;
+	bool				Initialize(int iconId, int width, int height)final;
 
 private:
 	void				CreateScene();

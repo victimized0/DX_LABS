@@ -9,10 +9,6 @@
 
 using Microsoft::WRL::ComPtr;
 
-static const char* NAME_SUN		= "The Sun";
-static const char* NAME_EARTH	= "The Earth";
-static const char* NAME_MOON	= "The Moon";
-
 class Game final : public Engine {
 public:
 					Game(HINSTANCE hInstance);
@@ -31,13 +27,7 @@ private:
 	void			OnEvent(const Event& event)final;
 	void			Update(float dt)final;
 
-	void			OnMouseDown(const MouseEvent& event);
-	void			OnMouseUp(const MouseEvent& event);
-	void			OnMouseMove(const MouseEvent& event);
-	void			OnMouseScroll(const MouseEvent& event);
-
 private:	
-	POINT			m_lastMousePos;
 
 };
 

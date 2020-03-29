@@ -86,9 +86,8 @@ void GameLogic::Update(float dt) {
 	auto rPaddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE));
 
 	const AABB& ballAABB = ball->GetAABB();
-	float threshold = 0.1f;
 
-	bool collidesBorder = fabs(ballAABB.Y - GRID_TOP_BORDER) < threshold || fabs(ballAABB.Y - GRID_BOTTOM_BORDER) < threshold;
+	bool collidesBorder = ballAABB.Y >= GRID_TOP_BORDER || ballAABB.Y <= GRID_BOTTOM_BORDER;
 	if (collidesBorder) {
 		ball->InverseSpeedY();
 	}
@@ -103,8 +102,8 @@ void GameLogic::Update(float dt) {
 	float dy = ball->GetSpeedY() * dt;
 	ball->Translate(dx, dy, 0.0f);
 
-	bool crossedBorderRight = fabs(ballAABB.X - GRID_RIGHT_BORDER) < threshold;
-	bool crossedBorderLeft  = fabs(ballAABB.X - GRID_LEFT_BORDER)  < threshold;
+	bool crossedBorderRight	= ballAABB.X < GRID_RIGHT_BORDER;
+	bool crossedBorderLeft	= ballAABB.X > GRID_LEFT_BORDER;
 	if (crossedBorderRight || crossedBorderLeft) {
 		ball->Reset();
 	}

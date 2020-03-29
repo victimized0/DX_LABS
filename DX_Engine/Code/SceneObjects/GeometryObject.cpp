@@ -11,7 +11,7 @@ GeometryObject::GeometryObject(const std::string& name, DirectX::XMFLOAT3 positi
 	, m_aabb(0, 0, 0, 0)
 {
 	m_rendInfo = {};
-	m_constBuffer.Create(Environment::Instance().Renderer()->GetDevice());
+	m_constBuffer.Create(gEnv.Renderer()->GetDevice());
 }
 
 GeometryObject::GeometryObject(const std::string& name)
@@ -58,7 +58,7 @@ void GeometryObject::CreateVertices(std::vector<VertexType>& vertices) {
 
 	m_vertices = vertices;
 
-	Environment::Instance().Renderer()->CreateBuffer(m_vertices.size(), sizeof(VertexType), &m_vertices[0], BIND_VERTEX_BUFFER, &m_rendInfo.pVertexBuffer);
+	gEnv.Renderer()->CreateBuffer(m_vertices.size(), sizeof(VertexType), &m_vertices[0], BIND_VERTEX_BUFFER, &m_rendInfo.pVertexBuffer);
 
 	float maxX = 0, maxY = 0, minX = 0, minY = 0;
 	FindMax(vertices, maxX, maxY);
@@ -73,7 +73,7 @@ void GeometryObject::CreateIndices(std::vector<UINT>& indices) {
 	}
 
 	m_indices = indices;
-	Environment::Instance().Renderer()->CreateBuffer(m_indices.size(), sizeof(UINT), &m_indices[0], BIND_INDEX_BUFFER, &m_rendInfo.pIndexBuffer);
+	gEnv.Renderer()->CreateBuffer(m_indices.size(), sizeof(UINT), &m_indices[0], BIND_INDEX_BUFFER, &m_rendInfo.pIndexBuffer);
 }
 
 void GeometryObject::Update(float dt) {
@@ -81,7 +81,7 @@ void GeometryObject::Update(float dt) {
 }
 
 void GeometryObject::Initialise() {
-	IRenderer* pRend = Environment::Instance().Renderer();
+	IRenderer* pRend = gEnv.Renderer();
 
 	D3DBlob* pVsBlob;
 	D3DBlob* pPsBlob;

@@ -19,8 +19,8 @@ Game::~Game() {
 
 }
 
-bool Game::Initialize(int iconId) {
-	if (!Engine::Initialize(iconId)) {
+bool Game::Initialize(int iconId, int width, int height) {
+	if (!Engine::Initialize(iconId, width, height)) {
 		return false;
 	}
 
@@ -34,8 +34,8 @@ bool Game::Initialize(int iconId) {
 
 void Game::CreateScene() {
 	auto ball	 = std::make_shared<Ball>( NAME_BALL, XMFLOAT3(0.0f, 0.0f, 0.0f) );
-	auto lPaddle = std::make_shared<GeometryObject>( NAME_LPADDLE, XMFLOAT3(-27.0f, 0.0f, 0.0f) );
-	auto rPaddle = std::make_shared<GeometryObject>( NAME_RPADDLE, XMFLOAT3(27.0f, 0.0f, 0.0f) );
+	auto lPaddle = std::make_shared<GeometryObject>( NAME_LPADDLE, XMFLOAT3(27.0f, 0.0f, 0.0f) );
+	auto rPaddle = std::make_shared<GeometryObject>( NAME_RPADDLE, XMFLOAT3(-27.0f, 0.0f, 0.0f) );
 
 	vector<GeometryObject::VertexType> lPaddleVertices =
 	{

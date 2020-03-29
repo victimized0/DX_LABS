@@ -33,8 +33,8 @@ public:
 	D3DContext*								GetDeviceContext()override { return m_context.Get(); }
 
 public:
-	HRESULT									CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer)override;
-	HRESULT									CreateBlob(const char* path, D3DBlob** pBlob)override;
+	HRES									CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer)override;
+	HRES									CreateBlob(const char* path, D3DBlob** pBlob)override;
 
 protected:
 	UINT									m_buffersCount;

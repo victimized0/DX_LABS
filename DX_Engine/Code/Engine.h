@@ -5,12 +5,12 @@
 #include "Scene.h"
 #include "Events/Event.h"
 #include "Interfaces/IRenderer.h"
-#include "Math/SimpleMath.h"
+#include "Environment.h"
 
 #ifdef _WIN32
 #include "D3D11Renderer.h"
 #else
-//#include null renderer
+#include "NullRenderer.h"
 #endif
 
 class Engine {
@@ -23,8 +23,8 @@ protected:
 									Engine& operator=(const Engine&)	= delete;
 									Engine& operator=(Engine&&)			= delete;
 
-	void							OnResize(uint32_t, uint32_t);
-	virtual bool					Initialize(int iconId);
+	virtual void					OnResize(uint32_t, uint32_t);
+	virtual bool					Initialize(int iconId, int width, int height);
 	virtual void					OnEvent(const Event& event) = 0;
 	virtual void					Update(float dt) = 0;
 
@@ -35,7 +35,7 @@ public:
 	Scene&							GetScene();
 
 protected:
-	bool							InitializeWindow(int iconId);
+	bool							InitializeWindow(int iconId, int width, int height);
 
 	static Engine*					pEngine;
 	std::wstring					m_wndCaption;
