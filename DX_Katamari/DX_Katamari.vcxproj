@@ -177,11 +177,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Code\Game.h" />
+    <ClInclude Include="Code\GameLogic.h" />
     <ClInclude Include="Code\pch.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\Game.cpp" />
+    <ClCompile Include="Code\GameLogic.cpp" />
     <ClCompile Include="main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>

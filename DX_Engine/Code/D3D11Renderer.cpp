@@ -3,6 +3,8 @@
 #include "SceneObjects/GeometryObject.h"
 #include "Engine.h"
 
+#ifdef USE_DX
+
 IRenderer* IRenderer::Create() {
 	return new D3D11Renderer();
 }
@@ -20,7 +22,7 @@ D3D11Renderer::D3D11Renderer()
 	, m_renderTargetView(nullptr)
 	, m_depthStencilView(nullptr)
 {
-
+	m_backColour = { 0.0f, 0.0f, 0.0f };
 }
 
 D3D11Renderer::~D3D11Renderer() {
@@ -35,14 +37,16 @@ bool D3D11Renderer::Initialise() {
 	return true;
 }
 
-void D3D11Renderer::Render() {
-	constexpr FLOAT backColour[3] = { 0.0f, 0.0f, 0.0f };
+void D3D11Renderer::SetBackColor(float r, float g, float b) {
+	m_backColour = { r, g, b };
+}
 
-	m_context->ClearRenderTargetView(m_renderTargetView.Get(), backColour);
+void D3D11Renderer::Render() {
+	m_context->ClearRenderTargetView(m_renderTargetView.Get(), m_backColour.data());
 	m_context->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 
-	for each ( auto& object in Engine::GetPtr()->GetScene().GetSceneObjects()) {
+	for each (auto& object in Engine::GetPtr()->GetScene().GetSceneObjects()) {
 		auto geoObj = dynamic_cast<GeometryObject*>(object.get());
 		if (geoObj != nullptr) {
 			const RenderInfo& rendInfo = geoObj->GetRenderInfo();
@@ -306,3 +310,5 @@ HRES D3D11Renderer::CreateBlob(const char* path, D3DBlob** pBlob) {
 	
 	return D3DReadFileToBlob(fullPath.c_str(), pBlob);
 }
+
+#endif //USE_DX

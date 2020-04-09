@@ -2,7 +2,10 @@
 #include "Ball.h"
 #include "../Game.h"
 
-Ball::Ball(const std::string& name, DirectX::XMFLOAT3 position)
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
+
+Ball::Ball(const std::string& name, const Vector3& position)
 	: GeometryObject(name, position)
 	, m_speedX(DEFAULT_SPEED_X)
 	, m_speedY(DEFAULT_SPEED_Y)
@@ -11,7 +14,7 @@ Ball::Ball(const std::string& name, DirectX::XMFLOAT3 position)
 }
 
 Ball::Ball(const std::string& name)
-	: Ball(name, DirectX::XMFLOAT3(0, 0, 0))
+	: Ball(name, Vector3())
 {
 
 }
@@ -41,7 +44,7 @@ void Ball::InverseSpeedY() {
 }
 
 void Ball::Reset() {
-	XMStoreFloat4x4(&m_transform, XMMatrixIdentity());
+	Transform = Transform::Transform();
 
 	m_speedX = DEFAULT_SPEED_X;
 	m_speedY = DEFAULT_SPEED_Y;

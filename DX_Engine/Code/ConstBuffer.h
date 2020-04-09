@@ -10,7 +10,7 @@ enum class CBType : unsigned char {
 };
 
 struct CBPerObject {
-    DirectX::XMFLOAT4X4 worldViewProj;
+    DirectX::SimpleMath::Matrix worldViewProj;
 };
 
 template <typename T>

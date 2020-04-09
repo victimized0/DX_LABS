@@ -4,10 +4,17 @@
 #include "Engine.h"
 #include "Events/Event.h"
 #include "Events/MouseEvent.h"
+#include "GameLogic.h"
 
 #pragma comment(lib, "DX_Engine.lib")
 
 using Microsoft::WRL::ComPtr;
+
+static const char* NAME_GROUND = "Ground";
+static const char* NAME_PLAYER = "Player";
+
+static constexpr float GROUND_WIDTH		= 2000.0f;
+static constexpr float GROUND_HEIGHT	= 2000.0f;
 
 class Game final : public Engine {
 public:
@@ -28,6 +35,7 @@ private:
 	void			Update(float dt)final;
 
 private:	
+	GameLogic		m_gameLogic;
 
 };
 

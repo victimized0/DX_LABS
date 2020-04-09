@@ -1,53 +1,53 @@
 #include "pch.h"
-#include <climits>
 #include "GeometryObject.h"
 #include "../Helper.h"
 #include "../Engine.h"
 
 using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
-GeometryObject::GeometryObject(const std::string& name, DirectX::XMFLOAT3 position)
+GeometryObject::GeometryObject(const std::string& name, const Vector3& position)
 	: SceneObject::SceneObject(name, position)
-	, m_aabb(0, 0, 0, 0)
 {
 	m_rendInfo = {};
 	m_constBuffer.Create(gEnv.Renderer()->GetDevice());
 }
 
 GeometryObject::GeometryObject(const std::string& name)
-	: GeometryObject::GeometryObject(name, XMFLOAT3(0.0f, 0.0f, 0.0f))
+	: GeometryObject::GeometryObject(name, Vector3())
 {
 
 }
 
-void GeometryObject::FindMax(const std::vector<VertexType>& verts, float& maxX, float& maxY) const {
-	maxX = 0;
-	maxY = 0;
-
+Vector2 GeometryObject::FindMax(const std::vector<VertexType>& verts) const {
+	Vector2 max;
 	for each (auto& v in verts) {
-		if (maxX < v.Position.x) {
-			maxX = v.Position.x;
+		if (max.x < v.Position.x) {
+			max.x = v.Position.x;
 		}
 
-		if (maxY < v.Position.y) {
-			maxY = v.Position.y;
+		if (max.y < v.Position.y) {
+			max.y = v.Position.y;
 		}
 	}
+
+	return max;
 }
 
-void GeometryObject::FindMin(const std::vector<VertexType>& verts, float& minX, float& minY) const {
-	minX = (std::numeric_limits<float>::max)();
-	minY = (std::numeric_limits<float>::max)();
+Vector2 GeometryObject::FindMin(const std::vector<VertexType>& verts) const {
+	Vector2 min;
 
 	for each (auto & v in verts) {
-		if (minX > v.Position.x) {
-			minX = v.Position.x;
+		if (min.x > v.Position.x) {
+			min.x = v.Position.x;
 		}
 
-		if (minY > v.Position.y) {
-			minY = v.Position.y;
+		if (min.y > v.Position.y) {
+			min.y = v.Position.y;
 		}
 	}
+
+	return min;
 }
 
 void GeometryObject::CreateVertices(std::vector<VertexType>& vertices) {
@@ -60,10 +60,9 @@ void GeometryObject::CreateVertices(std::vector<VertexType>& vertices) {
 
 	gEnv.Renderer()->CreateBuffer(m_vertices.size(), sizeof(VertexType), &m_vertices[0], BIND_VERTEX_BUFFER, &m_rendInfo.pVertexBuffer);
 
-	float maxX = 0, maxY = 0, minX = 0, minY = 0;
-	FindMax(vertices, maxX, maxY);
-	FindMin(vertices, minX, minY);
-	m_aabb.Create(minX, minY, maxX, maxY);
+	Vector2 max = FindMax(vertices);
+	Vector2 min = FindMin(vertices);
+	BoundingBox::CreateFromPoints(m_boundingBox, min, max);
 }
 
 void GeometryObject::CreateIndices(std::vector<UINT>& indices) {
@@ -77,7 +76,7 @@ void GeometryObject::CreateIndices(std::vector<UINT>& indices) {
 }
 
 void GeometryObject::Update(float dt) {
-	m_aabb.Update(GetPosition());
+	m_boundingBox.Center = GetPosition();
 }
 
 void GeometryObject::Initialise() {
@@ -113,40 +112,26 @@ const void* GeometryObject::Indices()const {
 	return &m_indices[0];
 }
 
-void GeometryObject::Scale(float delta) {
-	XMMATRIX transform		= XMLoadFloat4x4(&m_transform);
-	XMMATRIX scailing		= XMMatrixScaling(delta, delta, delta);
-	XMStoreFloat4x4(&m_transform, transform * scailing);
-}
-
-void GeometryObject::Rotate(float dx, float dy, float dz) {
-	XMMATRIX transform		= XMLoadFloat4x4(&m_transform);
-	XMMATRIX rotation		= XMMatrixRotationRollPitchYaw(dx, dy, dz);
-	XMStoreFloat4x4(&m_transform, transform * rotation);
-}
-
-void GeometryObject::Rotate(float dx, const DirectX::XMFLOAT3& target) {
-	XMVECTOR v1 = XMLoadFloat3(&target);
-
-	XMMATRIX transform = XMLoadFloat4x4(&m_transform);
-	XMMATRIX rotation = XMMatrixRotationY(dx);
-
-	transform.r[3]	= XMVectorSubtract(transform.r[3], v1);
-	transform		= transform * rotation;
-	transform.r[3]	= XMVectorAdd(transform.r[3], v1);
-	XMStoreFloat4x4(&m_transform, transform);
-}
-
-void GeometryObject::Translate(float dx, float dy, float dz) {
-	XMMATRIX transform		= XMLoadFloat4x4(&m_transform);
-	XMMATRIX translation	= XMMatrixTranslation(dx, dy, dz);
-	XMStoreFloat4x4(&m_transform, transform * translation);
-}
-
-ConstantBuffer* GeometryObject::GetConstBuffer(D3DContext* context, FXMMATRIX viewMat, FXMMATRIX projMat) {
+ConstantBuffer* GeometryObject::GetConstBuffer(D3DContext* context, const Matrix& viewMat, const Matrix& projMat) {
 	CBPerObject bufferData	= {};
-	XMStoreFloat4x4(&bufferData.worldViewProj, GetWorldTransform() * viewMat * projMat);
+	bufferData.worldViewProj = GetWorldTransform() * viewMat * projMat;
 
 	m_constBuffer.SetData(context, bufferData);
 	return m_constBuffer.GetBuffer();
+}
+
+void GeometryObject::Scale(float factor) {
+	Transform.Scale({ factor, factor, factor });
+}
+
+void GeometryObject::Translate(float dx, float dy, float dz) {
+	Transform.Translate({ dx, dy, dz });
+}
+
+void GeometryObject::Rotate(float yaw, float pitch, float roll) {
+	Transform.Rotate(Quaternion::CreateFromYawPitchRoll(yaw, pitch, roll));
+}
+
+void GeometryObject::Orbit(float angle, const Vector3& target) {
+	Transform.Orbit(angle, target);
 }

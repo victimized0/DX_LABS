@@ -2,7 +2,6 @@
 #define _GAME_OBJECT_BALL_H_
 
 #include "SceneObjects/GeometryObject.h"
-using namespace DirectX;
 
 class Ball : public GeometryObject {
 private:
@@ -10,7 +9,7 @@ private:
 	static constexpr float DEFAULT_SPEED_Y = 3.0f;
 
 public:
-					Ball(const std::string& name, XMFLOAT3 position);
+					Ball(const std::string& name, const DirectX::SimpleMath::Vector3& position);
 					Ball(const std::string& name);
 
 	float			GetSpeedX();

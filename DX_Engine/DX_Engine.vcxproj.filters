@@ -37,6 +37,7 @@
     <ClCompile Include="Code\Math\SimpleMath.cpp" />
     <ClCompile Include="Code\NullRenderer.cpp" />
     <ClCompile Include="Code\Environment.cpp" />
+    <ClCompile Include="Code\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\pch.h" />
@@ -94,6 +95,7 @@
     <ClInclude Include="Code\Shader.h" />
     <ClInclude Include="Code\Math\SimpleMath.h" />
     <ClInclude Include="Code\NullRenderer.h" />
+    <ClInclude Include="Code\Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Code">

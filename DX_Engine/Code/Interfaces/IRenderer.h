@@ -1,7 +1,13 @@
 #ifndef _INTERFACE_RENDERER_H_
 #define _INTERFACE_RENDERER_H_
 
-#ifdef _WIN32 
+#ifdef _WIN32
+#define USE_DX
+#else
+#define USE_NULLRND
+#endif
+
+//#ifdef USE_DX 
 #define D3DDevice				ID3D11Device
 #define D3DContext				ID3D11DeviceContext
 #define D3DSwapChain			IDXGISwapChain1
@@ -35,41 +41,7 @@
 #define D3D_FILL_WIREFRAME		D3D11_FILL_WIREFRAME
 #define D3D_FILL_SOLID			D3D11_FILL_SOLID
 #define HRES					HRESULT
-#else
-#define D3DDevice				
-#define D3DContext				
-#define D3DSwapChain			
-#define RenderTargetView		
-#define DepthStencilView		
-#define D3DViewport				
-#define D3DDriverType			
-#define D3DFeatureLevel			
-#define InputLayout				
-#define RSState					
-#define D3DBuffer				
-#define VertexBuffer			
-#define IndexBuffer				
-#define ConstantBuffer			
-#define D3DBlob					
-#define D3DUsage				
-#define D3DBindFlag				
-#define D3DRSDesc				
-#define InputElementDesc		
-#define VertexShader			
-#define PixelShader				
-#define D3DBufferDesc			
-#define D3DSubresData			
-#define D3DMappedSubres			
-#define BIND_VERTEX_BUFFER		
-#define BIND_INDEX_BUFFER		
-#define BIND_CONSTANT_BUFFER	
-#define D3D_CULL_FRONT			
-#define D3D_CULL_BACK			
-#define D3D_CULL_NONE			
-#define D3D_FILL_WIREFRAME		
-#define D3D_FILL_SOLID			
-#define HRES					
-#endif
+//#endif
 
 #define MAX_BUFFERS_COUNT 512
 
@@ -85,18 +57,19 @@ public:
 	static IRenderer*		Create();
 
 	virtual					~IRenderer() {}
-	virtual bool			Initialise()				= 0;
-	virtual void			Render()					= 0;
+	virtual bool			Initialise()		= 0;
+	virtual void			Render()			= 0;
 
-	virtual bool			CreateDevice()				= 0;
-	virtual bool			CreateResources()			= 0;
-	virtual bool			OnDeviceLost()				= 0;
+	virtual bool			CreateDevice()		= 0;
+	virtual bool			CreateResources()	= 0;
+	virtual bool			OnDeviceLost()		= 0;
 
-	virtual D3DDevice*		GetDevice()					= 0;
-	virtual D3DContext*		GetDeviceContext()			= 0;
+	virtual D3DDevice*		GetDevice()			= 0;
+	virtual D3DContext*		GetDeviceContext()	= 0;
 
 	virtual HRES			CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer) = 0;
 	virtual HRES			CreateBlob(const char* path, D3DBlob** pBlob) = 0;
+	virtual void			SetBackColor(float r, float g, float b) = 0;
 };
 
 #endif //_INTERFACE_RENDERER_H_

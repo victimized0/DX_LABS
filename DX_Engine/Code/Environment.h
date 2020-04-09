@@ -4,10 +4,6 @@
 #include "Interfaces/IRenderer.h"
 #include "Engine.h"
 
-#ifdef _WIN32
-#define USE_DX 1
-#endif
-
 #define SAFE_DELETE(p) { if (p) { delete (p); (p) = nullptr; } }
 
 struct Environment {

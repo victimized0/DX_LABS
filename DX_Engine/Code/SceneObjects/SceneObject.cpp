@@ -2,15 +2,17 @@
 #include "SceneObject.h"
 
 using namespace DirectX;
+using namespace DirectX::SimpleMath;
+using std::string;
 
-SceneObject::SceneObject(const std::string& name, DirectX::XMFLOAT3 position)
+SceneObject::SceneObject(const string& name, const Vector3& position)
 	: m_name(name)
+	, Transform()
 {
-	XMStoreFloat4x4(&m_transform, XMMatrixIdentity());
-	SetPosition(position.x, position.y, position.z);
+	SetPosition(position);
 }
 
-SceneObject::SceneObject(const std::string& name)
+SceneObject::SceneObject(const string& name)
 	: SceneObject(name, XMFLOAT3(0.0f, 0.0f, 0.0f))
 {
 
@@ -29,36 +31,17 @@ void SceneObject::Update(float dt) {
 }
 
 void SceneObject::SetPosition(float x, float y, float z) {
-	m_transform._41 = x;
-	m_transform._42 = y;
-	m_transform._43 = z;
+	SetPosition(Vector3(x, y, z));
 }
 
-const std::string& SceneObject::GetName()const {
+void SceneObject::SetPosition(const Vector3& pos) {
+	Transform.Translate(pos);
+}
+
+const string& SceneObject::GetName()const {
 	return m_name;
 }
 
-DirectX::XMFLOAT3 SceneObject::GetPosition()const {
-	XMFLOAT3 translation(0,0,0);
-	XMVECTOR outScale;
-	XMVECTOR outRot;
-	XMVECTOR outTrans;
-
-	XMMATRIX transform = XMLoadFloat4x4(&m_transform);
-	if (XMMatrixDecompose(&outScale, &outRot, &outTrans, transform)) {
-		XMStoreFloat3(&translation, outTrans);
-	}
-
-	return translation;
-}
-
-DirectX::XMVECTOR SceneObject::GetPositionV()const {
-	XMVECTOR outScale;
-	XMVECTOR outRot;
-	XMVECTOR outTrans;
-
-	XMMATRIX transform = XMLoadFloat4x4(&m_transform);
-	XMMatrixDecompose(&outScale, &outRot, &outTrans, transform);
-
-	return outTrans;
+Vector3 SceneObject::GetPosition()const {
+	return Transform.ToMatrix().Translation();
 }

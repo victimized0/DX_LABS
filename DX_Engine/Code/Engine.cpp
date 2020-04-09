@@ -3,7 +3,6 @@
 #include <windowsx.h>
 #include "Events/MouseEvent.h"
 #include "Events/KeyboardEvent.h"
-#include "D3D11Renderer.h"
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	return Engine::GetPtr()->WndProc(hwnd, msg, wParam, lParam);

@@ -72,11 +72,10 @@ void Game::Update(float dt) {
 	auto pSun	= dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_SUN));
 	auto pEarth = dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_EARTH));
 	auto pMoon	= dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_MOON));
-
-	pSun->Rotate(0, dt, 0);
-	pEarth->Rotate(0, dt, 0);
-	pEarth->Rotate(XM_PI / 32.f, pEarth->GetPosition());
-	pMoon->Rotate(XM_PIDIV4 / 8, pEarth->GetPosition());
+	
+	pSun->Rotate(sinf(dt) * 2.f, 0, 0);
+	pEarth->Orbit(sinf(dt) * 2.f, pSun->GetPosition());
+	pMoon->Orbit(sinf(dt) * 1.5f, pEarth->GetPosition());
 }
 
 void Game::OnMouseDown(const MouseEvent& event) {

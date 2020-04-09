@@ -4,6 +4,8 @@
 
 #include "Math/SimpleMath.h"
 
+using std::vector;
+
 Game::Game(HINSTANCE hInstance)
 	: Engine(hInstance)
 {
@@ -19,19 +21,42 @@ bool Game::Initialize(int iconId, int width, int height) {
 		return false;
 	}
 
+	if (!m_gameLogic.Initialise(&m_scene)) {
+		return false;
+	}
+
+	gEnv.Renderer()->SetBackColor(0.529f, 0.808f, 0.922f);
 	CreateScene();
 	return true;
 }
 
 void Game::CreateScene() {
+	auto ground = std::make_shared<GeometryObject>(NAME_GROUND, XMFLOAT3(0.0f, 0.0f, 0.0f));
+	
+	vector<GeometryObject::VertexType> groundVertices =
+	{
+		{ XMFLOAT3(-GROUND_WIDTH,	0,	-GROUND_HEIGHT), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ XMFLOAT3(GROUND_WIDTH,	0,	-GROUND_HEIGHT), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ XMFLOAT3(-GROUND_WIDTH,	0,	GROUND_HEIGHT), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ XMFLOAT3(GROUND_WIDTH,	0,	GROUND_HEIGHT), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) }
+	};
 
+	vector<UINT> groundIndices =
+	{
+		0, 2, 1,
+		2, 3, 1
+	};
+
+	ground->CreateVertices(groundVertices);
+	ground->CreateIndices(groundIndices);
+
+	m_scene.AddObject(ground);
 }
 
 void Game::OnEvent(const Event& event) {
-	Event& _event = const_cast<Event&>(event);
-	MouseEvent& mouseEvent = reinterpret_cast<MouseEvent&>(_event);
+	m_gameLogic.OnEvent(event);
 }
 
 void Game::Update(float dt) {
-
+	m_gameLogic.Update(dt);
 }

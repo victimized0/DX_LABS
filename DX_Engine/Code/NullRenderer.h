@@ -2,8 +2,6 @@
 #define _NULL_RENDERER_H_
 
 #pragma once
-
-#if USE_NULL_RENDERER
 #include "Interfaces/IRenderer.h"
 
 class NullRenderer : public IRenderer {
@@ -25,5 +23,4 @@ public:
 	HRES			CreateBlob(const char* path, D3DBlob** pBlob)override;
 };
 
-#endif //USE_NULL_RENDERER
 #endif //_NULL_RENDERER_H_

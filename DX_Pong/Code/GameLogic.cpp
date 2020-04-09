@@ -37,10 +37,10 @@ void GameLogic::OnEvent(const Event& event) {
 			{
 				case KeyCode::W:
 				{
-					auto player = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE));
-					float distToTop = fabs(player->GetPosition().y + player->GetAABB().Height / 2 - GRID_TOP_BORDER);
+					auto paddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE));
+					float distToTop = fabs(paddle->GetPosition().y + 2 * paddle->GetBoundingBox().Extents.y / 2 - GRID_TOP_BORDER);
 					if (distToTop > 0.1f) {
-						player->Translate(0.0f, 1.0f, 0.0f);
+						paddle->Translate(0.0f, 1.0f, 0.0f);
 					}
 				}
 				break;
@@ -48,7 +48,7 @@ void GameLogic::OnEvent(const Event& event) {
 				case KeyCode::S:
 				{
 					auto paddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE));
-					float distToBottom = fabs(paddle->GetPosition().y - paddle->GetAABB().Height / 2 - GRID_BOTTOM_BORDER);
+					float distToBottom = fabs(paddle->GetPosition().y - 2 * paddle->GetBoundingBox().Extents.y / 2 - GRID_BOTTOM_BORDER);
 					if (distToBottom > 0.1f) {
 						paddle->Translate(0.0f, -1.0f, 0.0f);
 					}
@@ -57,10 +57,10 @@ void GameLogic::OnEvent(const Event& event) {
 
 				case KeyCode::Up:
 				{
-					auto player = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE));
-					float distToTop = fabs(player->GetPosition().y + player->GetAABB().Height / 2 - GRID_TOP_BORDER);
+					auto paddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE));
+					float distToTop = fabs(paddle->GetPosition().y + 2 * paddle->GetBoundingBox().Extents.y / 2 - GRID_TOP_BORDER);
 					if (distToTop > 0.1f) {
-						player->Translate(0.0f, 1.0f, 0.0f);
+						paddle->Translate(0.0f, 1.0f, 0.0f);
 					}
 				}
 				break;
@@ -68,7 +68,7 @@ void GameLogic::OnEvent(const Event& event) {
 				case KeyCode::Down:
 				{
 					auto paddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE));
-					float distToBottom = fabs(paddle->GetPosition().y - paddle->GetAABB().Height / 2 - GRID_BOTTOM_BORDER);
+					float distToBottom = fabs(paddle->GetPosition().y - 2 * paddle->GetBoundingBox().Extents.y / 2 - GRID_BOTTOM_BORDER);
 					if (distToBottom > 0.1f) {
 						paddle->Translate(0.0f, -1.0f, 0.0f);
 					}
@@ -85,15 +85,15 @@ void GameLogic::Update(float dt) {
 	auto lPaddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE));
 	auto rPaddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE));
 
-	const AABB& ballAABB = ball->GetAABB();
+	const BoundingBox& ballBB = ball->GetBoundingBox();
 
-	bool collidesBorder = ballAABB.Y >= GRID_TOP_BORDER || ballAABB.Y <= GRID_BOTTOM_BORDER;
+	bool collidesBorder = ballBB.Center.y + ballBB.Extents.y >= GRID_TOP_BORDER || ballBB.Center.y - ballBB.Extents.y <= GRID_BOTTOM_BORDER;
 	if (collidesBorder) {
 		ball->InverseSpeedY();
 	}
 
-	if (lPaddle->GetAABB().Collides(ball->GetAABB()) ||
-		rPaddle->GetAABB().Collides(ball->GetAABB()))
+	if (lPaddle->GetBoundingBox().Intersects(ball->GetBoundingBox()) ||
+		rPaddle->GetBoundingBox().Intersects(ball->GetBoundingBox()))
 	{
 		ball->InverseSpeedX();
 	}
@@ -102,9 +102,10 @@ void GameLogic::Update(float dt) {
 	float dy = ball->GetSpeedY() * dt;
 	ball->Translate(dx, dy, 0.0f);
 
-	bool crossedBorderRight	= ballAABB.X < GRID_RIGHT_BORDER;
-	bool crossedBorderLeft	= ballAABB.X > GRID_LEFT_BORDER;
+	bool crossedBorderRight	= ballBB.Center.x < GRID_RIGHT_BORDER;
+	bool crossedBorderLeft	= ballBB.Center.x > GRID_LEFT_BORDER;
 	if (crossedBorderRight || crossedBorderLeft) {
 		ball->Reset();
 	}
+
 }

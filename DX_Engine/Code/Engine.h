@@ -7,7 +7,7 @@
 #include "Interfaces/IRenderer.h"
 #include "Environment.h"
 
-#ifdef _WIN32
+#ifdef USE_DX
 #include "D3D11Renderer.h"
 #else
 #include "NullRenderer.h"

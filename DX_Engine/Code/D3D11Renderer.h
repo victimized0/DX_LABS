@@ -1,9 +1,10 @@
-#ifndef _RENDERER_H_
-#define _RENDERER_H_
+#ifndef _D3D11_RENDERER_H_
+#define _D3D11_RENDERER_H_
 
 #include "SceneObjects/Camera.h"
 #include "Interfaces/IRenderer.h"
 #include "ConstBuffer.h"
+#include <array>
 
 #define RES_SUCCESS	0
 #define RES_FAILED	-1
@@ -24,6 +25,7 @@ public:
 public:
 	bool									Initialise()override;
 	void									Render()override;
+	void									SetBackColor(float r, float g, float b)override;
 
 	bool									CreateDevice()override;
 	bool									CreateResources()override;
@@ -37,6 +39,7 @@ public:
 	HRES									CreateBlob(const char* path, D3DBlob** pBlob)override;
 
 protected:
+	std::array<FLOAT, 3>					m_backColour;
 	UINT									m_buffersCount;
 	UINT									m_msaa4xQuality;
 	bool									m_enable4xMSAA;
@@ -53,4 +56,4 @@ protected:
 
 };
 
-#endif //_RENDERER_H_
+#endif //_D3D11_RENDERER_H_

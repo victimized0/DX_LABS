@@ -16,6 +16,7 @@
 
 #include <d3d11_2.h>
 #include <DirectXMath.h>
+#include <DirectXCollision.h>
 #include <D3Dcompiler.h>
 #include <Windows.h>
 #include <wrl/client.h>
@@ -31,8 +32,11 @@
 #include <memory>
 
 #include "VertexFormats.h"
+#include "Math/SimpleMath.h"
 #include "Environment.h"
 #include "../resource.h"
+
+using namespace DirectX::SimpleMath;
 
 inline void ThrowIfFailed(HRESULT hr)
 {
