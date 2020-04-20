@@ -1,16 +1,25 @@
 #ifndef _CONST_BUFFER_H_
 #define _CONST_BUFFER_H_
 
-enum class CBType : unsigned char {
-    CB_PER_OBJECT   = 0,
-    CB_PER_FRAME    = 1,
-    CB_PER_MATERIAL = 2,
+enum class ConstBufferType : unsigned char {
+    PerFrame       = 0,
+    PerInstance    = 1,
+    PerMaterial    = 2,
+    // <---- Add new types here
 
-    TOTAL
+    Total
 };
 
-struct CBPerObject {
-    DirectX::SimpleMath::Matrix worldViewProj;
+struct CBPerFrame {
+    DirectX::SimpleMath::Matrix ViewProj;
+
+    static const ConstBufferType Slot = ConstBufferType::PerFrame;
+};
+
+struct CBPerInstance {
+    DirectX::SimpleMath::Matrix WorldViewProj;
+
+    static const ConstBufferType Slot = ConstBufferType::PerInstance;
 };
 
 template <typename T>
@@ -20,11 +29,11 @@ public:
     ConstBuffer(ConstBuffer const&)                 = delete;
     ConstBuffer& operator= (ConstBuffer const&)     = delete;
 
-    explicit ConstBuffer(D3DDevice* device) {
+    explicit ConstBuffer(IDevice* device) {
         Create(device);
     }
 
-    void Create(D3DDevice* device) {
+    void Create(IDevice* device) {
         D3DBufferDesc desc = {};
 
         desc.ByteWidth          = sizeof(T);
@@ -37,7 +46,7 @@ public:
         );
     }
 
-    void SetData(D3DContext* deviceContext, T const& value) {
+    void SetData(IDevCon* deviceContext, T const& value) {
         assert(mConstBuffer);
 
         D3DMappedSubres mappedResource;
@@ -50,12 +59,12 @@ public:
         deviceContext->Unmap(mConstBuffer.Get(), 0);
     }
 
-    ConstantBuffer* GetBuffer() const noexcept {
+    IConstBuffer* GetBuffer() const noexcept {
         return mConstBuffer.Get();
     }
 
 private:
-    Microsoft::WRL::ComPtr<ConstantBuffer>  mConstBuffer;
+    Microsoft::WRL::ComPtr<IConstBuffer>    mConstBuffer;
 };
 
 #endif //_CONST_BUFFER_H_

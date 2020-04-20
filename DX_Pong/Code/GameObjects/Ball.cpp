@@ -5,8 +5,8 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-Ball::Ball(const std::string& name, const Vector3& position)
-	: GeometryObject(name, position)
+Ball::Ball(const std::string& name, const Vector3& m_position)
+	: GeometryObject(name, m_position)
 	, m_speedX(DEFAULT_SPEED_X)
 	, m_speedY(DEFAULT_SPEED_Y)
 {
@@ -14,7 +14,7 @@ Ball::Ball(const std::string& name, const Vector3& position)
 }
 
 Ball::Ball(const std::string& name)
-	: Ball(name, Vector3())
+	: Ball(name, Vector3::Zero)
 {
 
 }
@@ -44,7 +44,7 @@ void Ball::InverseSpeedY() {
 }
 
 void Ball::Reset() {
-	Transform = Transform::Transform();
+	Position = Vector3::Zero;
 
 	m_speedX = DEFAULT_SPEED_X;
 	m_speedY = DEFAULT_SPEED_Y;

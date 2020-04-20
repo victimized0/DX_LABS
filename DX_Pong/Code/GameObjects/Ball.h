@@ -5,11 +5,11 @@
 
 class Ball : public GeometryObject {
 private:
-	static constexpr float DEFAULT_SPEED_X = 15.0f;
-	static constexpr float DEFAULT_SPEED_Y = 3.0f;
+	static constexpr float DEFAULT_SPEED_X = 30.0f;
+	static constexpr float DEFAULT_SPEED_Y = 6.0f;
 
 public:
-					Ball(const std::string& name, const DirectX::SimpleMath::Vector3& position);
+					Ball(const std::string& name, const DirectX::SimpleMath::Vector3& m_position);
 					Ball(const std::string& name);
 
 	float			GetSpeedX();

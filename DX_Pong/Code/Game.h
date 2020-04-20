@@ -3,10 +3,16 @@
 
 #include "Engine.h"
 #include "GameLogic.h"
+#include "Input/Keyboard.h"
 
 #pragma comment(lib, "DX_Engine.lib")
 
 using Microsoft::WRL::ComPtr;
+using DirectX::SimpleMath::Vector2;
+using DirectX::SimpleMath::Vector3;
+using DirectX::SimpleMath::Vector4;
+using DirectX::SimpleMath::Matrix;
+using DirectX::SimpleMath::Quaternion;
 
 class Game final : public Engine {
 public:
@@ -22,13 +28,13 @@ public:
 
 private:
 	void				CreateScene();
-
-	void				OnEvent(const Event& event)final;
 	void				Update(float dt)final;
 
 private:
-	GameLogic			m_gameLogic;
-	POINT				m_lastMousePos;
+	std::unique_ptr<DirectX::Keyboard>	m_keyboard;
+	GameLogic							m_gameLogic;
+	POINT								m_lastMousePos;
+	float								m_paddleSpeed;
 };
 
 #endif //_PONG_H_

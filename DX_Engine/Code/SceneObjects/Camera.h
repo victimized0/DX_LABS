@@ -6,46 +6,29 @@ using namespace DirectX;
 
 class Camera : public SceneObject {
 public:
-				Camera(const std::string& name);
-	virtual		~Camera();
+											Camera(const std::string& name);
+	virtual									~Camera() = default;
 
-	void		SetLookAt(FXMVECTOR& eyePosition, FXMVECTOR& target, FXMVECTOR& up);
-	void		SetProj(float fov, uint32_t width, uint32_t height, float nearZ, float farZ);
-	void		SetTarget(float x, float y, float z);
-	//void		SetPosition(float x, float y, float z);
+	virtual void							Translate(float d);
+	virtual void							Rotate(float angleX, float angleY);
+	void									Zoom(float d);
 
-	void		Update(float dt);
-	void		Move(float d);
-	void		Zoom(float d);
-	void		Rotate(float angleX, float angleY);
-	void		ResetPosition();
+	void									SetRadius(float radius) { m_radius = radius; }
+	void									SetTarget(const DirectX::SimpleMath::Vector3& target);
 
-	void		SetRadius(float radius) { m_radius = radius; }
+	virtual DirectX::SimpleMath::Matrix		GetView()const;
+	virtual DirectX::SimpleMath::Matrix		GetProj()const;
+	virtual DirectX::SimpleMath::Vector3	GetTarget()const { return m_target; }
 
-	XMMATRIX	GetView()const;
-	XMMATRIX	GetProj()const;
-	
-	//XMVECTOR	GetPositionV()const;
-	//XMFLOAT3	GetPosition()const;
-	XMFLOAT3	GetTarget()const;
-	XMVECTOR	GetTargetV()const;
+protected:
+	DirectX::SimpleMath::Vector3			m_target;
 
-private:
-	XMFLOAT4X4	m_view;
-	XMFLOAT4X4	m_proj;
-
-	uint32_t	m_width;
-	uint32_t	m_height;
-
-	XMFLOAT3	m_target;
-	//XMFLOAT3	m_pos;
-
-	float		m_fov;
-	float		m_nearZ;
-	float		m_farZ;
-	float		m_radius;
-	float		m_theta;
-	float		m_phi;
+	float									m_fov;
+	float									m_nearZ;
+	float									m_farZ;
+	float									m_radius;
+	float									m_theta;
+	float									m_phi;
 
 };
 

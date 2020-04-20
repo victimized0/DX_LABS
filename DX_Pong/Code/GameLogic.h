@@ -3,7 +3,6 @@
 
 #include "StepTimer.h"
 #include "Scene.h"
-#include "Events/Event.h"
 #include "SceneObjects/Camera.h"
 
 static const char* NAME_LPADDLE				= "lPaddle";
@@ -28,7 +27,6 @@ public:
 				GameLogic& operator=(GameLogic&&)		= delete;
 
 	bool		Initialise(Scene* pScene);
-	void		OnEvent(const Event& event);
 	void		Update(float dt);
 
 private:

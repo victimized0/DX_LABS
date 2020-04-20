@@ -6,6 +6,21 @@
 #include "SceneObjects/GeometryObject.h"
 
 namespace {
+	template<typename T>
+	T wrap_angle(T theta) noexcept
+	{
+		const T mod = (T)fmod(theta, XM_2PI);
+		if (mod > (T)XM_PI)
+		{
+			return mod - XM_2PI;
+		}
+		else if (mod < -(T)XM_PI)
+		{
+			return mod + XM_2PI;
+		}
+		return mod;
+	}
+
 	void CreateIcosahedron(GeometryObject** geoObj, float radius, float r = 1.0f, float g = 1.0f, float b = 1.0f) {
 		const float t = (radius + (float)std::sqrt(5.0)) / 2.0f;
 

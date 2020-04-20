@@ -1,18 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="shaders\standard_vs.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="shaders\standard_ps.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Code\pch.cpp" />
     <ClCompile Include="Code\Game.cpp">
       <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\GameObjects\SolarObject.cpp">
+      <Filter>Code\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -23,16 +18,19 @@
     <ClInclude Include="Code\Game.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="Code\GameObjects\SolarObject.h">
+      <Filter>Code\GameObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Code">
       <UniqueIdentifier>{1dda9bfc-a2f6-4a63-be84-58f0eb00a312}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{f2bbd46e-28ec-45ec-b559-c6526dca68c6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resources">
       <UniqueIdentifier>{186e4929-ec61-440f-9283-55377ab4c55a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\GameObjects">
+      <UniqueIdentifier>{c4a977b7-a110-4070-8cf1-8be90108d6b4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

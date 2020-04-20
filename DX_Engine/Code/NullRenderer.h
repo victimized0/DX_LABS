@@ -13,14 +13,13 @@ public:
 	void			Render()override;
 
 	bool			CreateDevice()override;
-	bool			CreateResources()override;
 	bool			OnDeviceLost()override;
 
-	D3DDevice*		GetDevice()override;
-	D3DContext*		GetDeviceContext()override;
+	IDevice*		GetDevice()override;
+	IDevCon*		GetContext()override;
 
-	HRES			CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer)override;
-	HRES			CreateBlob(const char* path, D3DBlob** pBlob)override;
+	HRES			CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, IBuffer** pBuffer)override;
+	HRES			CreateBlob(const char* path, IBlob** pBlob)override;
 };
 
 #endif //_NULL_RENDERER_H_

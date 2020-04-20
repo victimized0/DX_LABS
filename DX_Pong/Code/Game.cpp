@@ -2,13 +2,13 @@
 #include "Game.h"
 #include "Helper.h"
 
-#include "GameObjects\Ball.h"
-#include "SceneObjects\GeometryObject.h"
-
+#include "GameObjects/Ball.h"
+#include "SceneObjects/GeometryObject.h"
 using std::vector;
 
 Game::Game(HINSTANCE hInstance)
 	: Engine(hInstance)
+	, m_paddleSpeed(25.0f)
 {
 	m_wndCaption = L"DX Pong";
 	m_lastMousePos.x = 0;
@@ -27,22 +27,24 @@ bool Game::Initialize(int iconId, int width, int height) {
 	if (!m_gameLogic.Initialise(&m_scene)) {
 		return false;
 	}
+	
+	m_keyboard = std::make_unique<Keyboard>();
 
 	CreateScene();
 	return true;
 }
 
 void Game::CreateScene() {
-	auto ball	 = std::make_shared<Ball>( NAME_BALL, XMFLOAT3(0.0f, 0.0f, 0.0f) );
-	auto lPaddle = std::make_shared<GeometryObject>( NAME_LPADDLE, XMFLOAT3(27.0f, 0.0f, 0.0f) );
-	auto rPaddle = std::make_shared<GeometryObject>( NAME_RPADDLE, XMFLOAT3(-27.0f, 0.0f, 0.0f) );
+	auto ball	 = std::make_shared<Ball>( NAME_BALL, Vector3(0.0f, 0.0f, 0.0f) );
+	auto lPaddle = std::make_shared<GeometryObject>( NAME_LPADDLE, Vector3(26.0f, 0.0f, 0.0f) );
+	auto rPaddle = std::make_shared<GeometryObject>( NAME_RPADDLE, Vector3(-26.0f, 0.0f, 0.0f) );
 
 	vector<GeometryObject::VertexType> lPaddleVertices =
 	{
-		{ XMFLOAT3(-1.0f,	4.0f,	0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{ XMFLOAT3(1.0f,	4.0f,	0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{ XMFLOAT3(-1.0f,	-4.0f,	0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{ XMFLOAT3(1.0f,	-4.0f,	0.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) }
+		{ Vector3(-1.0f, 4.0f,	0.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ Vector3(1.0f,	4.0f,	0.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ Vector3(-1.0f, -4.0f,	0.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ Vector3(1.0f,	-4.0f,	0.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) }
 	};
 
 	vector<UINT> lPaddleIndices =
@@ -56,10 +58,10 @@ void Game::CreateScene() {
 
 	vector<GeometryObject::VertexType> ballVertices =
 	{
-		{ XMFLOAT3(-0.5f,	0.5f,	0.0f), XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) },
-		{ XMFLOAT3(0.5f,	0.5f,	0.0f), XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) },
-		{ XMFLOAT3(-0.5f,	-0.5f,	0.0f), XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) },
-		{ XMFLOAT3(0.5f,	-0.5f,	0.0f), XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f) }
+		{ Vector3(-0.5f, 0.5f,	0.0f), Vector4(0.0f, 1.0f, 1.0f, 1.0f) },
+		{ Vector3(0.5f,	0.5f,	0.0f), Vector4(0.0f, 1.0f, 1.0f, 1.0f) },
+		{ Vector3(-0.5f, -0.5f,	0.0f), Vector4(0.0f, 1.0f, 1.0f, 1.0f) },
+		{ Vector3(0.5f,	-0.5f,	0.0f), Vector4(0.0f, 1.0f, 1.0f, 1.0f) }
 	};
 	vector<UINT> ballIndices(lPaddleIndices);
 
@@ -75,12 +77,44 @@ void Game::CreateScene() {
 	m_scene.AddObject(lPaddle);
 	m_scene.AddObject(rPaddle);
 	m_scene.AddObject(ball);
-}
 
-void Game::OnEvent(const Event& event) {
-	m_gameLogic.OnEvent(event);
+	//m_scene.GetMainCamera()->Update();
 }
 
 void Game::Update(float dt) {
+	auto lpaddle = dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_LPADDLE));
+	auto rpaddle = dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_RPADDLE));
+
 	m_gameLogic.Update(dt);
+	auto kb = m_keyboard->GetState();
+
+	float dv = m_paddleSpeed * dt;
+
+	if (kb.W) {
+		float distToTop = fabs(lpaddle->GetWorld().Translation().y + 2 * lpaddle->GetBoundingBox().Extents.y / 2 - GRID_TOP_BORDER);
+		if (distToTop > dv) {
+			lpaddle->Translate(Vector3::Up * dv);
+		}
+	}
+
+	if (kb.S) {
+		float distToBottom = fabs(lpaddle->GetWorld().Translation().y - 2 * lpaddle->GetBoundingBox().Extents.y / 2 - GRID_BOTTOM_BORDER);
+		if (distToBottom > dv) {
+			lpaddle->Translate(-Vector3::Up * dv);
+		}
+	}
+
+	if (kb.Up) {
+		float distToTop = fabs(rpaddle->GetWorld().Translation().y + 2 * rpaddle->GetBoundingBox().Extents.y / 2 - GRID_TOP_BORDER);
+		if (distToTop > dv) {
+			rpaddle->Translate(Vector3::Up * dv);
+		}
+	}
+
+	if (kb.Down) {
+		float distToBottom = fabs(rpaddle->GetWorld().Translation().y - 2 * rpaddle->GetBoundingBox().Extents.y / 2 - GRID_BOTTOM_BORDER);
+		if (distToBottom > dv) {
+			rpaddle->Translate(-Vector3::Up * dv);
+		}
+	}
 }

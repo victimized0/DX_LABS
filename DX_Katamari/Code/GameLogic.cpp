@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "GameLogic.h"
-#include "Events/KeyboardEvent.h"
 #include "SceneObjects/GeometryObject.h"
 
 GameLogic::GameLogic()
@@ -20,10 +19,6 @@ bool GameLogic::Initialise(Scene* pScene) {
 
 	m_pScene = pScene;
 	return true;
-}
-
-void GameLogic::OnEvent(const Event& event) {
-
 }
 
 void GameLogic::Update(float dt) {

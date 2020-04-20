@@ -16,6 +16,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DX_Engine", "DX_Engine\DX_Engine.vcxproj", "{EEAEDD05-C601-4D89-8DE3-DE5469D0275C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DX_Katamari", "DX_Katamari\DX_Katamari.vcxproj", "{DE22BFAC-34EE-45CD-AAAD-AB1A81866AEF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EEAEDD05-C601-4D89-8DE3-DE5469D0275C} = {EEAEDD05-C601-4D89-8DE3-DE5469D0275C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

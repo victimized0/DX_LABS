@@ -1,10 +1,8 @@
 #include "pch.h"
 #include "Scene.h"
 
-Scene::Scene()
-    : m_camera("Main Camera")
-{
-
+Scene::Scene() {
+    m_camera = std::make_unique<Camera>("Main Camera");
 }
 
 Scene::~Scene() {
@@ -26,7 +24,7 @@ SceneObject* Scene::GetSceneObject(const std::string& key)const {
 }
 
 void Scene::Update(float dt) {
-    m_camera.Update(dt);
+    //m_camera.Update();
     for (size_t index = 0; index < m_sceneObjects.size(); ++index) {
         m_sceneObjects[index]->Update(dt);
     }

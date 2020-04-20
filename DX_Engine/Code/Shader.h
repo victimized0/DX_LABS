@@ -15,7 +15,7 @@ public:
 
 private:
 	ShaderType			m_type;
-	ComPtr<D3DBlob>		m_blob;
+	ComPtr<IBlob>		m_blob;
 
 };
 

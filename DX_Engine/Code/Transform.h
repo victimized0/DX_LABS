@@ -5,41 +5,39 @@
 #include "Math/SimpleMath.h"
 
 class Transform {
+private:
+	typedef DirectX::SimpleMath::Matrix Matrix;
+	typedef DirectX::SimpleMath::Vector3 Vector3;
+	typedef DirectX::SimpleMath::Quaternion Quaternion;
+
 public:
-										Transform();
-										~Transform();
+					Transform();
+					Transform(const Vector3&, const Quaternion&, const Vector3&);
 
-										Transform(const DirectX::SimpleMath::Vector3&, const DirectX::SimpleMath::Quaternion&, const DirectX::SimpleMath::Vector3&);
+					~Transform();
 
-										Transform(Transform const&) = default;
-										Transform& operator=(Transform const&) = default;
-										Transform(Transform&&) = default;
-										Transform& operator=(Transform&&) = default;
-
-	DirectX::SimpleMath::Vector3		GetPosition()const { return m_location; }
-	DirectX::SimpleMath::Quaternion		GetRotation()const { return m_rotation; }
-	DirectX::SimpleMath::Vector3		GetScale()const { return m_scale; }
-
-	void								SetTransform(const DirectX::SimpleMath::Vector3&, const DirectX::SimpleMath::Quaternion&, const DirectX::SimpleMath::Vector3&);
-	void								SetPosition(const DirectX::SimpleMath::Vector3& pos) { m_location = pos; }
-	void								SetRotation(const DirectX::SimpleMath::Quaternion& rot) { m_rotation = rot; }
-	void								SetScale(const DirectX::SimpleMath::Vector3& scale) { m_scale = scale; }
+					Transform(Transform const&) = default;
+					Transform& operator=(Transform const&) = default;
+					Transform(Transform&&) = default;
+					Transform& operator=(Transform&&) = default;
 	
-	DirectX::SimpleMath::Matrix			ToMatrix()const;
+	Matrix			ToMatrix()const;
 
-	void								Translate(const DirectX::SimpleMath::Vector3& pos);
-	void								Rotate(const DirectX::SimpleMath::Quaternion& rot);
-	void								Scale(const DirectX::SimpleMath::Vector3& scale);
-	void								Orbit(float angle, const DirectX::SimpleMath::Vector3& pos);
+	void			Translate(const Vector3& pos);
+	void			Rotate(const Quaternion& rot);
+	void			Rotate(const Quaternion& rot, const Vector3& target);
+	//void			Scale(const Vector3& scale);
+
+	Vector3&		Position() { return m_position; }
+	Quaternion&		Rotation() { return m_rotation; }
+	Vector3&		Scale() { return m_scale; }
+	Matrix&			WorldTransform() { return m_transform; }
 
 private:
-	//void								Update();
-
-private:
-	DirectX::SimpleMath::Vector3		m_location;
-	DirectX::SimpleMath::Vector3		m_scale;
-	DirectX::SimpleMath::Quaternion		m_rotation;
-	DirectX::SimpleMath::Matrix			m_transform;
+	Vector3			m_position;
+	Vector3			m_scale;
+	Quaternion		m_rotation;
+	Matrix			m_transform;
 
 };
 

@@ -30,9 +30,14 @@
 #include <string>
 #include <memory>
 
+#include "Math/SimpleMath.h"
 #include "VertexFormats.h"
 #include "Environment.h"
 #include "../resource.h"
+#include "MeshLoaders/ObjLoader.h"
+
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 inline void ThrowIfFailed(HRESULT hr)
 {

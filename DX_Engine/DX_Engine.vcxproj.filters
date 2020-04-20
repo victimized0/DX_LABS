@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Code\pch.cpp" />
     <ClCompile Include="Code\Scene.cpp">
       <Filter>Code</Filter>
     </ClCompile>
@@ -10,15 +9,6 @@
     </ClCompile>
     <ClCompile Include="Code\SceneObjects\Camera.cpp">
       <Filter>Code\SceneObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\Events\Event.cpp">
-      <Filter>Code\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\Events\KeyboardEvent.cpp">
-      <Filter>Code\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\Events\MouseEvent.cpp">
-      <Filter>Code\Events</Filter>
     </ClCompile>
     <ClCompile Include="Code\SceneObjects\SceneObject.cpp">
       <Filter>Code\SceneObjects</Filter>
@@ -32,15 +22,38 @@
     <ClCompile Include="Code\Engine.cpp">
       <Filter>Code</Filter>
     </ClCompile>
-    <ClCompile Include="Code\Shader.cpp" />
-    <ClCompile Include="Code\VertexFormats.cpp" />
-    <ClCompile Include="Code\Math\SimpleMath.cpp" />
-    <ClCompile Include="Code\NullRenderer.cpp" />
-    <ClCompile Include="Code\Environment.cpp" />
-    <ClCompile Include="Code\Transform.cpp" />
+    <ClCompile Include="Code\Environment.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\NullRenderer.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\pch.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Shader.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Transform.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\VertexFormats.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\MeshLoaders\ObjLoader.cpp">
+      <Filter>Code\MeshLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Input\Keyboard.cpp">
+      <Filter>Code\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Input\Mouse.cpp">
+      <Filter>Code\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Math\SimpleMath.cpp">
+      <Filter>Code\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Code\pch.h" />
     <ClInclude Include="Code\ConstBuffer.h">
       <Filter>Code</Filter>
     </ClInclude>
@@ -62,20 +75,11 @@
     <ClInclude Include="Code\SceneObjects\Camera.h">
       <Filter>Code\SceneObjects</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Events\Event.h">
-      <Filter>Code\Events</Filter>
-    </ClInclude>
     <ClInclude Include="Code\Interfaces\IKeyboardEvent.h">
       <Filter>Code\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="Code\Interfaces\IGameObject.h">
       <Filter>Code\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\Events\KeyboardEvent.h">
-      <Filter>Code\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\Events\MouseEvent.h">
-      <Filter>Code\Events</Filter>
     </ClInclude>
     <ClInclude Include="Code\SceneObjects\SceneObject.h">
       <Filter>Code\SceneObjects</Filter>
@@ -92,10 +96,39 @@
     <ClInclude Include="Code\Engine.h">
       <Filter>Code</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Shader.h" />
-    <ClInclude Include="Code\Math\SimpleMath.h" />
-    <ClInclude Include="Code\NullRenderer.h" />
-    <ClInclude Include="Code\Transform.h" />
+    <ClInclude Include="Code\NullRenderer.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\pch.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Shader.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Transform.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Interfaces\IMeshLoader.h">
+      <Filter>Code\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\MeshLoaders\ObjLoader.h">
+      <Filter>Code\MeshLoaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Input\Keyboard.h">
+      <Filter>Code\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Input\Mouse.h">
+      <Filter>Code\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\PlatformHelpers.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Interfaces\ICamera.h">
+      <Filter>Code\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Math\SimpleMath.h">
+      <Filter>Code\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Code">
@@ -104,14 +137,42 @@
     <Filter Include="Code\SceneObjects">
       <UniqueIdentifier>{8ff01d06-6c4d-4aec-a903-91c1e6e17936}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Code\Events">
-      <UniqueIdentifier>{18f8c128-3459-4555-b602-0e8ddcf2f200}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Code\Interfaces">
       <UniqueIdentifier>{2936b5ee-ad78-4b5c-a29b-74afcb77e104}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code\MeshLoaders">
+      <UniqueIdentifier>{5404eedf-818f-4248-9559-745b315537dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Input">
+      <UniqueIdentifier>{8ed251ee-0c84-4476-941a-8cba9fa893a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{bf8f861c-8acd-4cc9-a16b-56204a792d60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Math">
+      <UniqueIdentifier>{dc8e5887-dadd-4b58-9097-5b1389467415}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Code\Math\SimpleMath.inl" />
+    <FxCompile Include="Shaders\standard_vs.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\standard_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\textured_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\textured_vs.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Code\Math\SimpleMath.inl">
+      <Filter>Code\Math</Filter>
+    </None>
+    <None Include="Shaders\common.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

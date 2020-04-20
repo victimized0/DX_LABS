@@ -7,9 +7,8 @@ using std::string;
 
 SceneObject::SceneObject(const string& name, const Vector3& position)
 	: m_name(name)
-	, Transform()
 {
-	SetPosition(position);
+
 }
 
 SceneObject::SceneObject(const string& name)
@@ -30,18 +29,7 @@ void SceneObject::Update(float dt) {
 
 }
 
-void SceneObject::SetPosition(float x, float y, float z) {
-	SetPosition(Vector3(x, y, z));
-}
-
-void SceneObject::SetPosition(const Vector3& pos) {
-	Transform.Translate(pos);
-}
-
 const string& SceneObject::GetName()const {
 	return m_name;
 }
 
-Vector3 SceneObject::GetPosition()const {
-	return Transform.ToMatrix().Translation();
-}

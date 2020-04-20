@@ -7,7 +7,7 @@
 
 class SceneObject : public IGameObject {
 public:
-										SceneObject(const std::string& name, const DirectX::SimpleMath::Vector3& position);
+										SceneObject(const std::string& name, const DirectX::SimpleMath::Vector3& m_position);
 										SceneObject(const std::string& name);
 	virtual								~SceneObject();
 
@@ -20,14 +20,10 @@ public:
 	void								Update(float dt)override;
 
 	void								SetName(const char* newName) { m_name = newName; }
-	void								SetPosition(float x, float y, float z);
-	void								SetPosition(const DirectX::SimpleMath::Vector3& position);
-
 	const std::string&					GetName()const;
-	DirectX::SimpleMath::Vector3		GetPosition()const;
 
 public:
-	Transform							Transform;
+
 
 protected:
 	std::string							m_name;

@@ -25,34 +25,38 @@ public:
 public:
 	bool									Initialise()override;
 	void									Render()override;
+	void									ClearFrame()override;
 	void									SetBackColor(float r, float g, float b)override;
 
 	bool									CreateDevice()override;
-	bool									CreateResources()override;
 	bool									OnDeviceLost()override;
 
-	D3DDevice*								GetDevice()override { return m_device.Get(); }
-	D3DContext*								GetDeviceContext()override { return m_context.Get(); }
+	IDevice*								GetDevice()override { return m_device.Get(); }
+	IDevCon*								GetContext()override { return m_context.Get(); }
 
 public:
-	HRES									CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, D3DBuffer** pBuffer)override;
-	HRES									CreateBlob(const char* path, D3DBlob** pBlob)override;
+	HRES									CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, IBuffer** pBuffer)override;
+	HRES									CreateBlob(const char* path, IBlob** pBlob)override;
 
 protected:
-	std::array<FLOAT, 3>					m_backColour;
-	UINT									m_buffersCount;
-	UINT									m_msaa4xQuality;
-	bool									m_enable4xMSAA;
+	std::array<float, 3>					m_backColour;
+	CViewport								m_viewport;
 
-	D3DViewport								m_viewport;
-	D3DDriverType							m_driverType;
-	D3DFeatureLevel							m_featureLevel;
+	ComPtr<IDevice>							m_device;
+	ComPtr<IDevCon>							m_context;
+	ComPtr<ISwapChain>						m_swapChain;
+	ComPtr<IRenderTargetView>				m_renderTargetView;
+	ComPtr<IDepthStencilView>				m_depthStencilView;
+	ComPtr<IRSState>						m_defaultRSState;
 
-	ComPtr<D3DDevice>						m_device;
-	ComPtr<D3DContext>						m_context;
-	ComPtr<D3DSwapChain>					m_swapChain;
-	ComPtr<RenderTargetView>				m_renderTargetView;
-	ComPtr<DepthStencilView>				m_depthStencilView;
+	ConstBuffer<CBPerFrame>					m_cbPerFrame;
+
+	//std::vector<ComPtr<VertexBuffer>>		m_vertexBuffers;
+	//std::vector<ComPtr<IndexBuffer>>		m_indexBuffers;
+	//std::vector<ComPtr<VertexShader>>		m_vertexShaders;
+	//std::vector<ComPtr<PixelShader>>		m_pixelShaders;
+	//std::vector<ComPtr<BlendState>>			m_blendStates;
+	//std::vector<ComPtr<RSState>>			m_rsStates;
 
 };
 

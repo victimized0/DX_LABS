@@ -11,8 +11,6 @@ public:
 	Environment()
 		: Width(800)
 		, Height(600)
-		, IsFullScreen(false)
-		, AllowFullScreen(false)
 		, HInstance(nullptr)
 		, HWnd(nullptr)
 	{
@@ -29,9 +27,6 @@ public:
 
 	int							Width;
 	int							Height;
-
-	bool						IsFullScreen;
-	bool						AllowFullScreen;
 
 private:
 	std::unique_ptr<IRenderer>	m_renderer;

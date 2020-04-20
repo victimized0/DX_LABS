@@ -2,7 +2,7 @@
 #define _PONG_PCH_H_
 
 #define WIN32_LEAN_AND_MEAN
-//#define NOMINMAX
+#define NOMINMAX
 #define NODRAWTEXT
 //#define NOGDI
 #define NOBITMAP

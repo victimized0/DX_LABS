@@ -530,11 +530,11 @@ namespace DirectX
             Vector3 Left() const noexcept { return Vector3(-_11, -_12, -_13); }
             void Left(const Vector3& v) noexcept { _11 = -v.x; _12 = -v.y; _13 = -v.z; }
 
-            Vector3 Forward() const noexcept { return Vector3(-_31, -_32, -_33); }
-            void Forward(const Vector3& v) noexcept { _31 = -v.x; _32 = -v.y; _33 = -v.z; }
+            Vector3 Forward() const noexcept { return Vector3(_31, _32, _33); }
+            void Forward(const Vector3& v) noexcept { _31 = v.x; _32 = v.y; _33 = v.z; }
 
-            Vector3 Backward() const noexcept { return Vector3(_31, _32, _33); }
-            void Backward(const Vector3& v) noexcept { _31 = v.x; _32 = v.y; _33 = v.z; }
+            Vector3 Backward() const noexcept { return Vector3(-_31, -_32, -_33); }
+            void Backward(const Vector3& v) noexcept { _31 = -v.x; _32 = -v.y; _33 = -v.z; }
 
             Vector3 Translation() const  noexcept { return Vector3(_41, _42, _43); }
             void Translation(const Vector3& v) noexcept { _41 = v.x; _42 = v.y; _43 = v.z; }
@@ -558,7 +558,7 @@ namespace DirectX
                 const Vector3& object, const Vector3& cameraPosition, const Vector3& rotateAxis,
                 _In_opt_ const Vector3* cameraForward = nullptr, _In_opt_ const Vector3* objectForward = nullptr) noexcept;
 
-            static Matrix CreateTranslation(const Vector3& position) noexcept;
+            static Matrix CreateTranslation(const Vector3& m_position) noexcept;
             static Matrix CreateTranslation(float x, float y, float z) noexcept;
 
             static Matrix CreateScale(const Vector3& scales) noexcept;
@@ -577,12 +577,12 @@ namespace DirectX
             static Matrix CreateOrthographic(float width, float height, float zNearPlane, float zFarPlane) noexcept;
             static Matrix CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNearPlane, float zFarPlane) noexcept;
 
-            static Matrix CreateLookAt(const Vector3& position, const Vector3& target, const Vector3& up) noexcept;
-            static Matrix CreateWorld(const Vector3& position, const Vector3& forward, const Vector3& up) noexcept;
+            static Matrix CreateLookAt(const Vector3& m_position, const Vector3& target, const Vector3& up) noexcept;
+            static Matrix CreateWorld(const Vector3& m_position, const Vector3& forward, const Vector3& up) noexcept;
 
             static Matrix CreateFromQuaternion(const Quaternion& quat) noexcept;
 
-            static Matrix CreateFromYawPitchRoll(float yaw, float pitch, float roll) noexcept;
+            static Matrix CreateFromRollPitchYaw(float yaw, float pitch, float roll) noexcept;
 
             static Matrix CreateShadow(const Vector3& lightDir, const Plane& plane) noexcept;
 
@@ -651,7 +651,7 @@ namespace DirectX
             void Normalize(Plane& result) const noexcept;
 
             float Dot(const Vector4& v) const noexcept;
-            float DotCoordinate(const Vector3& position) const noexcept;
+            float DotCoordinate(const Vector3& m_position) const noexcept;
             float DotNormal(const Vector3& normal) const noexcept;
 
             // Static functions
@@ -843,11 +843,11 @@ namespace DirectX
         class Ray
         {
         public:
-            Vector3 position;
+            Vector3 m_position;
             Vector3 direction;
 
-            Ray() noexcept : position(0, 0, 0), direction(0, 0, 1) {}
-            Ray(const Vector3& pos, const Vector3& dir) noexcept : position(pos), direction(dir) {}
+            Ray() noexcept : m_position(0, 0, 0), direction(0, 0, 1) {}
+            Ray(const Vector3& pos, const Vector3& dir) noexcept : m_position(pos), direction(dir) {}
 
             Ray(const Ray&) = default;
             Ray& operator=(const Ray&) = default;
@@ -1052,9 +1052,9 @@ namespace std
     {
         bool operator()(const DirectX::SimpleMath::Ray& R1, const DirectX::SimpleMath::Ray& R2) const noexcept
         {
-            if (R1.position.x != R2.position.x) return R1.position.x < R2.position.x;
-            if (R1.position.y != R2.position.y) return R1.position.y < R2.position.y;
-            if (R1.position.z != R2.position.z) return R1.position.z < R2.position.z;
+            if (R1.m_position.x != R2.m_position.x) return R1.m_position.x < R2.m_position.x;
+            if (R1.m_position.y != R2.m_position.y) return R1.m_position.y < R2.m_position.y;
+            if (R1.m_position.z != R2.m_position.z) return R1.m_position.z < R2.m_position.z;
 
             if (R1.direction.x != R2.direction.x) return R1.direction.x < R2.direction.x;
             if (R1.direction.y != R2.direction.y) return R1.direction.y < R2.direction.y;

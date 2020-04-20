@@ -2,8 +2,7 @@
 #define _GAME_H_
 
 #include "Engine.h"
-#include "Events/Event.h"
-#include "Events/MouseEvent.h"
+#include "Input/Mouse.h"
 
 #pragma comment(lib, "DX_Engine.lib")
 
@@ -27,17 +26,10 @@ public:
 
 private:
 	void			CreateScene();
-
-	void			OnEvent(const Event& event)final;
 	void			Update(float dt)final;
 
-	void			OnMouseDown(const MouseEvent& event);
-	void			OnMouseUp(const MouseEvent& event);
-	void			OnMouseMove(const MouseEvent& event);
-	void			OnMouseScroll(const MouseEvent& event);
-
-private:	
-	POINT			m_lastMousePos;
+private:
+	std::unique_ptr<DirectX::Mouse>	m_mouse;
 
 };
 

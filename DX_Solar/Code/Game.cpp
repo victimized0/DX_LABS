@@ -2,17 +2,21 @@
 #include "Game.h"
 #include "Helper.h"
 
-#include "SceneObjects\GeometryObject.h"
+#include "SceneObjects/GeometryObject.h"
+#include "GameObjects/SolarObject.h"
+#include "Math/SimpleMath.h"
+#include "Helper.h"
 
 using std::vector;
 using std::wstring;
+
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 Game::Game(HINSTANCE hInstance)
 	: Engine(hInstance)
 {
 	m_wndCaption = L"DX Solar System";
-	m_lastMousePos.x = 0;
-	m_lastMousePos.y = 0;
 }
 
 Game::~Game() {
@@ -24,89 +28,50 @@ bool Game::Initialize(int iconId, int width, int height) {
 		return false;
 	}
 
+	m_mouse = std::make_unique<Mouse>();
+	m_mouse->SetWindow(gEnv.HWnd);
+
 	CreateScene();
 	return true;
 }
 
 void Game::CreateScene() {
-	auto sun = std::make_shared<GeometryObject>(NAME_SUN, XMFLOAT3(0, 0, 0));
-	auto pSun = sun.get();
+	auto sun = std::make_shared<SolarObject>(NAME_SUN, Vector3(0, 0, 0));
+	auto pSun = dynamic_cast<GeometryObject*>(sun.get());
 	::CreateIcosahedron(&pSun, 20.0f, 1.0f, 1.0f, 0.0f);
 
-	auto earth = std::make_shared<GeometryObject>(NAME_EARTH, XMFLOAT3(75, 0, 0));
-	auto pEarth = earth.get();
+	auto earth = std::make_shared<SolarObject>(NAME_EARTH, Vector3(75, 0, 0));
+	auto pEarth = dynamic_cast<GeometryObject*>(earth.get());
 	::CreateIcosahedron(&pEarth, 5.f, 0.0f, 0.0f, 1.0f);
 	
-	auto moon = std::make_shared<GeometryObject>(NAME_MOON, XMFLOAT3(65, 0, 0));
-	auto pMoon = moon.get();
+	auto moon = std::make_shared<SolarObject>(NAME_MOON, Vector3(65, 0, 0));
+	auto pMoon = dynamic_cast<GeometryObject*>(moon.get());
 	::CreateIcosahedron(&pMoon, 1.f, 0.2f, 0.2f, 0.2f);
 
 	m_scene.AddObject(sun);
 	m_scene.AddObject(earth);
 	m_scene.AddObject(moon);
 
-	m_scene.GetMainCamera().SetRadius(200);
-}
-
-void Game::OnEvent(const Event& event) {
-	Event& _event = const_cast<Event&>(event);
-	MouseEvent& mouseEvent = reinterpret_cast<MouseEvent&>(_event);
-
-	switch (event.GetType()) {
-	case EventType::MouseDown:
-		OnMouseDown(mouseEvent);
-		break;
-	case EventType::MouseUp:
-		OnMouseUp(mouseEvent);
-		break;
-	case EventType::MouseMove:
-		OnMouseMove(mouseEvent);
-		break;
-	case EventType::MouseScroll:
-		OnMouseScroll(mouseEvent);
-		break;
-	}
+	m_scene.GetMainCamera()->SetRadius(200);
 }
 
 void Game::Update(float dt) {
-	auto pSun	= dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_SUN));
-	auto pEarth = dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_EARTH));
-	auto pMoon	= dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_MOON));
-	
-	pSun->Rotate(sinf(dt) * 2.f, 0, 0);
-	pEarth->Orbit(sinf(dt) * 2.f, pSun->GetPosition());
-	pMoon->Orbit(sinf(dt) * 1.5f, pEarth->GetPosition());
-}
+	auto mouse = m_mouse->GetState();
 
-void Game::OnMouseDown(const MouseEvent& event) {
-	m_lastMousePos.x = event.GetPosX();
-	m_lastMousePos.y = event.GetPosY();
-	SetCapture(gEnv.HWnd);
-}
+	if (mouse.positionMode == Mouse::MODE_RELATIVE) {
+		auto camera = m_scene.GetMainCamera();
+		Vector3 delta = Vector3(float(mouse.x), float(mouse.y), 0.f) * 0.1f;
 
-void Game::OnMouseUp(const MouseEvent& event) {
-	UNREFERENCED_PARAMETER(event);
-	ReleaseCapture();
-}
-
-void Game::OnMouseMove(const MouseEvent& event) {
-	auto& camera = m_scene.GetMainCamera();
-
-	if (event.GetKeyState() == MouseKeyState::LButton) {
-		float dx = XMConvertToRadians(0.5f * static_cast<float>(event.GetPosX() - m_lastMousePos.x));
-		float dy = XMConvertToRadians(0.5f * static_cast<float>(event.GetPosY() - m_lastMousePos.y));
-		camera.Rotate(-dx, -dy);
-	}
-	else if (event.GetKeyState() == MouseKeyState::RButton) {
-		float dy = XMConvertToRadians(0.5f * static_cast<float>(event.GetPosY() - m_lastMousePos.y));
-		camera.Move(dy);
+		camera->Rotate(-delta.x, -delta.y);
 	}
 
-	m_lastMousePos.x = event.GetPosX();
-	m_lastMousePos.y = event.GetPosY();
-}
+	m_mouse->SetMode(mouse.leftButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
 
-void Game::OnMouseScroll(const MouseEvent& event) {
-	auto& camera = m_scene.GetMainCamera();
-	camera.Zoom(10 * -0.002f * GET_WHEEL_DELTA_WPARAM(event.GetParam()));
+	auto pSun	= dynamic_cast<SolarObject*>(m_scene.GetSceneObject(NAME_SUN));
+	auto pEarth = dynamic_cast<SolarObject*>(m_scene.GetSceneObject(NAME_EARTH));
+	auto pMoon	= dynamic_cast<SolarObject*>(m_scene.GetSceneObject(NAME_MOON));
+
+	pSun->Rotate(0, 0, XM_PI);
+	pEarth->Rotate(0, 0, XM_PI);
+	pMoon->Rotate(0, 0, XM_PI);
 }

@@ -3,7 +3,6 @@
 
 #include "StepTimer.h"
 #include "Scene.h"
-#include "Events/Event.h"
 #include "Interfaces/IRenderer.h"
 #include "Environment.h"
 
@@ -23,9 +22,7 @@ protected:
 									Engine& operator=(const Engine&)	= delete;
 									Engine& operator=(Engine&&)			= delete;
 
-	virtual void					OnResize(uint32_t, uint32_t);
 	virtual bool					Initialize(int iconId, int width, int height);
-	virtual void					OnEvent(const Event& event) = 0;
 	virtual void					Update(float dt) = 0;
 
 public:
@@ -41,9 +38,6 @@ protected:
 	std::wstring					m_wndCaption;
 
 	bool							m_isInit;
-	bool							m_isPaused;
-	bool							m_isMinimized;
-	bool							m_isMaximized;
 	bool							m_isResizing;
 
 	Timer							m_timer;
