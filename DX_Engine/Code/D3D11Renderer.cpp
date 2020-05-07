@@ -60,10 +60,13 @@ void D3D11Renderer::Render() {
 	ClearFrame();
 
 	CBPerFrame cbpf = {};
-	cbpf.EyePos		= DirectX::SimpleMath::Vector4(Engine::GetPtr()->GetScene().GetMainCamera()->GetPosition(), 1.0f);
-	cbpf.LightCol	= m_pDirLight->LightCol;
-	cbpf.LightAmb	= m_pDirLight->LightAmb;
-	cbpf.LightDir	= DirectX::SimpleMath::Vector4(m_pDirLight->LightDir, 0.0f);
+	cbpf.EyePos = DirectX::SimpleMath::Vector4(Engine::GetPtr()->GetScene().GetMainCamera()->GetPosition(), 1.0f);
+
+	if (m_pDirLight != nullptr) {
+		cbpf.LightCol = m_pDirLight->LightCol;
+		cbpf.LightAmb = m_pDirLight->LightAmb;
+		cbpf.LightDir = DirectX::SimpleMath::Vector4(m_pDirLight->LightDir, 0.0f);
+	}
 
 	m_cbPerFrame.SetData(m_context.Get(), cbpf);
 	IConstBuffer* cb = m_cbPerFrame.GetBuffer();
