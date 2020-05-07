@@ -2,9 +2,7 @@
 #define _SOLAR_OBJECT_H_
 #pragma once
 
-#include "SceneObjects/GeometryObject.h"
-
-class SolarObject : public GeometryObject {
+class SolarObject : public GameObject {
 	typedef DirectX::SimpleMath::Vector3 Vector3;
 
 public:

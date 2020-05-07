@@ -98,6 +98,7 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessorDefinitions>SHADERS_DIR=R"($(ProjectDir)Shaders\)";_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
@@ -114,6 +115,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <PreprocessorDefinitions>SHADERS_DIR=R"($(ProjectDir)Shaders\)";_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
@@ -134,7 +136,7 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADERS_DIR=R"($(ProjectDir)Shaders\)";RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -155,7 +157,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADERS_DIR=R"($(ProjectDir)Shaders\)";RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -166,32 +168,36 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Code\ConstBuffer.h" />
+    <ClInclude Include="Code\DDSTextureLoader.h" />
     <ClInclude Include="Code\Environment.h" />
     <ClInclude Include="Code\Input\Keyboard.h" />
     <ClInclude Include="Code\Input\Mouse.h" />
     <ClInclude Include="Code\Interfaces\IGameObject.h" />
-    <ClInclude Include="Code\Interfaces\IKeyboardEvent.h" />
     <ClInclude Include="Code\Interfaces\IRenderer.h" />
     <ClInclude Include="Code\D3D11Renderer.h" />
     <ClInclude Include="Code\Math\SimpleMath.h" />
     <ClInclude Include="Code\MeshLoaders\ObjLoader.h" />
     <ClInclude Include="Code\NullRenderer.h" />
     <ClInclude Include="Code\PlatformHelpers.h" />
+    <ClInclude Include="Code\Primitives\Icosahedron.h" />
     <ClInclude Include="Code\SceneObjects\Camera.h" />
     <ClInclude Include="Code\Engine.h" />
-    <ClInclude Include="Code\SceneObjects\GeometryObject.h" />
+    <ClInclude Include="Code\SceneObjects\GameObject.h" />
     <ClInclude Include="Code\Helper.h" />
     <ClInclude Include="Code\Scene.h" />
-    <ClInclude Include="Code\SceneObjects\SceneObject.h" />
+    <ClInclude Include="Code\SceneObjects\Mesh.h" />
+    <ClInclude Include="Code\SceneObjects\Model.h" />
     <ClInclude Include="Code\Shader.h" />
     <ClInclude Include="Code\StepTimer.h" />
     <ClInclude Include="Code\pch.h" />
+    <ClInclude Include="Code\System\AVLTree.h" />
     <ClInclude Include="Code\Transform.h" />
     <ClInclude Include="Code\VertexFormats.h" />
     <ClInclude Include="Code\Interfaces\IMeshLoader.h" />
     <ClInclude Include="Code\Interfaces\ICamera.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Code\DDSTextureLoader.cpp" />
     <ClCompile Include="Code\Environment.cpp" />
     <ClCompile Include="Code\D3D11Renderer.cpp" />
     <ClCompile Include="Code\Input\Keyboard.cpp" />
@@ -199,11 +205,13 @@
     <ClCompile Include="Code\Math\SimpleMath.cpp" />
     <ClCompile Include="Code\MeshLoaders\ObjLoader.cpp" />
     <ClCompile Include="Code\NullRenderer.cpp" />
+    <ClCompile Include="Code\Primitives\Icosahedron.cpp" />
     <ClCompile Include="Code\SceneObjects\Camera.cpp" />
     <ClCompile Include="Code\Engine.cpp" />
-    <ClCompile Include="Code\SceneObjects\GeometryObject.cpp" />
+    <ClCompile Include="Code\SceneObjects\GameObject.cpp" />
     <ClCompile Include="Code\Scene.cpp" />
-    <ClCompile Include="Code\SceneObjects\SceneObject.cpp" />
+    <ClCompile Include="Code\SceneObjects\Mesh.cpp" />
+    <ClCompile Include="Code\SceneObjects\Model.cpp" />
     <ClCompile Include="Code\Shader.cpp" />
     <ClCompile Include="Code\StepTimer.cpp" />
     <ClCompile Include="Code\pch.cpp">
@@ -212,6 +220,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Code\System\AVLTree.cpp" />
     <ClCompile Include="Code\Transform.cpp" />
     <ClCompile Include="Code\VertexFormats.cpp" />
   </ItemGroup>

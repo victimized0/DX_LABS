@@ -46,6 +46,7 @@ private:
 	std::unique_ptr<DirectX::Mouse>		m_mouse;
 	std::unique_ptr<DirectX::Keyboard>	m_keyboard;
 	GameLogic							m_gameLogic;
+	DirLight							m_dirLight;
 
 };
 

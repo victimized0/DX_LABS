@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "Scene.h"
 
+using namespace DirectX::SimpleMath;
+
 Scene::Scene() {
+    Root = std::make_unique<GameObject>("Root", Vector3::Zero);
     m_camera = std::make_unique<Camera>("Main Camera");
 }
 
@@ -9,23 +12,45 @@ Scene::~Scene() {
 
 }
 
-void Scene::AddObject(const std::shared_ptr<SceneObject>& pObj) {
-    pObj->Initialise();
-    m_sceneObjects.push_back(pObj);
+
+void Scene::ReparentObject(const std::string& key, GameObject* pNewParent) {
+    Root->Reparent(key, pNewParent);
 }
 
-SceneObject* Scene::GetSceneObject(const std::string& key)const {
-    for (size_t index = 0; index < m_sceneObjects.size(); ++index) {
-        if (m_sceneObjects[index]->GetName() == key) {
-            return m_sceneObjects[index].get();
-        }
+void Scene::AddObject(std::unique_ptr<GameObject>&& obj, GameObject* parent) {
+    obj->Initialise();
+    if (parent == nullptr) {
+        Root->AddChild( std::move(obj) );
     }
-    return nullptr;
+    else {
+        parent->AddChild( std::move(obj) );
+    }
+}
+
+void Scene::DeleteObject(const std::string& key) {
+    Root->RemoveChild(key);
+    //for (size_t index = 0; index < m_sceneTree.size(); ++index) {
+    //    if (m_sceneObjects[index].get() == obj) {
+    //        m_sceneObjects.erase(m_sceneObjects.begin() + index);
+    //        return;
+    //    }
+    //}
+}
+
+GameObject* Scene::GetSceneObject(const std::string& key)const {
+    return Root->Find(key);
+    //for (size_t index = 0; index < m_sceneTree.size(); ++index) {
+    //    if (m_sceneObjects[index]->GetName() == key) {
+    //        return m_sceneObjects[index].get();
+    //    }
+    //}
+    //return nullptr;
 }
 
 void Scene::Update(float dt) {
-    //m_camera.Update();
-    for (size_t index = 0; index < m_sceneObjects.size(); ++index) {
-        m_sceneObjects[index]->Update(dt);
-    }
+
+}
+
+void Scene::RenderScene(IDevCon* context) {
+    Root->Draw(context, DirectX::SimpleMath::Matrix::Identity);
 }

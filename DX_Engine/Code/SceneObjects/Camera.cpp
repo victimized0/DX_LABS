@@ -7,7 +7,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 Camera::Camera(const std::string& name)
-	: SceneObject(name)
+	: GameObject(name)
 	, m_target(0.0f, 1.0f, 0.0f)
 
 	, m_fov(XM_PIDIV4)
@@ -16,7 +16,7 @@ Camera::Camera(const std::string& name)
 	
 	, m_radius(50.0f)
 	, m_theta(XM_PIDIV2)
-	, m_phi(XM_PIDIV2)
+	, m_phi(XM_PI/2.25f)
 {
 
 }
@@ -41,6 +41,15 @@ Matrix Camera::GetView()const {
 Matrix Camera::GetProj()const {
 	float aspectRatio = static_cast<float>(gEnv.Width) / static_cast<float>(gEnv.Height);
 	return Matrix::CreatePerspectiveFieldOfView(m_fov, aspectRatio, m_nearZ, m_farZ);
+}
+
+Vector3 Camera::GetPosition()const {
+	float sinphi = sinf(m_phi);
+	float costheta = cosf(m_theta);
+	float cosphi = cosf(m_phi);
+	float sintheta = sinf(m_theta);
+
+	return Vector3(m_target.x + m_radius * sinphi * costheta, m_target.y + m_radius * cosphi, m_target.z + m_radius * sinphi * sintheta);
 }
 
 void Camera::Translate(float d) {

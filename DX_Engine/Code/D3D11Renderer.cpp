@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "D3D11Renderer.h"
-#include "SceneObjects/GeometryObject.h"
 #include "Engine.h"
 
 #ifdef USE_DX
@@ -15,6 +14,7 @@ D3D11Renderer::D3D11Renderer()
 	, m_swapChain(nullptr)
 	, m_renderTargetView(nullptr)
 	, m_depthStencilView(nullptr)
+	, m_pDirLight(nullptr)
 {
 	m_backColour = { 0.0f, 0.0f, 0.0f };
 }
@@ -52,17 +52,28 @@ void D3D11Renderer::SetBackColor(float r, float g, float b) {
 	m_backColour = { r, g, b };
 }
 
+void D3D11Renderer::SetSunLight(DirLight* pDirLight) {
+	m_pDirLight = pDirLight;
+}
+
 void D3D11Renderer::Render() {
 	ClearFrame();
 
+	CBPerFrame cbpf = {};
+	cbpf.EyePos		= DirectX::SimpleMath::Vector4(Engine::GetPtr()->GetScene().GetMainCamera()->GetPosition(), 1.0f);
+	cbpf.LightCol	= m_pDirLight->LightCol;
+	cbpf.LightAmb	= m_pDirLight->LightAmb;
+	cbpf.LightDir	= DirectX::SimpleMath::Vector4(m_pDirLight->LightDir, 0.0f);
+
+	m_cbPerFrame.SetData(m_context.Get(), cbpf);
+	IConstBuffer* cb = m_cbPerFrame.GetBuffer();
+
+	m_context->VSSetConstantBuffers((UINT)CBPerFrame::Slot, 1, &cb);
+	m_context->PSSetConstantBuffers((UINT)CBPerFrame::Slot, 1, &cb);
+
 	m_context->RSSetState(m_defaultRSState.Get());
-	for each (auto& object in Engine::GetPtr()->GetScene().GetSceneObjects()) {
-		auto geoObj = dynamic_cast<GeometryObject*>(object.get());
-		if (geoObj != nullptr) {
-			//m_context->VSSetConstantBuffers((UINT)CBPerFrame::Slot, 1, &cb);
-			geoObj->Draw(m_context.Get());
-		}
-	}
+
+	Engine::GetPtr()->GetScene().RenderScene(m_context.Get());
 
 	m_swapChain->Present(1, 0);
 }
@@ -160,12 +171,42 @@ HRES D3D11Renderer::CreateBuffer(size_t size, size_t strideSize, const void* pDa
 	return m_device->CreateBuffer(&desc, &data, pBuffer);
 }
 
-HRES D3D11Renderer::CreateBlob(const char* path, IBlob** pBlob) {
+HRES D3D11Renderer::CompileShader(const wchar_t* srcFile, const char* entryPoint, const char* profile, const std::vector<D3DShaderMacro>& macros, UINT flags, IBlob** ppBlob) {
+	if (srcFile == nullptr || entryPoint == nullptr || profile == nullptr)
+		return E_INVALIDARG;
+
+	std::wstring path(srcFile);
+	std::string projDir(SHADERS_DIR);
+	path = std::wstring(projDir.begin(), projDir.end()) + path;
+	ComPtr<ID3DBlob> errorBlob;
+
+	HRES hr = D3DCompileFromFile(	path.c_str(), macros.data(),
+									D3D_COMPILE_STANDARD_FILE_INCLUDE,
+									entryPoint, profile, flags, 0,
+									ppBlob, &errorBlob);
+
+	if (FAILED(hr)) {
+		if (errorBlob) {
+			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+			errorBlob->Release();
+		}
+
+		if (*ppBlob)
+			(*ppBlob)->Release();
+	}
+
+	return hr;
+}
+
+HRES D3D11Renderer::CreateBlob(const char* path, IBlob** ppBlob) {
+	if (path == nullptr)
+		return E_INVALIDARG;
+
 	std::string sPath(path);
 	std::wstring wPath(sPath.begin(), sPath.end());
 	std::wstring fullPath = gEnv.WorkingPath + wPath;
 	
-	return D3DReadFileToBlob(fullPath.c_str(), pBlob);
+	return D3DReadFileToBlob(fullPath.c_str(), ppBlob);
 }
 
 #endif //USE_DX

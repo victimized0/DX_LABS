@@ -12,8 +12,8 @@ newmtl Apricot_02_material
 	Kd 0.6275 0.6275 0.6275
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka textures/Apricot_02_diffuse.png
-	map_Kd textures/Apricot_02_diffuse.png
-	map_Ks textures/Apricot_02_specular.png
-	map_bump textures/Apricot_02_normal.png
-	bump textures/Apricot_02_normal.png
+	map_Ka Art/Meshes/textures/Apricot_02_diffuse.dds
+	map_Kd Art/Meshes/textures/Apricot_02_diffuse.dds
+	map_Ks Art/Meshes/textures/Apricot_02_specular.dds
+	map_bump Art/Meshes/textures/Apricot_02_normal.dds
+	bump Art/Meshes/textures/Apricot_02_normal.dds

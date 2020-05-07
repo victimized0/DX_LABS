@@ -2,8 +2,10 @@
 #include "Game.h"
 #include "Helper.h"
 
-#include "SceneObjects/GeometryObject.h"
-#include "GameObjects/SolarObject.h"
+#include "SceneObjects/Model.h"
+#include "SceneObjects/Mesh.h"
+
+#include "VertexFormats.h"
 #include "Math/SimpleMath.h"
 #include "Helper.h"
 
@@ -36,21 +38,28 @@ bool Game::Initialize(int iconId, int width, int height) {
 }
 
 void Game::CreateScene() {
-	auto sun = std::make_shared<SolarObject>(NAME_SUN, Vector3(0, 0, 0));
-	auto pSun = dynamic_cast<GeometryObject*>(sun.get());
-	::CreateIcosahedron(&pSun, 20.0f, 1.0f, 1.0f, 0.0f);
+	Mesh sunMesh("sun_mesh");
+	::CreateIcosahedron(20.0f, sunMesh.Vertices(), sunMesh.Indices());
+	sunMesh.Initialise(gEnv.Renderer()->GetDevice());
 
-	auto earth = std::make_shared<SolarObject>(NAME_EARTH, Vector3(75, 0, 0));
-	auto pEarth = dynamic_cast<GeometryObject*>(earth.get());
-	::CreateIcosahedron(&pEarth, 5.f, 0.0f, 0.0f, 1.0f);
-	
-	auto moon = std::make_shared<SolarObject>(NAME_MOON, Vector3(65, 0, 0));
-	auto pMoon = dynamic_cast<GeometryObject*>(moon.get());
-	::CreateIcosahedron(&pMoon, 1.f, 0.2f, 0.2f, 0.2f);
+	auto sun = std::make_unique<Model>(NAME_SUN);
+	sun->AddMesh(std::move(sunMesh));
+	m_scene.AddObject(std::move(sun));
 
-	m_scene.AddObject(sun);
-	m_scene.AddObject(earth);
-	m_scene.AddObject(moon);
+	//Mesh<VertexType::VertexPosCol> earthMesh("earth_mesh", EVertexType::P3F_C3F);
+	//::CreateIcosahedron(5.0f, earthMesh.Vertices(), earthMesh.Indices());
+	//earthMesh.Initialise(gEnv.Renderer()->GetDevice());
+
+	//auto earth = std::make_unique<Model>(NAME_EARTH, Vector3(75, 0, 0));
+	//earth->AddMesh(earthMesh);
+	//m_scene.AddObject(std::move(earth));
+
+	//auto moon = std::make_shared<SolarObject>(NAME_MOON, Vector3(65, 0, 0));
+	//auto pMoon = dynamic_cast<GameObject*>(moon.get());
+	//::CreateIcosahedron(&pMoon, 1.f, 0.2f, 0.2f, 0.2f);
+
+	//m_scene.AddObject(earth);
+	//m_scene.AddObject(moon);
 
 	m_scene.GetMainCamera()->SetRadius(200);
 }
@@ -67,11 +76,5 @@ void Game::Update(float dt) {
 
 	m_mouse->SetMode(mouse.leftButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
 
-	auto pSun	= dynamic_cast<SolarObject*>(m_scene.GetSceneObject(NAME_SUN));
-	auto pEarth = dynamic_cast<SolarObject*>(m_scene.GetSceneObject(NAME_EARTH));
-	auto pMoon	= dynamic_cast<SolarObject*>(m_scene.GetSceneObject(NAME_MOON));
-
-	pSun->Rotate(0, 0, XM_PI);
-	pEarth->Rotate(0, 0, XM_PI);
-	pMoon->Rotate(0, 0, XM_PI);
+	//auto pSun = dynamic_cast<Model*>(m_scene.GetSceneObject(NAME_SUN));
 }

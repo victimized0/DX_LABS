@@ -10,12 +10,6 @@
     <ClCompile Include="Code\SceneObjects\Camera.cpp">
       <Filter>Code\SceneObjects</Filter>
     </ClCompile>
-    <ClCompile Include="Code\SceneObjects\SceneObject.cpp">
-      <Filter>Code\SceneObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\SceneObjects\GeometryObject.cpp">
-      <Filter>Code\SceneObjects</Filter>
-    </ClCompile>
     <ClCompile Include="Code\D3D11Renderer.cpp">
       <Filter>Code</Filter>
     </ClCompile>
@@ -52,6 +46,24 @@
     <ClCompile Include="Code\Math\SimpleMath.cpp">
       <Filter>Code\Math</Filter>
     </ClCompile>
+    <ClCompile Include="Code\SceneObjects\Mesh.cpp">
+      <Filter>Code\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\SceneObjects\Model.cpp">
+      <Filter>Code\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Primitives\Icosahedron.cpp">
+      <Filter>Code\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\DDSTextureLoader.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\SceneObjects\GameObject.cpp">
+      <Filter>Code\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\System\AVLTree.cpp">
+      <Filter>Code\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\ConstBuffer.h">
@@ -75,17 +87,8 @@
     <ClInclude Include="Code\SceneObjects\Camera.h">
       <Filter>Code\SceneObjects</Filter>
     </ClInclude>
-    <ClInclude Include="Code\Interfaces\IKeyboardEvent.h">
-      <Filter>Code\Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="Code\Interfaces\IGameObject.h">
       <Filter>Code\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\SceneObjects\SceneObject.h">
-      <Filter>Code\SceneObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\SceneObjects\GeometryObject.h">
-      <Filter>Code\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="Code\Interfaces\IRenderer.h">
       <Filter>Code\Interfaces</Filter>
@@ -129,6 +132,24 @@
     <ClInclude Include="Code\Math\SimpleMath.h">
       <Filter>Code\Math</Filter>
     </ClInclude>
+    <ClInclude Include="Code\SceneObjects\Mesh.h">
+      <Filter>Code\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\SceneObjects\Model.h">
+      <Filter>Code\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Primitives\Icosahedron.h">
+      <Filter>Code\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\DDSTextureLoader.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\SceneObjects\GameObject.h">
+      <Filter>Code\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\System\AVLTree.h">
+      <Filter>Code\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Code">
@@ -151,6 +172,12 @@
     </Filter>
     <Filter Include="Code\Math">
       <UniqueIdentifier>{dc8e5887-dadd-4b58-9097-5b1389467415}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Primitives">
+      <UniqueIdentifier>{be45693e-f808-47a4-aae1-f8079270dd32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\System">
+      <UniqueIdentifier>{531b1611-6c35-4389-adf2-eb99521b9370}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

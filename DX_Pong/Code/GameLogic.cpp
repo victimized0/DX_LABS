@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "GameLogic.h"
-#include "SceneObjects/GeometryObject.h"
+#include "SceneObjects/GameObject.h"
 #include "GameObjects/Ball.h"
 
 GameLogic::GameLogic()
@@ -25,8 +25,8 @@ bool GameLogic::Initialise(Scene* pScene) {
 
 void GameLogic::Update(float dt) {
 	auto ball    = dynamic_cast<Ball*>(m_pScene->GetSceneObject(NAME_BALL));
-	auto lPaddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_LPADDLE));
-	auto rPaddle = dynamic_cast<GeometryObject*>(m_pScene->GetSceneObject(NAME_RPADDLE));
+	auto lPaddle = dynamic_cast<GameObject*>(m_pScene->GetSceneObject(NAME_LPADDLE));
+	auto rPaddle = dynamic_cast<GameObject*>(m_pScene->GetSceneObject(NAME_RPADDLE));
 
 	const BoundingBox& ballBB = ball->GetBoundingBox();
 

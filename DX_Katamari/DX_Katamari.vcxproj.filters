@@ -12,6 +12,9 @@
     <ClCompile Include="Code\GameObjects\Katamari.cpp">
       <Filter>Code\GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="Code\GameObjects\Pickup.cpp">
+      <Filter>Code\GameObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\pch.h" />
@@ -25,6 +28,9 @@
       <Filter>Code</Filter>
     </ClInclude>
     <ClInclude Include="Code\GameObjects\Katamari.h">
+      <Filter>Code\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\GameObjects\Pickup.h">
       <Filter>Code\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>

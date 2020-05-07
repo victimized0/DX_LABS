@@ -4,6 +4,7 @@
 #include "SceneObjects/Camera.h"
 #include "Interfaces/IRenderer.h"
 #include "ConstBuffer.h"
+
 #include <array>
 
 #define RES_SUCCESS	0
@@ -12,7 +13,7 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-class D3D11Renderer : public IRenderer {
+class D3D11Renderer final : public IRenderer {
 public:
 											D3D11Renderer();
 	virtual									~D3D11Renderer();
@@ -23,20 +24,23 @@ public:
 											D3D11Renderer& operator=(D3D11Renderer&&)		= delete;
 
 public:
-	bool									Initialise()override;
-	void									Render()override;
-	void									ClearFrame()override;
-	void									SetBackColor(float r, float g, float b)override;
+	bool									Initialise()final;
+	void									Render()final;
+	void									ClearFrame()final;
 
-	bool									CreateDevice()override;
-	bool									OnDeviceLost()override;
+	void									SetBackColor(float r, float g, float b)final;
+	void									SetSunLight(DirLight* pDirLight)final;
 
-	IDevice*								GetDevice()override { return m_device.Get(); }
-	IDevCon*								GetContext()override { return m_context.Get(); }
+	bool									CreateDevice()final;
+	bool									OnDeviceLost()final;
+
+	IDevice*								GetDevice()final { return m_device.Get(); }
+	IDevCon*								GetContext()final { return m_context.Get(); }
 
 public:
-	HRES									CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, IBuffer** pBuffer)override;
-	HRES									CreateBlob(const char* path, IBlob** pBlob)override;
+	HRES									CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, IBuffer** pBuffer)final;
+	HRES									CompileShader(const wchar_t* srcFile, const char* entryPoint, const char* profile, const std::vector<D3DShaderMacro>& macros, UINT flags, IBlob** ppBlob)final;
+	HRES									CreateBlob(const char* path, IBlob** ppBlob)final;
 
 protected:
 	std::array<float, 3>					m_backColour;
@@ -50,13 +54,7 @@ protected:
 	ComPtr<IRSState>						m_defaultRSState;
 
 	ConstBuffer<CBPerFrame>					m_cbPerFrame;
-
-	//std::vector<ComPtr<VertexBuffer>>		m_vertexBuffers;
-	//std::vector<ComPtr<IndexBuffer>>		m_indexBuffers;
-	//std::vector<ComPtr<VertexShader>>		m_vertexShaders;
-	//std::vector<ComPtr<PixelShader>>		m_pixelShaders;
-	//std::vector<ComPtr<BlendState>>			m_blendStates;
-	//std::vector<ComPtr<RSState>>			m_rsStates;
+	DirLight*								m_pDirLight;
 
 };
 

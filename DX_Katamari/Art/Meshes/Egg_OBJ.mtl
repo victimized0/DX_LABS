@@ -1,0 +1,19 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 31.10.2019 02:06:59
+
+newmtl Egg_OBJ
+	Ns 32.0000
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.1412 0.0980 0.0784
+	Kd 0.9294 0.7882 0.6863
+	Ks 0.1000 0.1000 0.1000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka Art/Meshes/textures/Egg_Egg_BaseColor.dds
+	map_Kd Art/Meshes/textures/Egg_Egg_BaseColor.dds
+	map_Ks Art/Meshes/textures/Egg_Egg_Roughness.dds
+	map_bump Art/Meshes/textures/Egg_Egg_Normal.dds
+	bump Art/Meshes/textures/Egg_Egg_Normal.dds

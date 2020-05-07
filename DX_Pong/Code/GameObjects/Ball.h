@@ -1,9 +1,9 @@
 #ifndef _GAME_OBJECT_BALL_H_
 #define _GAME_OBJECT_BALL_H_
 
-#include "SceneObjects/GeometryObject.h"
+#include "SceneObjects/GameObject.h"
 
-class Ball : public GeometryObject {
+class Ball : public GameObject {
 private:
 	static constexpr float DEFAULT_SPEED_X = 30.0f;
 	static constexpr float DEFAULT_SPEED_Y = 6.0f;

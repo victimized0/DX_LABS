@@ -10,24 +10,38 @@ enum class ConstBufferType : unsigned char {
     Total
 };
 
-struct CBPerFrame {
-    DirectX::SimpleMath::Matrix ViewProj;
+struct alignas(16) CBPerFrame {
+    DirectX::SimpleMath::Vector4    EyePos;
+    DirectX::SimpleMath::Vector4    LightCol;
+    DirectX::SimpleMath::Vector4    LightAmb;
+    DirectX::SimpleMath::Vector4    LightDir;
 
-    static const ConstBufferType Slot = ConstBufferType::PerFrame;
+    static const ConstBufferType    Slot = ConstBufferType::PerFrame;
 };
 
-struct CBPerInstance {
-    DirectX::SimpleMath::Matrix WorldViewProj;
+struct alignas(16) CBPerInstance {
+    DirectX::SimpleMath::Matrix     WorldViewProj;
+    DirectX::SimpleMath::Matrix     WorldView;
+    DirectX::SimpleMath::Matrix     World;
 
-    static const ConstBufferType Slot = ConstBufferType::PerInstance;
+    static const ConstBufferType    Slot = ConstBufferType::PerInstance;
+};
+
+struct alignas(16) CBPerMaterial {
+public:
+    DirectX::SimpleMath::Vector4    AmbientColor;
+    DirectX::SimpleMath::Vector4    DiffuseColor;
+    DirectX::SimpleMath::Vector4    SpecularColor;
+
+    static const ConstBufferType    Slot = ConstBufferType::PerMaterial;
 };
 
 template <typename T>
 class ConstBuffer {
 public:
     ConstBuffer()                                   = default;
-    ConstBuffer(ConstBuffer const&)                 = delete;
-    ConstBuffer& operator= (ConstBuffer const&)     = delete;
+    ConstBuffer(ConstBuffer const& other) : mConstBuffer(other.mConstBuffer) {}
+    ConstBuffer& operator=(ConstBuffer const& other) { other.mConstBuffer = mConstBuffer }
 
     explicit ConstBuffer(IDevice* device) {
         Create(device);
@@ -64,7 +78,7 @@ public:
     }
 
 private:
-    Microsoft::WRL::ComPtr<IConstBuffer>    mConstBuffer;
+    Microsoft::WRL::ComPtr<IConstBuffer> mConstBuffer;
 };
 
 #endif //_CONST_BUFFER_H_

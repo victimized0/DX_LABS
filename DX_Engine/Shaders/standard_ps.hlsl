@@ -1,6 +1,5 @@
 #include "common.hlsli"
 
-float4 main( in VS_PosCol input ) : SV_TARGET {
-	float4 col = input.Color;
-	return col;
+float4 main( in VS_PosColNmlTex input ) : SV_TARGET {
+	return input.Color;
 }

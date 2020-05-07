@@ -61,7 +61,7 @@ namespace objloader {
 	struct Vertex
 	{
 		// Position Vector
-		Vector3 m_position;
+		Vector3 Position;
 		// Normal Vector
 		Vector3 Normal;
 		// Texture Coordinate Vector

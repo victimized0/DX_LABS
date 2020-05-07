@@ -1,10 +1,9 @@
 #ifndef _SCENE_H_
 #define _SCENE_H_
 
-#include "SceneObjects\SceneObject.h"
-#include "SceneObjects\Camera.h"
-
-using SceneObjects = std::vector<std::shared_ptr<SceneObject>>;
+#include "SceneObjects/GameObject.h"
+#include "SceneObjects/Camera.h"
+#include "System/AVLTree.h"
 
 class Scene {
 public:
@@ -17,17 +16,22 @@ public:
 									Scene& operator=(Scene&&)		= delete;
 
 public:
-	void							AddObject(const std::shared_ptr<SceneObject>&);
-	SceneObject*					GetSceneObject(const std::string& key)const;
-	const SceneObjects&				GetSceneObjects()const { return m_sceneObjects; }
+	void							AddObject(std::unique_ptr<GameObject>&& obj, GameObject* parent = nullptr);
+	void							DeleteObject(const std::string& key);
+	void							ReparentObject(const std::string& key, GameObject* pNewParent);
+	GameObject*						GetSceneObject(const std::string& key)const;
+
 	Camera*							GetMainCamera() { return m_camera.get(); }
 	void							SetMainCamera(std::unique_ptr<Camera> camera) { m_camera = std::move(camera); }
+	void							RenderScene(IDevCon* context);
 
 	void							Update(float dt);
 
 private:
 	std::unique_ptr<Camera>			m_camera;
-	SceneObjects					m_sceneObjects;
+
+public:
+	std::unique_ptr<GameObject>		Root;
 
 };
 

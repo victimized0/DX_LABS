@@ -1,22 +1,20 @@
 #ifndef _KATAMARI_H_
 #define _KATAMARI_H_
-
 #pragma once
-#include "SceneObjects/GeometryObject.h"
 
-class Katamari : public GeometryObject {
-private:
-	using VertexType = VertexPosNmlTex;
+#include "SceneObjects/GameObject.h"
+
+class Katamari final : public GameObject {
+public:
+									Katamari(const std::string& name, const DirectX::SimpleMath::Vector3& position, std::string modelPath, float scale = 1.0f);
+	virtual							~Katamari() = default;
+
+	void							Attach(std::unique_ptr<GameObject>&& pickup);
+	void							Initialise()final;
+	bool							Contains(GameObject* child);
 
 public:
-					Katamari(const std::string& name, const objloader::Mesh& mesh, const DirectX::SimpleMath::Vector3& position);
-	virtual			~Katamari() = default;
-
-	void			Initialise()override;
-
-private:
-	BoundingSphere	m_boundingSphere;
-
+	float							Size;
 
 };
 

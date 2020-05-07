@@ -1,10 +1,11 @@
 #include "common.hlsli"
 
-VS_PosCol main(in IA_PosCol input) {
-	VS_PosCol output;
+VS_PosColNmlTex main(in IA_PosColNmlTex input) {
+	VS_PosColNmlTex output;
 
 	output.Position = mul(input.Position, worldViewProj);
 	output.Color	= input.Color;
+	output.Normal   = input.Normal;
 
 	return output;
 }

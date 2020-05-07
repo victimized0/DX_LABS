@@ -3,7 +3,7 @@
 #include "Helper.h"
 
 #include "GameObjects/Ball.h"
-#include "SceneObjects/GeometryObject.h"
+#include "SceneObjects/GameObject.h"
 using std::vector;
 
 Game::Game(HINSTANCE hInstance)
@@ -35,16 +35,16 @@ bool Game::Initialize(int iconId, int width, int height) {
 }
 
 void Game::CreateScene() {
-	auto ball	 = std::make_shared<Ball>( NAME_BALL, Vector3(0.0f, 0.0f, 0.0f) );
-	auto lPaddle = std::make_shared<GeometryObject>( NAME_LPADDLE, Vector3(26.0f, 0.0f, 0.0f) );
-	auto rPaddle = std::make_shared<GeometryObject>( NAME_RPADDLE, Vector3(-26.0f, 0.0f, 0.0f) );
+	auto ball	 = std::make_unique<Ball>( NAME_BALL, Vector3(0.0f, 0.0f, 0.0f) );
+	auto lPaddle = std::make_unique<GameObject>( NAME_LPADDLE, Vector3(26.0f, 0.0f, 0.0f) );
+	auto rPaddle = std::make_unique<GameObject>( NAME_RPADDLE, Vector3(-26.0f, 0.0f, 0.0f) );
 
-	vector<GeometryObject::VertexType> lPaddleVertices =
+	vector<Mesh::Vertex> lPaddleVertices =
 	{
-		{ Vector3(-1.0f, 4.0f,	0.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{ Vector3(1.0f,	4.0f,	0.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{ Vector3(-1.0f, -4.0f,	0.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{ Vector3(1.0f,	-4.0f,	0.0f), Vector4(1.0f, 1.0f, 1.0f, 1.0f) }
+		{ Vector3(-1.0f, 4.0f,	0.0f), Vector3::One, Vector3::One, Vector2::Zero },
+		{ Vector3(1.0f,	4.0f,	0.0f), Vector3::One, Vector3::One, Vector2::Zero },
+		{ Vector3(-1.0f, -4.0f,	0.0f), Vector3::One, Vector3::One, Vector2::Zero },
+		{ Vector3(1.0f,	-4.0f,	0.0f), Vector3::One, Vector3::One, Vector2::Zero }
 	};
 
 	vector<UINT> lPaddleIndices =
@@ -53,37 +53,45 @@ void Game::CreateScene() {
 		2, 3, 1
 	};
 
-	vector<GeometryObject::VertexType> rPaddleVertices(lPaddleVertices);
+	vector<Mesh::Vertex> rPaddleVertices(lPaddleVertices);
 	vector<UINT> rPaddleIndices(lPaddleIndices);
 
-	vector<GeometryObject::VertexType> ballVertices =
+	vector<Mesh::Vertex> ballVertices =
 	{
-		{ Vector3(-0.5f, 0.5f,	0.0f), Vector4(0.0f, 1.0f, 1.0f, 1.0f) },
-		{ Vector3(0.5f,	0.5f,	0.0f), Vector4(0.0f, 1.0f, 1.0f, 1.0f) },
-		{ Vector3(-0.5f, -0.5f,	0.0f), Vector4(0.0f, 1.0f, 1.0f, 1.0f) },
-		{ Vector3(0.5f,	-0.5f,	0.0f), Vector4(0.0f, 1.0f, 1.0f, 1.0f) }
+		{ Vector3(-0.5f, 0.5f,	0.0f), Vector3(0.0f, 1.0f, 1.0f), Vector3::One, Vector2::Zero },
+		{ Vector3(0.5f,	0.5f,	0.0f), Vector3(0.0f, 1.0f, 1.0f), Vector3::One, Vector2::Zero },
+		{ Vector3(-0.5f, -0.5f,	0.0f), Vector3(0.0f, 1.0f, 1.0f), Vector3::One, Vector2::Zero },
+		{ Vector3(0.5f,	-0.5f,	0.0f), Vector3(0.0f, 1.0f, 1.0f), Vector3::One, Vector2::Zero }
 	};
 	vector<UINT> ballIndices(lPaddleIndices);
 
-	lPaddle->CreateVertices(lPaddleVertices);
-	lPaddle->CreateIndices(lPaddleIndices);
+	Mesh padLeft("pad_left");
+	Mesh padRight("pad_right");
+	Mesh meshBall("ball");
 
-	rPaddle->CreateVertices(rPaddleVertices);
-	rPaddle->CreateIndices(rPaddleIndices);
+	padLeft.CreateVertices(lPaddleVertices);
+	padLeft.CreateIndices(lPaddleIndices);
+
+	padRight.CreateVertices(rPaddleVertices);
+	padRight.CreateIndices(rPaddleIndices);
 	
-	ball->CreateVertices(ballVertices);
-	ball->CreateIndices(ballIndices);
+	meshBall.CreateVertices(ballVertices);
+	meshBall.CreateIndices(ballIndices);
 
-	m_scene.AddObject(lPaddle);
-	m_scene.AddObject(rPaddle);
-	m_scene.AddObject(ball);
+	lPaddle->GetModel().AddMesh(padLeft);
+	rPaddle->GetModel().AddMesh(padRight);
+	ball->GetModel().AddMesh(meshBall);
+
+	m_scene.AddObject( std::move(lPaddle) );
+	m_scene.AddObject( std::move(rPaddle) );
+	m_scene.AddObject( std::move(ball) );
 
 	//m_scene.GetMainCamera()->Update();
 }
 
 void Game::Update(float dt) {
-	auto lpaddle = dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_LPADDLE));
-	auto rpaddle = dynamic_cast<GeometryObject*>(m_scene.GetSceneObject(NAME_RPADDLE));
+	auto lpaddle = dynamic_cast<GameObject*>(m_scene.GetSceneObject(NAME_LPADDLE));
+	auto rpaddle = dynamic_cast<GameObject*>(m_scene.GetSceneObject(NAME_RPADDLE));
 
 	m_gameLogic.Update(dt);
 	auto kb = m_keyboard->GetState();

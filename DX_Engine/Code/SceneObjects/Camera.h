@@ -1,10 +1,10 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "SceneObject.h"
+#include "GameObject.h"
 using namespace DirectX;
 
-class Camera : public SceneObject {
+class Camera : public GameObject {
 public:
 											Camera(const std::string& name);
 	virtual									~Camera() = default;
@@ -19,6 +19,7 @@ public:
 	virtual DirectX::SimpleMath::Matrix		GetView()const;
 	virtual DirectX::SimpleMath::Matrix		GetProj()const;
 	virtual DirectX::SimpleMath::Vector3	GetTarget()const { return m_target; }
+	virtual DirectX::SimpleMath::Vector3	GetPosition()const;
 
 protected:
 	DirectX::SimpleMath::Vector3			m_target;

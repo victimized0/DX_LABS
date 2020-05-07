@@ -1,0 +1,19 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 31.10.2019 02:06:59
+
+newmtl Ring
+	Ns 27.8974
+	Ni 1.6000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.3294 0.2235 0.0275
+	Kd 0.7804 0.5686 0.1137
+	Ks 0.9922 0.9412 0.8078
+	Ke 0.0000 0.0000 0.0000
+	map_Ka Art/Meshes/textures/ring_BaseColor.dds
+	map_Kd Art/Meshes/textures/ring_BaseColor.dds
+	map_Ks Art/Meshes/textures/ring_Roughness.dds
+	map_bump Art/Meshes/textures/ring_Normal.dds
+	bump Art/Meshes/textures/ring_Normal.dds

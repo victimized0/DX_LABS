@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "ObjLoader.h"
 
+#include "../Environment.h"
+
 namespace objloader {
 	Vector2::Vector2()
 	{
@@ -290,6 +292,8 @@ ObjLoader::~ObjLoader() {
 
 bool ObjLoader::LoadFile(std::string Path)
 {
+	LoadedMaterials.clear();
+
 	// If the file is not an .obj file return false
 	if (Path.substr(Path.size() - 4, 4) != ".obj")
 		return false;
@@ -485,7 +489,6 @@ bool ObjLoader::LoadFile(std::string Path)
 				}
 			}
 
-
 			pathtomat += algorithm::tail(curline);
 
 			// Load Materials
@@ -585,7 +588,7 @@ void ObjLoader::GenVerticesFromRawOBJ(std::vector<Vertex>& oVerts, const std::ve
 		{
 		case 1: // P
 		{
-			vVert.m_position = algorithm::getElement(iPositions, svert[0]);
+			vVert.Position = algorithm::getElement(iPositions, svert[0]);
 			vVert.TextureCoordinate = Vector2(0, 0);
 			noNormal = true;
 			oVerts.push_back(vVert);
@@ -593,7 +596,7 @@ void ObjLoader::GenVerticesFromRawOBJ(std::vector<Vertex>& oVerts, const std::ve
 		}
 		case 2: // P/T
 		{
-			vVert.m_position = algorithm::getElement(iPositions, svert[0]);
+			vVert.Position = algorithm::getElement(iPositions, svert[0]);
 			vVert.TextureCoordinate = algorithm::getElement(iTCoords, svert[1]);
 			noNormal = true;
 			oVerts.push_back(vVert);
@@ -601,7 +604,7 @@ void ObjLoader::GenVerticesFromRawOBJ(std::vector<Vertex>& oVerts, const std::ve
 		}
 		case 3: // P//N
 		{
-			vVert.m_position = algorithm::getElement(iPositions, svert[0]);
+			vVert.Position = algorithm::getElement(iPositions, svert[0]);
 			vVert.TextureCoordinate = Vector2(0, 0);
 			vVert.Normal = algorithm::getElement(iNormals, svert[2]);
 			oVerts.push_back(vVert);
@@ -609,7 +612,7 @@ void ObjLoader::GenVerticesFromRawOBJ(std::vector<Vertex>& oVerts, const std::ve
 		}
 		case 4: // P/T/N
 		{
-			vVert.m_position = algorithm::getElement(iPositions, svert[0]);
+			vVert.Position = algorithm::getElement(iPositions, svert[0]);
 			vVert.TextureCoordinate = algorithm::getElement(iTCoords, svert[1]);
 			vVert.Normal = algorithm::getElement(iNormals, svert[2]);
 			oVerts.push_back(vVert);
@@ -627,8 +630,8 @@ void ObjLoader::GenVerticesFromRawOBJ(std::vector<Vertex>& oVerts, const std::ve
 	// best they get for not compiling a mesh with normals	
 	if (noNormal)
 	{
-		Vector3 A = oVerts[0].m_position - oVerts[1].m_position;
-		Vector3 B = oVerts[2].m_position - oVerts[1].m_position;
+		Vector3 A = oVerts[0].Position - oVerts[1].Position;
+		Vector3 B = oVerts[2].Position - oVerts[1].Position;
 
 		Vector3 normal = math::CrossV3(A, B);
 
@@ -697,11 +700,11 @@ void ObjLoader::VertexTriangluation(std::vector<unsigned int>& oIndices, const s
 				// Create a triangle from pCur, pPrev, pNext
 				for (int j = 0; j < int(tVerts.size()); j++)
 				{
-					if (iVerts[j].m_position == pCur.m_position)
+					if (iVerts[j].Position == pCur.Position)
 						oIndices.push_back(j);
-					if (iVerts[j].m_position == pPrev.m_position)
+					if (iVerts[j].Position == pPrev.Position)
 						oIndices.push_back(j);
-					if (iVerts[j].m_position == pNext.m_position)
+					if (iVerts[j].Position == pNext.Position)
 						oIndices.push_back(j);
 				}
 
@@ -713,22 +716,22 @@ void ObjLoader::VertexTriangluation(std::vector<unsigned int>& oIndices, const s
 				// Create a triangle from pCur, pPrev, pNext
 				for (int j = 0; j < int(iVerts.size()); j++)
 				{
-					if (iVerts[j].m_position == pCur.m_position)
+					if (iVerts[j].Position == pCur.Position)
 						oIndices.push_back(j);
-					if (iVerts[j].m_position == pPrev.m_position)
+					if (iVerts[j].Position == pPrev.Position)
 						oIndices.push_back(j);
-					if (iVerts[j].m_position == pNext.m_position)
+					if (iVerts[j].Position == pNext.Position)
 						oIndices.push_back(j);
 				}
 
 				Vector3 tempVec;
 				for (int j = 0; j < int(tVerts.size()); j++)
 				{
-					if (tVerts[j].m_position != pCur.m_position
-						&& tVerts[j].m_position != pPrev.m_position
-						&& tVerts[j].m_position != pNext.m_position)
+					if (tVerts[j].Position != pCur.Position
+						&& tVerts[j].Position != pPrev.Position
+						&& tVerts[j].Position != pNext.Position)
 					{
-						tempVec = tVerts[j].m_position;
+						tempVec = tVerts[j].Position;
 						break;
 					}
 				}
@@ -736,11 +739,11 @@ void ObjLoader::VertexTriangluation(std::vector<unsigned int>& oIndices, const s
 				// Create a triangle from pCur, pPrev, pNext
 				for (int j = 0; j < int(iVerts.size()); j++)
 				{
-					if (iVerts[j].m_position == pPrev.m_position)
+					if (iVerts[j].Position == pPrev.Position)
 						oIndices.push_back(j);
-					if (iVerts[j].m_position == pNext.m_position)
+					if (iVerts[j].Position == pNext.Position)
 						oIndices.push_back(j);
-					if (iVerts[j].m_position == tempVec)
+					if (iVerts[j].Position == tempVec)
 						oIndices.push_back(j);
 				}
 
@@ -749,7 +752,7 @@ void ObjLoader::VertexTriangluation(std::vector<unsigned int>& oIndices, const s
 			}
 
 			// If Vertex is not an interior vertex
-			float angle = math::AngleBetweenV3(pPrev.m_position - pCur.m_position, pNext.m_position - pCur.m_position) * (180.0f / 3.141593f);
+			float angle = math::AngleBetweenV3(pPrev.Position - pCur.Position, pNext.Position - pCur.Position) * (180.0f / 3.141593f);
 			if (angle <= 0 && angle >= 180)
 				continue;
 
@@ -757,10 +760,10 @@ void ObjLoader::VertexTriangluation(std::vector<unsigned int>& oIndices, const s
 			bool inTri = false;
 			for (int j = 0; j < int(iVerts.size()); j++)
 			{
-				if (algorithm::inTriangle(iVerts[j].m_position, pPrev.m_position, pCur.m_position, pNext.m_position)
-					&& iVerts[j].m_position != pPrev.m_position
-					&& iVerts[j].m_position != pCur.m_position
-					&& iVerts[j].m_position != pNext.m_position)
+				if (algorithm::inTriangle(iVerts[j].Position, pPrev.Position, pCur.Position, pNext.Position)
+					&& iVerts[j].Position != pPrev.Position
+					&& iVerts[j].Position != pCur.Position
+					&& iVerts[j].Position != pNext.Position)
 				{
 					inTri = true;
 					break;
@@ -772,18 +775,18 @@ void ObjLoader::VertexTriangluation(std::vector<unsigned int>& oIndices, const s
 			// Create a triangle from pCur, pPrev, pNext
 			for (int j = 0; j < int(iVerts.size()); j++)
 			{
-				if (iVerts[j].m_position == pCur.m_position)
+				if (iVerts[j].Position == pCur.Position)
 					oIndices.push_back(j);
-				if (iVerts[j].m_position == pPrev.m_position)
+				if (iVerts[j].Position == pPrev.Position)
 					oIndices.push_back(j);
-				if (iVerts[j].m_position == pNext.m_position)
+				if (iVerts[j].Position == pNext.Position)
 					oIndices.push_back(j);
 			}
 
 			// Delete pCur from the list
 			for (int j = 0; j < int(tVerts.size()); j++)
 			{
-				if (tVerts[j].m_position == pCur.m_position)
+				if (tVerts[j].Position == pCur.Position)
 				{
 					tVerts.erase(tVerts.begin() + j);
 					break;
