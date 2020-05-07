@@ -27,7 +27,7 @@ float4 main(in VS_PosColNmlTex input) : SV_TARGET {
 	float4 specular = t_specular.Sample(t_sampler, input.TexCoord.xy);
 
 	Material m;
-	m.Ka = AmbientColor.rgb;
+	m.Ka = diffuse * AmbientColor.rgb;
 	m.Kd = diffuse;//DiffuseColor.rgb;
 	m.Ks = (1.0f - specular) * SpecularColor.rgb;
 	m.A  = SpecularColor.a;

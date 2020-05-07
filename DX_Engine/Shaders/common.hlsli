@@ -2,15 +2,15 @@
 
 /////////////////////// DEFINES
 
-#define REG_CB_PER_FRAME	b0
-#define REG_CB_PER_INSTN	b1
-#define REG_CB_PER_MATER	b2
+#define REG_CB_PER_FRAME		b0
+#define REG_CB_PER_INSTANCE		b1
+#define REG_CB_PER_MATERIAL		b2
 
-#define REG_TEX_DIFFUSE		t0
-#define REG_TEX_NORMAL		t1
-#define REG_TEX_SPECULAR	t2
+#define REG_TEX_DIFFUSE			t0
+#define REG_TEX_NORMAL			t1
+#define REG_TEX_SPECULAR		t2
 
-#define REG_SAMPLER_DEFAULT	s0
+#define REG_MIP_MIN_MAG_LINEAR	s0
 
 /////////////////////// CONSTANT BUFFERS
 
@@ -23,13 +23,13 @@ cbuffer cbPerFrame : register(REG_CB_PER_FRAME) {
 #endif
 }
 
-cbuffer cbPerInstance : register(REG_CB_PER_INSTN) {
+cbuffer cbPerInstance : register(REG_CB_PER_INSTANCE) {
 	float4x4 worldViewProj;
 	float4x4 worldView;
 	float4x4 world;
 };
 
-cbuffer cbPerMaterial : register(REG_CB_PER_MATER) {
+cbuffer cbPerMaterial : register(REG_CB_PER_MATERIAL) {
 #ifdef USE_DIR_LIGHT
 	float4	AmbientColor;
 	float4	DiffuseColor;
@@ -45,7 +45,7 @@ Texture2D	t_specular	: register(REG_TEX_SPECULAR);
 
 /////////////////////// SAMPLER STATES
 
-SamplerState	t_sampler	: register(REG_SAMPLER_DEFAULT);
+SamplerState	t_sampler	: register(REG_MIP_MIN_MAG_LINEAR);
 
 /////////////////////// INPUT ASSEMBLER STRUCTURES
 

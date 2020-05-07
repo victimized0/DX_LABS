@@ -37,7 +37,7 @@ bool Game::Initialize(int iconId, int width, int height) {
 	gEnv.Renderer()->SetBackColor(0.529f, 0.808f, 0.922f);
 
 	m_dirLight.LightCol = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	m_dirLight.LightAmb = DirectX::SimpleMath::Vector4(0.15f, 0.15f, 0.15f, 1.0f);
+	m_dirLight.LightAmb = DirectX::SimpleMath::Vector4(0.25f, 0.25f, 0.25f, 1.0f);
 	m_dirLight.LightDir = DirectX::SimpleMath::Vector3(-1.0f, -1.0f, -1.0f);
 
 	gEnv.Renderer()->SetSunLight(&m_dirLight);
