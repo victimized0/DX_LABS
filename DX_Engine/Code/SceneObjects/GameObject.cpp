@@ -1,13 +1,11 @@
 #include "pch.h"
 #include "GameObject.h"
+
 #include "../Helper.h"
 #include "../Engine.h"
-
 #include "../DDSTextureLoader.h"
 
-using std::vector;
 using namespace DirectX;
-using namespace DirectX::SimpleMath;
 
 GameObject::GameObject(const std::string& name)
 	: GameObject::GameObject(name, Vector3::Zero, "", 1.0f)
@@ -88,21 +86,32 @@ Matrix GameObject::GetWorld()const {
 		Matrix::CreateTranslation(Position);
 }
 
+void GameObject::SetTransform(Matrix& mat) {
+	Vector3 pos, scale;
+	Quaternion rot;
+
+	if (mat.Decompose(scale, rot, pos)) {
+		Position	= pos;
+		Rotation	= rot;
+		Scale		= scale.x;
+	}
+}
+
 void GameObject::Rescale(float dScale) {
 	Scale *= dScale;
 }
 
-void GameObject::Translate(const Vector3& dPos) {
+void GameObject::Move(const Vector3& dPos) {
 	Position += dPos;
 	m_boundingBox.Center = Position;
 }
 
-void GameObject::Rotate(const Vector3& dRot, float angle) {
+void GameObject::Orbit(const Vector3& dRot, float angle) {
 	Rotation *= Quaternion::CreateFromAxisAngle(dRot, angle);
 }
 
-void GameObject::Rotate(float dx, float dy, float dz, float angle) {
-	Rotate(Vector3(dx, dy, dz), angle);
+void GameObject::Orbit(float dx, float dy, float dz, float angle) {
+	Orbit(Vector3(dx, dy, dz), angle);
 }
 
 bool GameObject::Intersects(GameObject* other) {

@@ -9,8 +9,8 @@ public:
 									Katamari(const std::string& name, const DirectX::SimpleMath::Vector3& position, std::string modelPath, float scale = 1.0f);
 	virtual							~Katamari() = default;
 
-	void							Attach(std::unique_ptr<GameObject>&& pickup);
 	void							Initialise()final;
+	void							Attach(GameObject* pickup);
 	bool							Contains(GameObject* child);
 
 public:

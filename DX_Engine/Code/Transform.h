@@ -23,9 +23,9 @@ public:
 	
 	Matrix			ToMatrix()const;
 
-	void			Translate(const Vector3& pos);
-	void			Rotate(const Quaternion& rot);
-	void			Rotate(const Quaternion& rot, const Vector3& target);
+	void			Move(const Vector3& pos);
+	void			Orbit(const Quaternion& rot);
+	void			Orbit(const Quaternion& rot, const Vector3& target);
 	//void			Scale(const Vector3& scale);
 
 	Vector3&		Position() { return m_position; }

@@ -9,19 +9,19 @@ class GameLogic {
 public:
 
 public:
-	GameLogic();
-	~GameLogic();
+				GameLogic()								= default;
+				~GameLogic()							= default;
 
-	GameLogic(GameLogic const&) = delete;
-	GameLogic& operator=(GameLogic const&) = delete;
-	GameLogic(GameLogic&&) = delete;
-	GameLogic& operator=(GameLogic&&) = delete;
+				GameLogic(GameLogic const&)				= delete;
+				GameLogic& operator=(GameLogic const&)	= delete;
+				GameLogic(GameLogic&&)					= delete;
+				GameLogic& operator=(GameLogic&&)		= delete;
 
 	bool		Initialise(Scene* pScene);
 	void		Update(float dt);
 
 private:
-	Scene* m_pScene;
+	Scene*		m_pScene;
 
 };
 

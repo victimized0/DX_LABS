@@ -185,8 +185,8 @@
     <ClInclude Include="Code\SceneObjects\GameObject.h" />
     <ClInclude Include="Code\Helper.h" />
     <ClInclude Include="Code\Scene.h" />
-    <ClInclude Include="Code\SceneObjects\Mesh.h" />
-    <ClInclude Include="Code\SceneObjects\Model.h" />
+    <ClInclude Include="Code\Mesh.h" />
+    <ClInclude Include="Code\Model.h" />
     <ClInclude Include="Code\Shader.h" />
     <ClInclude Include="Code\StepTimer.h" />
     <ClInclude Include="Code\pch.h" />
@@ -210,8 +210,8 @@
     <ClCompile Include="Code\Engine.cpp" />
     <ClCompile Include="Code\SceneObjects\GameObject.cpp" />
     <ClCompile Include="Code\Scene.cpp" />
-    <ClCompile Include="Code\SceneObjects\Mesh.cpp" />
-    <ClCompile Include="Code\SceneObjects\Model.cpp" />
+    <ClCompile Include="Code\Mesh.cpp" />
+    <ClCompile Include="Code\Model.cpp" />
     <ClCompile Include="Code\Shader.cpp" />
     <ClCompile Include="Code\StepTimer.cpp" />
     <ClCompile Include="Code\pch.cpp">

@@ -26,21 +26,21 @@ Matrix Transform::ToMatrix()const {
 	return m_transform;
 }
 
-void Transform::Translate(const Vector3& pos) {
+void Transform::Move(const Vector3& pos) {
 	m_position += pos;
 	m_transform.Translation(m_position);
 }
 
-void Transform::Rotate(const Quaternion& rot) {
-	Translate(m_position);
+void Transform::Orbit(const Quaternion& rot) {
+	Move(m_position);
 	m_transform *= Matrix::CreateFromQuaternion(rot);
 	m_rotation = Quaternion::CreateFromRotationMatrix(m_transform);
-	Translate(-m_position);
+	Move(-m_position);
 }
 
-void Transform::Rotate(const Quaternion& rot, const Vector3& target) {
+void Transform::Orbit(const Quaternion& rot, const Vector3& target) {
 	m_transform = Matrix::CreateLookAt(m_position, target, Vector3::Up);
-	//Rotate(rot);
+	//Orbit(rot);
 }
 
 //void Transform::Scale(const Vector3& scale) {

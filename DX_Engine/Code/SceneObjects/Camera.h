@@ -1,36 +1,36 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef _CAMERA_H_
+#define _CAMERA_H_
 
 #include "GameObject.h"
-using namespace DirectX;
 
 class Camera : public GameObject {
+private:
+	typedef DirectX::SimpleMath::Vector3 Vector3;
+	typedef DirectX::SimpleMath::Matrix Matrix;
+
 public:
-											Camera(const std::string& name);
-	virtual									~Camera() = default;
+						Camera(const std::string& name);
+	virtual				~Camera() = default;
 
-	virtual void							Translate(float d);
-	virtual void							Rotate(float angleX, float angleY);
-	void									Zoom(float d);
+	virtual void		Move(float d);
+	virtual void		Orbit(float angleX, float angleY);
+	virtual void		Zoom(float d);
 
-	void									SetRadius(float radius) { m_radius = radius; }
-	void									SetTarget(const DirectX::SimpleMath::Vector3& target);
-
-	virtual DirectX::SimpleMath::Matrix		GetView()const;
-	virtual DirectX::SimpleMath::Matrix		GetProj()const;
-	virtual DirectX::SimpleMath::Vector3	GetTarget()const { return m_target; }
-	virtual DirectX::SimpleMath::Vector3	GetPosition()const;
+	virtual Matrix		GetView()const;
+	virtual Matrix		GetProj()const;
+	virtual Vector3		GetPosition()const;
 
 protected:
-	DirectX::SimpleMath::Vector3			m_target;
+	float				m_fov;
+	float				m_nearZ;
+	float				m_farZ;
+	float				m_theta;
+	float				m_phi;
 
-	float									m_fov;
-	float									m_nearZ;
-	float									m_farZ;
-	float									m_radius;
-	float									m_theta;
-	float									m_phi;
+public:
+	Vector3				Target;
+	float				Radius;
 
 };
 
-#endif // !CAMERA_H
+#endif //_CAMERA_H_

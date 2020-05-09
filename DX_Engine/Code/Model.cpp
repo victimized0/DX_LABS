@@ -1,9 +1,7 @@
 #include "pch.h"
 #include "Model.h"
 
-#include "../Helper.h"
-#include "../Engine.h"
-#include "../Math/SimpleMath.h"
+#include "Math/SimpleMath.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;

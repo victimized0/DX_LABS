@@ -8,8 +8,11 @@ Katamari::Katamari(const std::string& name, const DirectX::SimpleMath::Vector3& 
 
 }
 
-void Katamari::Attach(std::unique_ptr<GameObject>&& pickup) {
+void Katamari::Attach(GameObject* pickup) {
+	Matrix InvKatamari = GetWorld().Invert();
+	Matrix attachMat = pickup->GetWorld() * InvKatamari;
 
+	pickup->SetTransform(attachMat);
 }
 
 void Katamari::Initialise() {

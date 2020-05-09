@@ -123,7 +123,7 @@ void Game::OnMouseUpdate(float dt) {
 		auto camera = m_scene.GetMainCamera();
 		float dx = -delta.x * 1.5f;
 		float dy = -delta.y * 0.2f;
-		camera->Rotate(dx, dy);
+		camera->Orbit(dx, dy);
 	}
 }
 
@@ -146,23 +146,23 @@ void Game::OnKeyboardUpdate(float dt) {
 	}
 
 	if (kb.W) {
-		player->Translate(moveFwd * moveSpeed);
-		player->Rotate(viewRight, spinSpeed);
+		player->Move(moveFwd * moveSpeed);
+		player->Orbit(viewRight, spinSpeed);
 	}
 
 	if (kb.A) {
-		player->Translate(-viewRight * moveSpeed);
-		player->Rotate(viewFwd, spinSpeed);
+		player->Move(-viewRight * moveSpeed);
+		player->Orbit(viewFwd, spinSpeed);
 	}
 
 	if (kb.S) {
-		player->Translate(-moveFwd * moveSpeed);
-		player->Rotate(-viewRight, spinSpeed);
+		player->Move(-moveFwd * moveSpeed);
+		player->Orbit(-viewRight, spinSpeed);
 	}
 
 	if (kb.D) {
-		player->Translate(viewRight * moveSpeed);
-		player->Rotate(-viewFwd, spinSpeed);
+		player->Move(viewRight * moveSpeed);
+		player->Orbit(-viewFwd, spinSpeed);
 	}
 
 	if (kb.Z) {
@@ -193,5 +193,5 @@ void Game::OnKeyboardUpdate(float dt) {
 		m_dirLight.LightDir = DirectX::SimpleMath::Vector3(-1.0f, -1.0f, -1.0f);
 	}
 
-	camera->SetTarget(player->Position);
+	camera->Target = player->Position;
 }

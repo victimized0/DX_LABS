@@ -46,12 +46,6 @@
     <ClCompile Include="Code\Math\SimpleMath.cpp">
       <Filter>Code\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Code\SceneObjects\Mesh.cpp">
-      <Filter>Code\SceneObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\SceneObjects\Model.cpp">
-      <Filter>Code\SceneObjects</Filter>
-    </ClCompile>
     <ClCompile Include="Code\Primitives\Icosahedron.cpp">
       <Filter>Code\Primitives</Filter>
     </ClCompile>
@@ -63,6 +57,12 @@
     </ClCompile>
     <ClCompile Include="Code\System\AVLTree.cpp">
       <Filter>Code\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Model.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Mesh.cpp">
+      <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -132,12 +132,6 @@
     <ClInclude Include="Code\Math\SimpleMath.h">
       <Filter>Code\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Code\SceneObjects\Mesh.h">
-      <Filter>Code\SceneObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\SceneObjects\Model.h">
-      <Filter>Code\SceneObjects</Filter>
-    </ClInclude>
     <ClInclude Include="Code\Primitives\Icosahedron.h">
       <Filter>Code\Primitives</Filter>
     </ClInclude>
@@ -149,6 +143,12 @@
     </ClInclude>
     <ClInclude Include="Code\System\AVLTree.h">
       <Filter>Code\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Model.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Mesh.h">
+      <Filter>Code</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -89,7 +89,14 @@ StyleCopReport.xml
 *.scc
 
 # Ignore 3d objects
-!DX_LABS/DX_Katamari/Art/**/*.obj
+!DX_Katamari/Art/**/*.obj
+
+# Ignore temp files
+DX_Engine/Lib/
+DX_Engine/Temp/
+DX_Katamari/Temp/
+DX_Solar/Temp/
+DX_Pong/Temp/
 
 # Chutzpah Test files
 _Chutzpah*

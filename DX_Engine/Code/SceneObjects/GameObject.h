@@ -18,17 +18,19 @@ protected:
 public:
 												GameObject(const std::string& name, const Vector3& position, std::string modelPath = "", float scale = 1.0f);
 												GameObject(const std::string& name);
-	virtual										~GameObject() {}
+	virtual										~GameObject() = default;
 
 	virtual void								Initialise();
 	virtual void								Update(float dt);
 	virtual void								Draw(IDevCon* context, const Matrix& parentTransfom);
 
 	void										Rescale(float dScale);
-	void										Translate(const Vector3& dPos);
-	void										Rotate(const Vector3& dRot, float angle);
-	void										Rotate(float dRoll, float dPitch, float dYaw, float angle);
+	void										Move(const Vector3& dPos);
+	void										Orbit(const Vector3& dRot, float angle);
+	void										Orbit(float dRoll, float dPitch, float dYaw, float angle);
+
 	Matrix										GetWorld()const;
+	void										SetTransform(Matrix& mat);
 
 	std::vector<GameObject*>					GetIntersected(GameObject* obj);
 	virtual bool								Intersects(GameObject* other);

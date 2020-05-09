@@ -1,9 +1,8 @@
 #include "pch.h"
 #include "Mesh.h"
 
-#include "../Engine.h"
-#include "../Math/SimpleMath.h"
-#include "../DDSTextureLoader.h"
+#include "Math/SimpleMath.h"
+#include "DDSTextureLoader.h"
 #include <d3dcompiler.h>
 
 using namespace DirectX;

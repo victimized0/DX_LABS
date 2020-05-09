@@ -71,7 +71,7 @@ void Game::Update(float dt) {
 		auto camera = m_scene.GetMainCamera();
 		Vector3 delta = Vector3(float(mouse.x), float(mouse.y), 0.f) * 0.1f;
 
-		camera->Rotate(-delta.x, -delta.y);
+		camera->Orbit(-delta.x, -delta.y);
 	}
 
 	m_mouse->SetMode(mouse.leftButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);

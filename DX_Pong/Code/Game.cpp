@@ -101,28 +101,28 @@ void Game::Update(float dt) {
 	if (kb.W) {
 		float distToTop = fabs(lpaddle->GetWorld().Translation().y + 2 * lpaddle->GetBoundingBox().Extents.y / 2 - GRID_TOP_BORDER);
 		if (distToTop > dv) {
-			lpaddle->Translate(Vector3::Up * dv);
+			lpaddle->Move(Vector3::Up * dv);
 		}
 	}
 
 	if (kb.S) {
 		float distToBottom = fabs(lpaddle->GetWorld().Translation().y - 2 * lpaddle->GetBoundingBox().Extents.y / 2 - GRID_BOTTOM_BORDER);
 		if (distToBottom > dv) {
-			lpaddle->Translate(-Vector3::Up * dv);
+			lpaddle->Move(-Vector3::Up * dv);
 		}
 	}
 
 	if (kb.Up) {
 		float distToTop = fabs(rpaddle->GetWorld().Translation().y + 2 * rpaddle->GetBoundingBox().Extents.y / 2 - GRID_TOP_BORDER);
 		if (distToTop > dv) {
-			rpaddle->Translate(Vector3::Up * dv);
+			rpaddle->Move(Vector3::Up * dv);
 		}
 	}
 
 	if (kb.Down) {
 		float distToBottom = fabs(rpaddle->GetWorld().Translation().y - 2 * rpaddle->GetBoundingBox().Extents.y / 2 - GRID_BOTTOM_BORDER);
 		if (distToBottom > dv) {
-			rpaddle->Translate(-Vector3::Up * dv);
+			rpaddle->Move(-Vector3::Up * dv);
 		}
 	}
 }
