@@ -177,7 +177,6 @@
     <ClInclude Include="Code\D3D11Renderer.h" />
     <ClInclude Include="Code\Math\SimpleMath.h" />
     <ClInclude Include="Code\MeshLoaders\ObjLoader.h" />
-    <ClInclude Include="Code\NullRenderer.h" />
     <ClInclude Include="Code\PlatformHelpers.h" />
     <ClInclude Include="Code\Primitives\Icosahedron.h" />
     <ClInclude Include="Code\SceneObjects\Camera.h" />
@@ -191,7 +190,6 @@
     <ClInclude Include="Code\StepTimer.h" />
     <ClInclude Include="Code\pch.h" />
     <ClInclude Include="Code\System\AVLTree.h" />
-    <ClInclude Include="Code\Transform.h" />
     <ClInclude Include="Code\VertexFormats.h" />
     <ClInclude Include="Code\Interfaces\IMeshLoader.h" />
     <ClInclude Include="Code\Interfaces\ICamera.h" />
@@ -204,7 +202,6 @@
     <ClCompile Include="Code\Input\Mouse.cpp" />
     <ClCompile Include="Code\Math\SimpleMath.cpp" />
     <ClCompile Include="Code\MeshLoaders\ObjLoader.cpp" />
-    <ClCompile Include="Code\NullRenderer.cpp" />
     <ClCompile Include="Code\Primitives\Icosahedron.cpp" />
     <ClCompile Include="Code\SceneObjects\Camera.cpp" />
     <ClCompile Include="Code\Engine.cpp" />
@@ -221,7 +218,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Code\System\AVLTree.cpp" />
-    <ClCompile Include="Code\Transform.cpp" />
     <ClCompile Include="Code\VertexFormats.cpp" />
   </ItemGroup>
   <ItemGroup>

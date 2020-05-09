@@ -19,16 +19,10 @@
     <ClCompile Include="Code\Environment.cpp">
       <Filter>Code</Filter>
     </ClCompile>
-    <ClCompile Include="Code\NullRenderer.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
     <ClCompile Include="Code\pch.cpp">
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="Code\Shader.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="Code\Transform.cpp">
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="Code\VertexFormats.cpp">
@@ -99,16 +93,10 @@
     <ClInclude Include="Code\Engine.h">
       <Filter>Code</Filter>
     </ClInclude>
-    <ClInclude Include="Code\NullRenderer.h">
-      <Filter>Code</Filter>
-    </ClInclude>
     <ClInclude Include="Code\pch.h">
       <Filter>Code</Filter>
     </ClInclude>
     <ClInclude Include="Code\Shader.h">
-      <Filter>Code</Filter>
-    </ClInclude>
-    <ClInclude Include="Code\Transform.h">
       <Filter>Code</Filter>
     </ClInclude>
     <ClInclude Include="Code\Interfaces\IMeshLoader.h">

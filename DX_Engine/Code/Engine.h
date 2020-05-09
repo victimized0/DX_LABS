@@ -9,7 +9,7 @@
 #ifdef USE_DX
 #include "D3D11Renderer.h"
 #else
-#include "NullRenderer.h"
+#error Not implemented
 #endif
 
 class Engine {

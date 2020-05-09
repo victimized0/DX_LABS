@@ -4,7 +4,7 @@
 #ifdef _WIN32
 #define USE_DX
 #else
-#define USE_NULLRND
+#error Not implemented
 #endif
 
 //#ifdef USE_DX 
