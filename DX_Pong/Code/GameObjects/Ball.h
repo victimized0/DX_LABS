@@ -5,8 +5,8 @@
 
 class Ball : public GameObject {
 private:
-	static constexpr float DEFAULT_SPEED_X = 30.0f;
-	static constexpr float DEFAULT_SPEED_Y = 6.0f;
+	static constexpr float DEFAULT_SPEED_X = 50.0f;
+	static constexpr float DEFAULT_SPEED_Y = 8.0f;
 
 public:
 					Ball(const std::string& name, const DirectX::SimpleMath::Vector3& m_position);

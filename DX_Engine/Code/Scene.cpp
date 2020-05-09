@@ -17,7 +17,10 @@ void Scene::ReparentObject(const std::string& key, GameObject* pNewParent) {
 }
 
 void Scene::AddObject(std::unique_ptr<GameObject>&& obj, GameObject* parent) {
-    obj->Initialise();
+    if (!obj->IsInit()) {
+        obj->Initialise();
+    }
+
     if (parent == nullptr) {
         Root->AddChild( std::move(obj) );
     }

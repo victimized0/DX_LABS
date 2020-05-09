@@ -39,12 +39,14 @@ public:
 template <typename T>
 class ConstBuffer {
 public:
-    ConstBuffer()                                   = default;
-    ConstBuffer(ConstBuffer const& other) : mConstBuffer(other.mConstBuffer) {}
-    ConstBuffer& operator=(ConstBuffer const& other) { other.mConstBuffer = mConstBuffer }
+    ConstBuffer() = default;
 
     explicit ConstBuffer(IDevice* device) {
         Create(device);
+    }
+
+    void CopyFrom(const ConstBuffer<T>& other) {
+        m_constBuffer = other.m_constBuffer;
     }
 
     void Create(IDevice* device) {
@@ -56,29 +58,29 @@ public:
         desc.CPUAccessFlags     = D3D11_CPU_ACCESS_WRITE;
 
         ThrowIfFailed(
-            device->CreateBuffer(&desc, nullptr, mConstBuffer.ReleaseAndGetAddressOf())
+            device->CreateBuffer(&desc, nullptr, m_constBuffer.ReleaseAndGetAddressOf())
         );
     }
 
     void SetData(IDevCon* deviceContext, T const& value) {
-        assert(mConstBuffer);
+        assert(m_constBuffer);
 
         D3DMappedSubres mappedResource;
 
         ThrowIfFailed(
-            deviceContext->Map(mConstBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)
+            deviceContext->Map(m_constBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)
         );
 
         *static_cast<T*>(mappedResource.pData) = value;
-        deviceContext->Unmap(mConstBuffer.Get(), 0);
+        deviceContext->Unmap(m_constBuffer.Get(), 0);
     }
 
     IConstBuffer* GetBuffer() const noexcept {
-        return mConstBuffer.Get();
+        return m_constBuffer.Get();
     }
 
 private:
-    Microsoft::WRL::ComPtr<IConstBuffer> mConstBuffer;
+    Microsoft::WRL::ComPtr<IConstBuffer> m_constBuffer;
 };
 
 #endif //_CONST_BUFFER_H_

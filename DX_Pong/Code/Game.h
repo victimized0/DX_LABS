@@ -16,25 +16,25 @@ using DirectX::SimpleMath::Quaternion;
 
 class Game final : public Engine {
 public:
-						Game(HINSTANCE hInstance);
-	virtual				~Game();
+											Game(HINSTANCE hInstance);
+	virtual									~Game();
 
-						Game(const Game&)				= delete;
-						Game(Game&&)					= delete;
-						Game& operator=(const Game&)	= delete;
-						Game& operator=(Game&&)			= delete;
+											Game(const Game&)				= delete;
+											Game(Game&&)					= delete;
+											Game& operator=(const Game&)	= delete;
+											Game& operator=(Game&&)			= delete;
 
-	bool				Initialize(int iconId, int width, int height)final;
-
-private:
-	void				CreateScene();
-	void				Update(float dt)final;
+	bool									Initialize(int iconId, int width, int height)final;
 
 private:
-	std::unique_ptr<DirectX::Keyboard>	m_keyboard;
-	GameLogic							m_gameLogic;
-	POINT								m_lastMousePos;
-	float								m_paddleSpeed;
+	void									CreateScene();
+	void									Update(float dt)final;
+
+private:
+	std::unique_ptr<DirectX::Keyboard>		m_keyboard;
+	GameLogic								m_gameLogic;
+	POINT									m_lastMousePos;
+	float									m_paddleSpeed;
 };
 
 #endif //_PONG_H_

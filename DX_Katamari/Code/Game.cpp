@@ -29,8 +29,9 @@ bool Game::Initialize(int iconId, int width, int height) {
 		return false;
 	}
 
-	m_keyboard = std::make_unique<Keyboard>();
-	m_mouse = std::make_unique<Mouse>();
+	m_keyboard	= std::make_unique<Keyboard>();
+	m_mouse		= std::make_unique<Mouse>();
+
 	m_mouse->SetWindow(gEnv.HWnd);
 	m_mouse->SetMode(Mouse::MODE_RELATIVE);
 
@@ -41,6 +42,7 @@ bool Game::Initialize(int iconId, int width, int height) {
 	m_dirLight.LightDir = DirectX::SimpleMath::Vector3(-1.0f, -1.0f, -1.0f);
 
 	gEnv.Renderer()->SetSunLight(&m_dirLight);
+	m_scene.GetMainCamera()->Rotate(0, -0.25f);
 
 	CreateScene();
 	return true;
@@ -123,7 +125,7 @@ void Game::OnMouseUpdate(float dt) {
 		auto camera = m_scene.GetMainCamera();
 		float dx = -delta.x * 1.5f;
 		float dy = -delta.y * 0.2f;
-		camera->Orbit(dx, dy);
+		camera->Rotate(dx, dy);
 	}
 }
 
@@ -146,23 +148,23 @@ void Game::OnKeyboardUpdate(float dt) {
 	}
 
 	if (kb.W) {
-		player->Move(moveFwd * moveSpeed);
-		player->Orbit(viewRight, spinSpeed);
+		player->Translate(moveFwd * moveSpeed);
+		player->Rotate(viewRight, spinSpeed);
 	}
 
 	if (kb.A) {
-		player->Move(-viewRight * moveSpeed);
-		player->Orbit(viewFwd, spinSpeed);
+		player->Translate(-viewRight * moveSpeed);
+		player->Rotate(viewFwd, spinSpeed);
 	}
 
 	if (kb.S) {
-		player->Move(-moveFwd * moveSpeed);
-		player->Orbit(-viewRight, spinSpeed);
+		player->Translate(-moveFwd * moveSpeed);
+		player->Rotate(-viewRight, spinSpeed);
 	}
 
 	if (kb.D) {
-		player->Move(viewRight * moveSpeed);
-		player->Orbit(-viewFwd, spinSpeed);
+		player->Translate(viewRight * moveSpeed);
+		player->Rotate(-viewFwd, spinSpeed);
 	}
 
 	if (kb.Z) {

@@ -2,12 +2,9 @@
 #define _MODEL_H_
 #pragma once
 
+#include "ConstBuffer.h"
+#include "VertexFormats.h"
 #include "Mesh.h"
-
-#include "../ConstBuffer.h"
-#include "../VertexFormats.h"
-#include "../Math/SimpleMath.h"
-#include "../MeshLoaders/ObjLoader.h"
 
 class Model {
 private:
@@ -22,7 +19,12 @@ public:
 
 public:
 									Model(const std::string& path);
-	virtual							~Model() = default;
+	virtual							~Model()						= default;
+
+									Model(Model const&)				= delete;
+									Model& operator=(Model const&)	= delete;
+									Model(Model&&)					= delete;
+									Model& operator=(Model&&)		= delete;
 
 	void							Initialise(IDevice* device);
 	void							Draw(IDevCon* context, const Matrix& world);

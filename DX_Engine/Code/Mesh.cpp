@@ -15,6 +15,14 @@ Mesh::Mesh(const std::string& name)
 
 }
 
+void Mesh::SetColor(const Vector3& vCol) {
+	assert(m_vertices.size() > 0);
+
+	for (size_t index = 0; index < m_vertices.size(); ++index) {
+		m_vertices[index].Color = vCol;
+	}
+}
+
 Matrix Mesh::GetMatrix()const {
 	return m_transform;
 }
@@ -25,10 +33,6 @@ void Mesh::Initialise(IDevice* device) {
 
 	IBlob* pVsBlob = nullptr;
 	IBlob* pPsBlob = nullptr;
-
-	for (size_t idx = 0; idx < m_vertices.size(); ++idx) {
-		m_vertices[idx].Color = Vector3::One;
-	}
 
 	m_constBuffer.Create(device);
 
@@ -144,14 +148,14 @@ void Mesh::SetMaterial(const Material& mat) {
 	ThrowIfFailed(gEnv.Renderer()->GetDevice()->CreateSamplerState(&samplerDesc, &m_renderInfo.pSamplerState));
 }
 
-void Mesh::CreateVertices(std::vector<Vertex>& vertices) {
+void Mesh::CreateVertices(const std::vector<Vertex>& vertices) {
 	assert(m_vertices.size() == 0);
 
 	m_vertices = vertices;
 	gEnv.Renderer()->CreateBuffer(m_vertices.size(), sizeof(Vertex), &m_vertices[0], D3DBindVertexBuffer, &m_renderInfo.pVertexBuffer);
 }
 
-void Mesh::CreateIndices(std::vector<UINT>& indices) {
+void Mesh::CreateIndices(const std::vector<UINT>& indices) {
 	assert(m_indices.size() == 0);
 
 	m_indices = indices;

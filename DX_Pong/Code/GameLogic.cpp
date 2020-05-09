@@ -43,7 +43,7 @@ void GameLogic::Update(float dt) {
 
 	float dx = ball->GetSpeedX() * dt;
 	float dy = ball->GetSpeedY() * dt;
-	ball->Move( { dx, dy, 0.0f } );
+	ball->Translate( { dx, dy, 0.0f } );
 
 	bool crossedBorderRight	= ballBB.Center.x < GRID_RIGHT_BORDER;
 	bool crossedBorderLeft	= ballBB.Center.x > GRID_LEFT_BORDER;

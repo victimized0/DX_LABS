@@ -10,13 +10,13 @@ Camera::Camera(const std::string& name)
 	: GameObject(name)
 	, Target(0.0f, 1.0f, 0.0f)
 
-	, m_fov(XM_PIDIV4)
+	, FoV(XM_PIDIV4)
 	, m_nearZ(0.1f)
 	, m_farZ(1000.0f)
 	
 	, Radius(50.0f)
 	, m_theta(XM_PIDIV2)
-	, m_phi(XM_PI/2.25f)
+	, m_phi(XM_PIDIV2)
 {
 
 }
@@ -25,9 +25,9 @@ Matrix Camera::GetView()const {
 	return Matrix::CreateLookAt(GetPosition(), Target, Vector3::Up);
 }
 
-Matrix Camera::GetProj()const {
-	float aspectRatio = static_cast<float>(gEnv.Width) / static_cast<float>(gEnv.Height);
-	return Matrix::CreatePerspectiveFieldOfView(m_fov, aspectRatio, m_nearZ, m_farZ);
+Matrix Camera::GetProj(int width, int height)const {
+	float aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+	return Matrix::CreatePerspectiveFieldOfView(FoV, aspectRatio, m_nearZ, m_farZ);
 }
 
 Vector3 Camera::GetPosition()const {
@@ -47,7 +47,7 @@ void Camera::Zoom(float d) {
 	Radius += d;
 }
 
-void Camera::Orbit(float angleX, float angleY) {
+void Camera::Rotate(float angleX, float angleY) {
 	m_theta	+= angleX;
 	m_phi	+= angleY;
 	m_phi	= std::clamp(m_phi, 0.01f, XM_PI - 0.01f);

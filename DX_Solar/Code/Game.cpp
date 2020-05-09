@@ -1,13 +1,10 @@
 #include "pch.h"
 #include "Game.h"
+
+#include "Model.h"
+#include "Mesh.h"
 #include "Helper.h"
-
-#include "SceneObjects/Model.h"
-#include "SceneObjects/Mesh.h"
-
-#include "VertexFormats.h"
 #include "Math/SimpleMath.h"
-#include "Helper.h"
 
 using std::vector;
 using std::wstring;
@@ -21,10 +18,6 @@ Game::Game(HINSTANCE hInstance)
 	m_wndCaption = L"DX Solar System";
 }
 
-Game::~Game() {
-
-}
-
 bool Game::Initialize(int iconId, int width, int height) {
 	if (!Engine::Initialize(iconId, width, height)) {
 		return false;
@@ -32,49 +25,64 @@ bool Game::Initialize(int iconId, int width, int height) {
 
 	m_mouse = std::make_unique<Mouse>();
 	m_mouse->SetWindow(gEnv.HWnd);
+	m_mouse->SetMode(Mouse::MODE_RELATIVE);
 
 	CreateScene();
 	return true;
 }
 
 void Game::CreateScene() {
-	Mesh sunMesh("sun_mesh");
-	::CreateIcosahedron(20.0f, sunMesh.Vertices(), sunMesh.Indices());
-	sunMesh.Initialise(gEnv.Renderer()->GetDevice());
+	auto sun	= std::make_unique<GameObject>(NAME_SUN);
+	auto earth	= std::make_unique<GameObject>(NAME_EARTH, Vector3(200, 0, 0));
+	auto moon	= std::make_unique<GameObject>(NAME_MOON,  Vector3(25, 0, 0));
 
-	auto sun = std::make_unique<Model>(NAME_SUN);
-	sun->AddMesh(std::move(sunMesh));
-	m_scene.AddObject(std::move(sun));
+	Mesh sunMesh	( "sun_mesh" );
+	Mesh earthMesh	( "earth_mesh" );
+	Mesh moonMesh	( "moon_mesh" );
 
-	//Mesh<VertexType::VertexPosCol> earthMesh("earth_mesh", EVertexType::P3F_C3F);
-	//::CreateIcosahedron(5.0f, earthMesh.Vertices(), earthMesh.Indices());
-	//earthMesh.Initialise(gEnv.Renderer()->GetDevice());
+	::CreateIcosahedron(50.0f, sunMesh.Vertices(),	 sunMesh.Indices());
+	::CreateIcosahedron(10.0f, earthMesh.Vertices(), earthMesh.Indices());
+	::CreateIcosahedron(2.0f,  moonMesh.Vertices(),  moonMesh.Indices());
 
-	//auto earth = std::make_unique<Model>(NAME_EARTH, Vector3(75, 0, 0));
-	//earth->AddMesh(earthMesh);
-	//m_scene.AddObject(std::move(earth));
+	sunMesh.SetColor( Vector3(1.0f, 1.0f, 0.0f) );
+	earthMesh.SetColor( Vector3(0.0f, 0.0f, 1.0f) );
+	moonMesh.SetColor( Vector3(1.0f, 1.0f, 1.0f) );
 
-	//auto moon = std::make_shared<SolarObject>(NAME_MOON, Vector3(65, 0, 0));
-	//auto pMoon = dynamic_cast<GameObject*>(moon.get());
-	//::CreateIcosahedron(&pMoon, 1.f, 0.2f, 0.2f, 0.2f);
+	sun->GetModel().AddMesh(sunMesh);
+	earth->GetModel().AddMesh(earthMesh);
+	moon->GetModel().AddMesh(moonMesh);
 
-	//m_scene.AddObject(earth);
-	//m_scene.AddObject(moon);
+	earth->AddChild( std::move(moon) );
+	sun->AddChild( std::move(earth) );
 
-	m_scene.GetMainCamera()->SetRadius(200);
+	m_scene.AddObject( std::move(sun) );
+	m_scene.GetMainCamera()->Radius = 600;
 }
 
 void Game::Update(float dt) {
-	auto mouse = m_mouse->GetState();
+	ProcessMouse();
 
-	if (mouse.positionMode == Mouse::MODE_RELATIVE) {
-		auto camera = m_scene.GetMainCamera();
-		Vector3 delta = Vector3(float(mouse.x), float(mouse.y), 0.f) * 0.1f;
+	auto pSun	= dynamic_cast<GameObject*>( m_scene.GetSceneObject(NAME_SUN) );
+	auto pEarth	= dynamic_cast<GameObject*>( m_scene.GetSceneObject(NAME_EARTH) );
+	auto pMoon	= dynamic_cast<GameObject*>( m_scene.GetSceneObject(NAME_MOON) );
 
-		camera->Orbit(-delta.x, -delta.y);
+	if (pSun)	pSun->Rotate(Vector3::Up, 0.01f);
+	if (pEarth)	pEarth->Rotate(Vector3::Up, 0.1f);
+	if (pMoon)	pMoon->Rotate(Vector3::Up, 0.1f);
+}
+
+void Game::ProcessMouse() {
+	auto camera	= m_scene.GetMainCamera();
+	auto mouse	= m_mouse->GetState();
+
+	if (mouse.leftButton) {
+		auto delta = Vector3( float(mouse.x), float(mouse.y), 0.f ) * 0.1f;
+		camera->Rotate(-delta.x, -delta.y);
 	}
 
-	m_mouse->SetMode(mouse.leftButton ? Mouse::MODE_RELATIVE : Mouse::MODE_ABSOLUTE);
+	if (mouse.rightButton) {
+		float dy = XMConvertToRadians(5 * float(mouse.y));
+		camera->Move(dy);
+	}
 
-	//auto pSun = dynamic_cast<Model*>(m_scene.GetSceneObject(NAME_SUN));
 }

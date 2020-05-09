@@ -2,8 +2,8 @@
 #define _MESH_H_
 #pragma once
 
-#include "../VertexFormats.h"
-#include "../ConstBuffer.h"
+#include "VertexFormats.h"
+#include "ConstBuffer.h"
 
 class Mesh {
 private:
@@ -18,12 +18,12 @@ public:
 
 public:
 									Mesh(const std::string& name);
-	virtual							~Mesh() = default;
+	virtual							~Mesh()							= default;
 
-									Mesh(const Mesh&) = default;
-									Mesh& operator=(const Mesh&) = default;
-									//Mesh(Mesh&&);
-									//Mesh& operator=(Mesh&&);
+									Mesh(const Mesh&)				= default;
+									Mesh& operator=(const Mesh&)	= default;
+									Mesh(Mesh&&)					= default;
+									Mesh& operator=(Mesh&&)			= default;
 
 	void							Initialise(IDevice* device);
 	void							Draw(IDevCon* context);
@@ -34,12 +34,14 @@ public:
 	void							SetRenderInfo(const RenderInfo& ri) { m_renderInfo = ri; }
 	void							SetMaterial(const Material& mat);
 
-	void							CreateVertices(std::vector<Vertex>& vertices);
-	void							CreateIndices(std::vector<UINT>& indices);
-	const std::vector<Vertex>&		GetVertices()const { return m_vertices; }
-	const std::vector<UINT>&		GetIndices()const { return m_indices; }
-	const void*						Vertices()const { &m_vertices[0]; }
-	const void*						Indices()const { &m_indices[0]; }
+	void							SetColor(const Vector3& vCol);
+
+	void							CreateVertices(const std::vector<Vertex>& vertices);
+	void							CreateIndices(const std::vector<UINT>& indices);
+	const std::vector<Vertex>&		Vertices()const { return m_vertices; }
+	const std::vector<UINT>&		Indices()const { return m_indices; }
+	std::vector<Vertex>&			Vertices() { return m_vertices; }
+	std::vector<UINT>&				Indices() { return m_indices; }
 
 private:
 	std::vector<Vertex>				m_vertices;

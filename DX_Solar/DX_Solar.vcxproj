@@ -191,7 +191,6 @@
     <ClInclude Include="Code\Game.h" />
     <ClInclude Include="Code\pch.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Code\GameObjects\SolarObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\Game.cpp" />
@@ -211,7 +210,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Code\GameObjects\SolarObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX_Solar.rc" />

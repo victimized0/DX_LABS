@@ -1,5 +1,6 @@
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
+#pragma once
 
 #include "GameObject.h"
 
@@ -13,21 +14,21 @@ public:
 	virtual				~Camera() = default;
 
 	virtual void		Move(float d);
-	virtual void		Orbit(float angleX, float angleY);
+	virtual void		Rotate(float angleX, float angleY);
 	virtual void		Zoom(float d);
 
 	virtual Matrix		GetView()const;
-	virtual Matrix		GetProj()const;
+	virtual Matrix		GetProj(int width, int height)const;
 	virtual Vector3		GetPosition()const;
 
 protected:
-	float				m_fov;
 	float				m_nearZ;
 	float				m_farZ;
 	float				m_theta;
 	float				m_phi;
 
 public:
+	float				FoV;
 	Vector3				Target;
 	float				Radius;
 

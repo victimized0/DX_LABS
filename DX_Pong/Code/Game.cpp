@@ -8,7 +8,7 @@ using std::vector;
 
 Game::Game(HINSTANCE hInstance)
 	: Engine(hInstance)
-	, m_paddleSpeed(25.0f)
+	, m_paddleSpeed(50.0f)
 {
 	m_wndCaption = L"DX Pong";
 	m_lastMousePos.x = 0;
@@ -30,12 +30,15 @@ bool Game::Initialize(int iconId, int width, int height) {
 	
 	m_keyboard = std::make_unique<Keyboard>();
 
+	auto camera = m_scene.GetMainCamera();
+	camera->Radius = 100;
+
 	CreateScene();
 	return true;
 }
 
 void Game::CreateScene() {
-	auto ball	 = std::make_unique<Ball>( NAME_BALL, Vector3(0.0f, 0.0f, 0.0f) );
+	auto ball	 = std::make_unique<Ball>( NAME_BALL, Vector3::Zero );
 	auto lPaddle = std::make_unique<GameObject>( NAME_LPADDLE, Vector3(26.0f, 0.0f, 0.0f) );
 	auto rPaddle = std::make_unique<GameObject>( NAME_RPADDLE, Vector3(-26.0f, 0.0f, 0.0f) );
 
@@ -85,8 +88,6 @@ void Game::CreateScene() {
 	m_scene.AddObject( std::move(lPaddle) );
 	m_scene.AddObject( std::move(rPaddle) );
 	m_scene.AddObject( std::move(ball) );
-
-	//m_scene.GetMainCamera()->Update();
 }
 
 void Game::Update(float dt) {
@@ -94,35 +95,35 @@ void Game::Update(float dt) {
 	auto rpaddle = dynamic_cast<GameObject*>(m_scene.GetSceneObject(NAME_RPADDLE));
 
 	m_gameLogic.Update(dt);
-	auto kb = m_keyboard->GetState();
 
+	auto kb	 = m_keyboard->GetState();
 	float dv = m_paddleSpeed * dt;
 
 	if (kb.W) {
 		float distToTop = fabs(lpaddle->GetWorld().Translation().y + 2 * lpaddle->GetBoundingBox().Extents.y / 2 - GRID_TOP_BORDER);
 		if (distToTop > dv) {
-			lpaddle->Move(Vector3::Up * dv);
+			lpaddle->Translate(Vector3::Up * dv);
 		}
 	}
 
 	if (kb.S) {
 		float distToBottom = fabs(lpaddle->GetWorld().Translation().y - 2 * lpaddle->GetBoundingBox().Extents.y / 2 - GRID_BOTTOM_BORDER);
 		if (distToBottom > dv) {
-			lpaddle->Move(-Vector3::Up * dv);
+			lpaddle->Translate(-Vector3::Up * dv);
 		}
 	}
 
 	if (kb.Up) {
 		float distToTop = fabs(rpaddle->GetWorld().Translation().y + 2 * rpaddle->GetBoundingBox().Extents.y / 2 - GRID_TOP_BORDER);
 		if (distToTop > dv) {
-			rpaddle->Move(Vector3::Up * dv);
+			rpaddle->Translate(Vector3::Up * dv);
 		}
 	}
 
 	if (kb.Down) {
 		float distToBottom = fabs(rpaddle->GetWorld().Translation().y - 2 * rpaddle->GetBoundingBox().Extents.y / 2 - GRID_BOTTOM_BORDER);
 		if (distToBottom > dv) {
-			rpaddle->Move(-Vector3::Up * dv);
+			rpaddle->Translate(-Vector3::Up * dv);
 		}
 	}
 }

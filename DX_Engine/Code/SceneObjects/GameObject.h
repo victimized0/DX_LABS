@@ -1,33 +1,32 @@
-#ifndef _GEOMETY_OBJECT_H_
-#define _GEOMETY_OBJECT_H_
+#ifndef _GAME_OBJECT_H_
+#define _GAME_OBJECT_H_
 
-#include "Model.h"
-
+#include "../Model.h"
 #include "../Math/SimpleMath.h"
-
-using Microsoft::WRL::ComPtr;
 
 class GameObject {
 protected:
-	using Quaternion = DirectX::SimpleMath::Quaternion;
-	using Vector2 = DirectX::SimpleMath::Vector2; 
-	using Vector3 = DirectX::SimpleMath::Vector3; 
-	using Vector4 = DirectX::SimpleMath::Vector4; 
-	using Matrix  = DirectX::SimpleMath::Matrix;
+	typedef DirectX::SimpleMath::Quaternion		Quaternion;
+	typedef DirectX::SimpleMath::Vector3		Vector3;
+	typedef DirectX::SimpleMath::Matrix			Matrix;
 
 public:
-												GameObject(const std::string& name, const Vector3& position, std::string modelPath = "", float scale = 1.0f);
-												GameObject(const std::string& name);
-	virtual										~GameObject() = default;
+												GameObject(const std::string& name, const Vector3& position = Vector3::Zero, const std::string& modelPath = "", float scale = 1.0f, const Quaternion& rot = Quaternion::Identity);
+	virtual										~GameObject()								= default;
+
+												GameObject(GameObject const&)				= default;
+												GameObject& operator=(GameObject const&)	= default;
+												GameObject(GameObject&&)					= default;
+												GameObject& operator=(GameObject&&)			= default;
 
 	virtual void								Initialise();
 	virtual void								Update(float dt);
 	virtual void								Draw(IDevCon* context, const Matrix& parentTransfom);
 
 	void										Rescale(float dScale);
-	void										Move(const Vector3& dPos);
-	void										Orbit(const Vector3& dRot, float angle);
-	void										Orbit(float dRoll, float dPitch, float dYaw, float angle);
+	void										Translate(const Vector3& dPos);
+	void										Rotate(const Vector3& dRot, float angle);
+	void										Rotate(float dRoll, float dPitch, float dYaw, float angle);
 
 	Matrix										GetWorld()const;
 	void										SetTransform(Matrix& mat);
@@ -38,6 +37,7 @@ public:
 
 	Model&										GetModel() { return m_model; }
 	const std::string&							GetName() { return m_name; }
+	bool										IsInit() { return m_isInit; }
 
 	void										Reparent(const std::string& name, GameObject* pNewParent);
 	void										AddChild(std::unique_ptr<GameObject>&& child);
@@ -46,6 +46,9 @@ public:
 
 protected:
 	virtual void								CreateBoundingBox();
+
+private:
+	bool										m_isInit;
 
 protected:
 	std::string									m_name;

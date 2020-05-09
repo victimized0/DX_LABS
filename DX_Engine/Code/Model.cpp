@@ -2,6 +2,7 @@
 #include "Model.h"
 
 #include "Math/SimpleMath.h"
+#include "MeshLoaders/ObjLoader.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -14,7 +15,7 @@ Model::Model(const std::string& path)
 
 void Model::AddMesh(const Mesh& mesh) {
 	m_meshes.push_back(mesh);
-	m_vertices.insert(m_vertices.end(), mesh.GetVertices().begin(), mesh.GetVertices().end());
+	m_vertices.insert(m_vertices.end(), mesh.Vertices().begin(), mesh.Vertices().end());
 }
 
 bool Model::LoadFromFile(std::string path) {
@@ -74,7 +75,7 @@ void Model::Draw(IDevCon* context, const Matrix& world) {
 
 	CBPerInstance cbPerInstance = {};
 	auto camera = Engine::GetPtr()->GetScene().GetMainCamera();
-	cbPerInstance.WorldViewProj	= world * camera->GetView() * camera->GetProj();
+	cbPerInstance.WorldViewProj	= world * camera->GetView() * camera->GetProj(gEnv.Width, gEnv.Height);
 	cbPerInstance.WorldView		= world * camera->GetView();
 	cbPerInstance.World			= world;
 	m_constBuffer.SetData(context, cbPerInstance);

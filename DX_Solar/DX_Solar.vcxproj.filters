@@ -6,9 +6,6 @@
     <ClCompile Include="Code\Game.cpp">
       <Filter>Code</Filter>
     </ClCompile>
-    <ClCompile Include="Code\GameObjects\SolarObject.cpp">
-      <Filter>Code\GameObjects</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\pch.h" />
@@ -18,9 +15,6 @@
     <ClInclude Include="Code\Game.h">
       <Filter>Code</Filter>
     </ClInclude>
-    <ClInclude Include="Code\GameObjects\SolarObject.h">
-      <Filter>Code\GameObjects</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Code">
@@ -28,9 +22,6 @@
     </Filter>
     <Filter Include="Resources">
       <UniqueIdentifier>{186e4929-ec61-440f-9283-55377ab4c55a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Code\GameObjects">
-      <UniqueIdentifier>{c4a977b7-a110-4070-8cf1-8be90108d6b4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

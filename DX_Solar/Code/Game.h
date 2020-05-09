@@ -15,7 +15,7 @@ static const char* NAME_MOON	= "The Moon";
 class Game final : public Engine {
 public:
 					Game(HINSTANCE hInstance);
-	virtual			~Game();
+	virtual			~Game()								= default;
 
 					Game(const Game&)					= delete;
 					Game(Game&&)						= delete;
@@ -25,6 +25,7 @@ public:
 	bool			Initialize(int iconId, int width, int height)final;
 
 private:
+	void			ProcessMouse();
 	void			CreateScene();
 	void			Update(float dt)final;
 

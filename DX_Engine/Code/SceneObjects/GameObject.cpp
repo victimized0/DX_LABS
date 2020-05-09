@@ -5,20 +5,13 @@
 #include "../Engine.h"
 #include "../DDSTextureLoader.h"
 
-using namespace DirectX;
-
-GameObject::GameObject(const std::string& name)
-	: GameObject::GameObject(name, Vector3::Zero, "", 1.0f)
-{
-
-}
-
-GameObject::GameObject(const std::string& name, const Vector3& position, std::string modelPath, float scale)
+GameObject::GameObject(const std::string& name, const Vector3& position, const std::string& modelPath, float scale, const Quaternion& rot)
 	: m_name(name)
 	, m_model(modelPath)
 	, Scale(scale)
 	, Position(position)
-	, Rotation(Quaternion::Identity)
+	, Rotation(rot)
+	, m_isInit(false)
 {
 
 }
@@ -40,6 +33,9 @@ void GameObject::Reparent(const std::string& name, GameObject* pNewParent) {
 }
 
 void GameObject::AddChild(std::unique_ptr<GameObject>&& child) {
+	if (!child->IsInit()) {
+		child->Initialise();
+	}
 	m_children.push_back( std::move(child) );
 }
 
@@ -55,19 +51,28 @@ void GameObject::RemoveChild(const std::string& name) {
 }
 
 GameObject* GameObject::Find(const std::string& name) {
+	if ( GetName() == name ) return this;
+
 	for (size_t index = 0; index < m_children.size(); ++index) {
 		GameObject* obj = m_children[index].get();
-		if (obj->GetName() == name) {
+
+		if ( obj->GetName() == name ) {
 			return obj;
 		}
-		obj->Find(name);
+
+		obj = obj->Find(name);
+		if ( obj != nullptr ) {
+			return obj;
+		}
 	}
+
 	return nullptr;
 }
 
 void GameObject::Initialise() {
 	m_model.Initialise(gEnv.Renderer()->GetDevice());
 	CreateBoundingBox();
+	m_isInit = true;
 }
 
 void GameObject::Draw(IDevCon* context, const Matrix& parentTransfom) {
@@ -101,17 +106,17 @@ void GameObject::Rescale(float dScale) {
 	Scale *= dScale;
 }
 
-void GameObject::Move(const Vector3& dPos) {
+void GameObject::Translate(const Vector3& dPos) {
 	Position += dPos;
 	m_boundingBox.Center = Position;
 }
 
-void GameObject::Orbit(const Vector3& dRot, float angle) {
+void GameObject::Rotate(const Vector3& dRot, float angle) {
 	Rotation *= Quaternion::CreateFromAxisAngle(dRot, angle);
 }
 
-void GameObject::Orbit(float dx, float dy, float dz, float angle) {
-	Orbit(Vector3(dx, dy, dz), angle);
+void GameObject::Rotate(float dx, float dy, float dz, float angle) {
+	Rotate(Vector3(dx, dy, dz), angle);
 }
 
 bool GameObject::Intersects(GameObject* other) {
