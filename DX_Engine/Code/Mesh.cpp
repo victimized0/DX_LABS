@@ -31,28 +31,13 @@ void Mesh::Initialise(IDevice* device) {
 	assert(m_vertices.size() > 0);
 	assert(m_indices.size() > 0);
 
-	IBlob* pVsBlob = nullptr;
-	IBlob* pPsBlob = nullptr;
-
-	m_constBuffer.Create(device);
-
-	UINT shaderFlags = 0;
-#ifdef _DEBUG
-	shaderFlags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#endif
-
 	if (m_renderInfo.pDiffuseView != nullptr) {
-		std::vector<D3DShaderMacro> macros = {
-			{ "USE_DIR_LIGHT", "1" },
-			{ NULL, NULL }
-		};
-
-		if (FAILED( gEnv.Renderer()->CompileShader(L"textured_vs.hlsl", "main", "vs_5_0", macros, shaderFlags, &pVsBlob) )) return;
-		if (FAILED( gEnv.Renderer()->CompileShader(L"textured_ps.hlsl", "main", "ps_5_0", macros, shaderFlags, &pPsBlob) )) return;
+		m_renderInfo.pVertexShader = dynamic_cast<VertexShader*>(gEnv.ResManager()->GetResource( SV_TEXTURED ));
+		m_renderInfo.pPixelShader  = dynamic_cast<PixelShader*> (gEnv.ResManager()->GetResource( SP_TEXTURED ));
 	}
 	else {
-		if (FAILED(gEnv.Renderer()->CreateBlob("/Data/Shaders/standard_vs.cso", &pVsBlob))) return;
-		if (FAILED(gEnv.Renderer()->CreateBlob("/Data/Shaders/standard_ps.cso", &pPsBlob))) return;
+		m_renderInfo.pVertexShader = dynamic_cast<VertexShader*>(gEnv.ResManager()->GetResource( SV_STANDARD ));
+		m_renderInfo.pPixelShader  = dynamic_cast<PixelShader*> (gEnv.ResManager()->GetResource( SP_STANDARD ));
 	}
 
 	ThrowIfFailed(
@@ -63,25 +48,14 @@ void Mesh::Initialise(IDevice* device) {
 		gEnv.Renderer()->CreateBuffer(m_indices.size(), sizeof(UINT), &m_indices[0], D3DBindIndexBuffer, &m_renderInfo.pIndexBuffer)
 	);
 
-	ThrowIfFailed(
-		device->CreateVertexShader(pVsBlob->GetBufferPointer(), pVsBlob->GetBufferSize(), nullptr, &m_renderInfo.pVertexShader)
-	);
-
-	ThrowIfFailed(
-		device->CreatePixelShader(pPsBlob->GetBufferPointer(), pPsBlob->GetBufferSize(), nullptr, &m_renderInfo.pPixelShader)
-	);
-
-	device->CreateInputLayout(Vertex::InputElements, Vertex::ElementsCount,
-							  pVsBlob->GetBufferPointer(), pVsBlob->GetBufferSize(),
-							  &m_renderInfo.pInputLayout);
+	m_constBuffer.Create(device);
 }
 
 void Mesh::Draw(IDevCon* context) {
 	if (m_renderInfo.pVertexBuffer == nullptr ||
 		m_renderInfo.pIndexBuffer  == nullptr ||
 		m_renderInfo.pVertexShader == nullptr ||
-		m_renderInfo.pPixelShader  == nullptr ||
-		m_renderInfo.pInputLayout  == nullptr)
+		m_renderInfo.pPixelShader  == nullptr )
 	{
 		return;
 	}
@@ -90,14 +64,8 @@ void Mesh::Draw(IDevCon* context) {
 	UINT offset = 0;
 
 	context->IASetPrimitiveTopology(m_renderInfo.Topology);
-	context->IASetInputLayout(m_renderInfo.pInputLayout.Get());
 	context->IASetVertexBuffers(0, 1, m_renderInfo.pVertexBuffer.GetAddressOf(), &stride, &offset);
 	context->IASetIndexBuffer(m_renderInfo.pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, offset);
-
-	context->VSSetShader(m_renderInfo.pVertexShader.Get(), nullptr, 0);
-	context->PSSetShader(m_renderInfo.pPixelShader.Get(), nullptr, 0);
-	context->PSSetShaderResources(0, 1, m_renderInfo.pDiffuseView.GetAddressOf());
-	context->PSSetSamplers(0, 1, m_renderInfo.pSamplerState.GetAddressOf());
 
 	CBPerMaterial cbPerMaterial = {};
 	cbPerMaterial.AmbientColor	= Vector4(m_material.AmbientColor, 0.0f);
@@ -106,14 +74,18 @@ void Mesh::Draw(IDevCon* context) {
 	m_constBuffer.SetData(context, cbPerMaterial);
 	IConstBuffer* cb = m_constBuffer.GetBuffer();
 
-	context->PSSetConstantBuffers((UINT)CBPerMaterial::Slot, 1, &cb);
+	m_renderInfo.pVertexShader->BindToPipeline();
+	m_renderInfo.pPixelShader->BindToPipeline();
+	m_renderInfo.pPixelShader->BindSamplers( 0, 1, m_renderInfo.pSamplerState.GetAddressOf() );
+	m_renderInfo.pPixelShader->BindConstBuffers( (UINT)CBPerMaterial::Slot, 1, &cb );
+	m_renderInfo.pPixelShader->BindResourceViews( 0, 1, m_renderInfo.pDiffuseView.GetAddressOf() );
 
 	if (m_renderInfo.pNormalView != nullptr) {
-		context->PSSetShaderResources(1, 1, m_renderInfo.pNormalView.GetAddressOf());
+		m_renderInfo.pPixelShader->BindResourceViews(1, 1, m_renderInfo.pNormalView.GetAddressOf());
 	}
 
 	if (m_renderInfo.pSpecularView != nullptr) {
-		context->PSSetShaderResources(2, 1, m_renderInfo.pSpecularView.GetAddressOf());
+		m_renderInfo.pPixelShader->BindResourceViews(2, 1, m_renderInfo.pSpecularView.GetAddressOf());
 	}
 
 	if (m_renderInfo.pRSState != nullptr) {

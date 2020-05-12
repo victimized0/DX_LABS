@@ -25,6 +25,7 @@ public:
 
 public:
 	bool									Initialise()final;
+	void									CreateResources()final;
 	void									Render()final;
 	void									ClearFrame()final;
 
@@ -39,8 +40,6 @@ public:
 
 public:
 	HRES									CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, IBuffer** pBuffer)final;
-	HRES									CompileShader(const wchar_t* srcFile, const char* entryPoint, const char* profile, const std::vector<D3DShaderMacro>& macros, UINT flags, IBlob** ppBlob)final;
-	HRES									CreateBlob(const char* path, IBlob** ppBlob)final;
 
 protected:
 	std::array<float, 3>					m_backColour;

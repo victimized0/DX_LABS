@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "D3D11Renderer.h"
+
 #include "Engine.h"
+#include "Shader.h"
 
 #ifdef USE_DX
 
@@ -28,6 +30,8 @@ bool D3D11Renderer::Initialise() {
 		return false;
 	}
 
+	CreateResources();
+
 	m_cbPerFrame.Create(m_device.Get());
 
 	D3D11_RASTERIZER_DESC rsDesc = {};
@@ -40,6 +44,35 @@ bool D3D11Renderer::Initialise() {
 
 	m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 	return true;
+}
+
+void D3D11Renderer::CreateResources() {
+	D3DShaderMacro lightMacro = { "USE_DIR_LIGHT", "1" };
+	D3DShaderMacro emptyMacro = { NULL, NULL };
+
+	const D3DShaderMacro macrosLight[2] =
+	{
+		lightMacro,
+		emptyMacro
+	};
+
+	auto pStandardVS = std::make_unique<VertexShader>( SV_STANDARD, nullptr, "main" );
+	auto pStandardPS = std::make_unique<PixelShader> ( SP_STANDARD, nullptr, "main" );
+
+	auto pTexturedVSNoLight = std::make_unique<VertexShader>( SV_TEXTURED, nullptr, "main" );
+	auto pTexturedPSNoLight = std::make_unique<PixelShader> ( SP_TEXTURED, nullptr, "main" );
+
+	auto pTexturedVSWithLight = std::make_unique<VertexShader>( SV_TEXTURED, macrosLight, "main" );
+	auto pTexturedPSWithLight = std::make_unique<PixelShader> ( SP_TEXTURED, macrosLight, "main" );
+
+	gEnv.ResManager()->CreateResource( std::move( pStandardVS ) );
+	gEnv.ResManager()->CreateResource( std::move( pStandardPS ) );
+
+	gEnv.ResManager()->CreateResource( std::move( pTexturedVSNoLight ) );
+	gEnv.ResManager()->CreateResource( std::move( pTexturedPSNoLight ) );
+
+	gEnv.ResManager()->CreateResource( std::move( pTexturedVSWithLight ) );
+	gEnv.ResManager()->CreateResource( std::move( pTexturedPSWithLight ) );
 }
 
 void D3D11Renderer::ClearFrame() {
@@ -172,44 +205,6 @@ HRES D3D11Renderer::CreateBuffer(size_t size, size_t strideSize, const void* pDa
 	data.pSysMem = pData;
 
 	return m_device->CreateBuffer(&desc, &data, pBuffer);
-}
-
-HRES D3D11Renderer::CompileShader(const wchar_t* srcFile, const char* entryPoint, const char* profile, const std::vector<D3DShaderMacro>& macros, UINT flags, IBlob** ppBlob) {
-	if (srcFile == nullptr || entryPoint == nullptr || profile == nullptr)
-		return E_INVALIDARG;
-
-	std::wstring path(srcFile);
-	std::string projDir(SHADERS_DIR);
-	path = std::wstring(projDir.begin(), projDir.end()) + path;
-	ComPtr<ID3DBlob> errorBlob;
-
-	HRES hr = D3DCompileFromFile(	path.c_str(), macros.data(),
-									D3D_COMPILE_STANDARD_FILE_INCLUDE,
-									entryPoint, profile, flags, 0,
-									ppBlob, &errorBlob);
-
-	if (FAILED(hr)) {
-		if (errorBlob) {
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
-
-		if (*ppBlob)
-			(*ppBlob)->Release();
-	}
-
-	return hr;
-}
-
-HRES D3D11Renderer::CreateBlob(const char* path, IBlob** ppBlob) {
-	if (path == nullptr)
-		return E_INVALIDARG;
-
-	std::string sPath(path);
-	std::wstring wPath(sPath.begin(), sPath.end());
-	std::wstring fullPath = gEnv.WorkingPath + wPath;
-	
-	return D3DReadFileToBlob(fullPath.c_str(), ppBlob);
 }
 
 #endif //USE_DX

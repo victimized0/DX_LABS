@@ -3,7 +3,6 @@
 
 #include "SceneObjects/GameObject.h"
 #include "SceneObjects/Camera.h"
-#include "System/AVLTree.h"
 
 class Scene {
 public:

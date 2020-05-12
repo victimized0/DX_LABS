@@ -7,7 +7,7 @@
 #error Not implemented
 #endif
 
-//#ifdef USE_DX 
+#ifdef USE_DX 
 #define IDevice						ID3D11Device
 #define IDevCon						ID3D11DeviceContext
 #define ISwapChain					IDXGISwapChain
@@ -32,6 +32,7 @@
 #define D3DInputElementDesc			D3D11_INPUT_ELEMENT_DESC
 #define IVertexShader				ID3D11VertexShader
 #define IPixelShader				ID3D11PixelShader
+#define IGeometryShader				ID3D11GeometryShader
 #define D3DBufferDesc				D3D11_BUFFER_DESC
 #define D3DSubresData				D3D11_SUBRESOURCE_DATA
 #define D3DMappedSubres				D3D11_MAPPED_SUBRESOURCE
@@ -49,11 +50,17 @@
 #define D3DFillSolid				D3D11_FILL_SOLID
 #define D3DShaderMacro				D3D_SHADER_MACRO
 #define HRES						HRESULT
-//#endif
+#endif
 
 #define MAX_BUFFERS_COUNT 512
 
 #include "../Math/SimpleMath.h"
+#include "../Shader.h"
+
+static constexpr char* SV_STANDARD = "standard_vs";
+static constexpr char* SP_STANDARD = "standard_ps";
+static constexpr char* SV_TEXTURED = "textured_vs";
+static constexpr char* SP_TEXTURED = "textured_ps";
 
 struct Texture {
 	int			Width;
@@ -71,9 +78,9 @@ struct Material {
 };
 
 struct DirLight {
-	DirectX::SimpleMath::Vector4 LightCol;
-	DirectX::SimpleMath::Vector4 LightAmb;
-	DirectX::SimpleMath::Vector3 LightDir;
+	DirectX::SimpleMath::Vector4	LightCol;
+	DirectX::SimpleMath::Vector4	LightAmb;
+	DirectX::SimpleMath::Vector3	LightDir;
 };
 
 struct RenderInfo {
@@ -84,9 +91,8 @@ struct RenderInfo {
 
 	Microsoft::WRL::ComPtr<IVertexBuffer>		pVertexBuffer;
 	Microsoft::WRL::ComPtr<IIndexBuffer>		pIndexBuffer;
-	Microsoft::WRL::ComPtr<IInputLayout>		pInputLayout;
-	Microsoft::WRL::ComPtr<IVertexShader>		pVertexShader;
-	Microsoft::WRL::ComPtr<IPixelShader>		pPixelShader;
+	VertexShader*								pVertexShader;
+	PixelShader*								pPixelShader;
 	Microsoft::WRL::ComPtr<IRSState>			pRSState;
 
 	D3DPrimitiveTopology						Topology = D3DTopologyTriangleList;
@@ -102,6 +108,7 @@ public:
 
 	virtual bool			CreateDevice()		= 0;
 	virtual bool			OnDeviceLost()		= 0;
+	virtual void			CreateResources()	= 0;
 
 	virtual IDevice*		GetDevice()			= 0;
 	virtual IDevCon*		GetContext()		= 0;
@@ -110,8 +117,6 @@ public:
 	virtual void			SetSunLight(DirLight* pDirLight)			= 0;
 	virtual void			SetBackColor(float r, float g, float b)		= 0;
 
-	virtual HRES			CreateBlob(const char* path, IBlob** ppBlob) = 0;
-	virtual HRES			CompileShader(const wchar_t* srcFile, const char* entryPoint, const char* profile, const std::vector<D3DShaderMacro>& macros, UINT flags, IBlob** ppBlob) = 0;
 	virtual HRES			CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, IBuffer** pBuffer) = 0;
 };
 

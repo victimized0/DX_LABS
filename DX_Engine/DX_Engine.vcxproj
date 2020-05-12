@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Crc32C.1.2.1\build\native\Crc32C.props" Condition="Exists('..\packages\Crc32C.1.2.1\build\native\Crc32C.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -172,6 +173,7 @@
     <ClInclude Include="Code\Environment.h" />
     <ClInclude Include="Code\Input\Keyboard.h" />
     <ClInclude Include="Code\Input\Mouse.h" />
+    <ClInclude Include="Code\Interfaces\IBaseResource.h" />
     <ClInclude Include="Code\Interfaces\IGameObject.h" />
     <ClInclude Include="Code\Interfaces\IRenderer.h" />
     <ClInclude Include="Code\D3D11Renderer.h" />
@@ -179,6 +181,7 @@
     <ClInclude Include="Code\MeshLoaders\ObjLoader.h" />
     <ClInclude Include="Code\PlatformHelpers.h" />
     <ClInclude Include="Code\Primitives\Icosahedron.h" />
+    <ClInclude Include="Code\ResourcesManager.h" />
     <ClInclude Include="Code\SceneObjects\Camera.h" />
     <ClInclude Include="Code\Engine.h" />
     <ClInclude Include="Code\SceneObjects\GameObject.h" />
@@ -189,7 +192,6 @@
     <ClInclude Include="Code\Shader.h" />
     <ClInclude Include="Code\StepTimer.h" />
     <ClInclude Include="Code\pch.h" />
-    <ClInclude Include="Code\System\AVLTree.h" />
     <ClInclude Include="Code\VertexFormats.h" />
     <ClInclude Include="Code\Interfaces\IMeshLoader.h" />
     <ClInclude Include="Code\Interfaces\ICamera.h" />
@@ -217,8 +219,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Code\System\AVLTree.cpp" />
     <ClCompile Include="Code\VertexFormats.cpp" />
+    <ClCompile Include="Code\ResourcesManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\standard_ps.hlsl">
@@ -280,9 +282,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Code\Math\SimpleMath.inl" />
+    <None Include="packages.config" />
     <None Include="Shaders\common.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Crc32C.1.2.1\build\native\Crc32C.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Crc32C.1.2.1\build\native\Crc32C.props'))" />
+  </Target>
 </Project>

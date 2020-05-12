@@ -49,13 +49,13 @@
     <ClCompile Include="Code\SceneObjects\GameObject.cpp">
       <Filter>Code\SceneObjects</Filter>
     </ClCompile>
-    <ClCompile Include="Code\System\AVLTree.cpp">
-      <Filter>Code\System</Filter>
-    </ClCompile>
     <ClCompile Include="Code\Model.cpp">
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="Code\Mesh.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\ResourcesManager.cpp">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>
@@ -129,14 +129,17 @@
     <ClInclude Include="Code\SceneObjects\GameObject.h">
       <Filter>Code\SceneObjects</Filter>
     </ClInclude>
-    <ClInclude Include="Code\System\AVLTree.h">
-      <Filter>Code\System</Filter>
-    </ClInclude>
     <ClInclude Include="Code\Model.h">
       <Filter>Code</Filter>
     </ClInclude>
     <ClInclude Include="Code\Mesh.h">
       <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\ResourcesManager.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Interfaces\IBaseResource.h">
+      <Filter>Code\Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -189,5 +192,6 @@
     <None Include="Shaders\common.hlsli">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

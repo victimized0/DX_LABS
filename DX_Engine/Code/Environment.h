@@ -1,6 +1,7 @@
 #ifndef _ENVIRONMENT_H_
 #define _ENVIRONMENT_H_
 
+#include "ResourcesManager.h"
 #include "Interfaces/IRenderer.h"
 #include "Engine.h"
 
@@ -8,28 +9,24 @@
 
 struct Environment {
 public:
-	Environment()
-		: Width(800)
-		, Height(600)
-		, HInstance(nullptr)
-		, HWnd(nullptr)
-	{
-		m_renderer.reset(IRenderer::Create());
-	}
+										Environment();
+										~Environment() = default;
 
-	IRenderer* Renderer() { return m_renderer.get(); }
+	IRenderer*							Renderer() { return m_renderer.get(); }
+	ResourcesManager*					ResManager() { return m_resMan.get(); }
 
 public:
-	std::wstring				WorkingPath;
+	std::wstring						WorkingPath;
 
-	HINSTANCE					HInstance;
-	HWND						HWnd;
+	HINSTANCE							HInstance;
+	HWND								HWnd;
 
-	int							Width;
-	int							Height;
+	int									Width;
+	int									Height;
 
 private:
-	std::unique_ptr<IRenderer>	m_renderer;
+	std::unique_ptr<IRenderer>			m_renderer;
+	std::unique_ptr<ResourcesManager>	m_resMan;
 
 };
 
