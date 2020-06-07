@@ -3,7 +3,9 @@
 
 using namespace DirectX::SimpleMath;
 
-Scene::Scene() {
+Scene::Scene()
+    : m_pDirLight(nullptr)
+{
     Root        = std::make_unique<GameObject>("Root", Vector3::Zero);
     m_camera    = std::make_unique<Camera>("Main Camera");
 }
@@ -11,6 +13,23 @@ Scene::Scene() {
 Scene::~Scene() {
 
 }
+
+void Scene::Initialise(IDevice* device) {
+    m_cbPerFrame.Create( device );
+}
+
+void Scene::SetSunLight(DirLight const* pDirLight) {
+    m_pDirLight = pDirLight;
+}
+
+void Scene::AddLight(std::unique_ptr<CPointLight>&& pLight) {
+    pLight->Initialise( gEnv.Renderer()->GetDevice() );
+    m_vPointLights.push_back( std::move(pLight) );
+}
+
+//const std::vector<CPointLight>& Scene::GetAllLights() {
+//    return m_vPointLights;
+//}
 
 void Scene::ReparentObject(const std::string& key, GameObject* pNewParent) {
     Root->Reparent(key, pNewParent);
@@ -41,6 +60,32 @@ void Scene::Update(float dt) {
 
 }
 
-void Scene::RenderScene(IDevCon* context) {
-    Root->Draw(context, DirectX::SimpleMath::Matrix::Identity);
+void Scene::RenderScene(IDevCon* context, RenderPass pass) {
+    if (pass == RenderPass::Geometry) {
+        Root->Draw(context, DirectX::SimpleMath::Matrix::Identity);
+
+        for (auto& pointLight : m_vPointLights) {
+            pointLight->Draw(context);
+        }
+    }
+
+    if (pass == RenderPass::Light) {
+        CBPerFrame cbpf = {};
+        cbpf.EyePos = DirectX::SimpleMath::Vector4(GetMainCamera()->GetPosition(), 1.0f);
+
+        if (m_pDirLight != nullptr) {
+            cbpf.LightCol = m_pDirLight->LightCol;
+            cbpf.LightAmb = m_pDirLight->LightAmb;
+            cbpf.LightDir = DirectX::SimpleMath::Vector4(m_pDirLight->LightDir, 0.0f);
+        }
+
+        m_cbPerFrame.SetData(context, cbpf);
+        IConstBuffer* cb = m_cbPerFrame.GetBuffer();
+
+        context->VSSetConstantBuffers((UINT)CBPerFrame::Slot, 1, &cb);
+        context->PSSetConstantBuffers((UINT)CBPerFrame::Slot, 1, &cb);
+
+        //draw screen-aligned quad
+        context->Draw(3, 0);
+    }
 }

@@ -18,6 +18,12 @@ void Model::AddMesh(const Mesh& mesh) {
 	m_vertices.insert(m_vertices.end(), mesh.Vertices().begin(), mesh.Vertices().end());
 }
 
+void Model::SetRenderFlags(int flags) {
+	for (auto& mesh : m_meshes) {
+		mesh.SetRenderFlags(flags);
+	}
+}
+
 bool Model::LoadFromFile(std::string path) {
 	if (path.size() < 5) {
 		return false;

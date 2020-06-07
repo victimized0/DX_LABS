@@ -2,7 +2,6 @@
 #define _VERTEX_FORMATS_H_
 
 #include "Interfaces/IRenderer.h"
-#include "Math/SimpleMath.h"
 
 struct VertexPosition {
 	VertexPosition() : VertexPosition(DirectX::SimpleMath::Vector3::Zero) {}

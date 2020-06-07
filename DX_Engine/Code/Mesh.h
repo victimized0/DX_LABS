@@ -2,21 +2,14 @@
 #define _MESH_H_
 #pragma once
 
-#include "VertexFormats.h"
 #include "ConstBuffer.h"
 
 class Mesh {
-private:
-	using Matrix		= DirectX::SimpleMath::Matrix;
-	using Vector2		= DirectX::SimpleMath::Vector2;
-	using Vector3		= DirectX::SimpleMath::Vector3;
-	using Vector4		= DirectX::SimpleMath::Vector4;
-	using Quaternion	= DirectX::SimpleMath::Quaternion;
-
 public:
 	using Vertex		= VertexPosColNmlTex;
 
 public:
+									Mesh();
 									Mesh(const std::string& name);
 	virtual							~Mesh()							= default;
 
@@ -34,6 +27,7 @@ public:
 	void							SetRenderInfo(const RenderInfo& ri) { m_renderInfo = ri; }
 	void							SetMaterial(const Material& mat);
 
+	void							SetRenderFlags(int flags);
 	void							SetColor(const Vector3& vCol);
 
 	void							CreateVertices(const std::vector<Vertex>& vertices);
@@ -47,6 +41,7 @@ private:
 	std::vector<Vertex>				m_vertices;
 	std::vector<UINT>				m_indices;
 
+	int								m_renderFlags;
 	RenderInfo						m_renderInfo;
 	ConstBuffer<CBPerMaterial>		m_constBuffer;
 

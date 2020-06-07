@@ -21,7 +21,7 @@ public:
 
 	virtual void								Initialise();
 	virtual void								Update(float dt);
-	virtual void								Draw(IDevCon* context, const Matrix& parentTransfom);
+	virtual void								Draw(IDevCon* context, const Matrix& parentTransfom = Matrix::Identity);
 
 	void										Rescale(float dScale);
 	void										Translate(const Vector3& dPos);

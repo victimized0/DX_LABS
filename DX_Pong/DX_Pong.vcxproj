@@ -107,7 +107,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)DX_Engine\Lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>call $(ProjectDir)..\post-build.bat $(OutDir) $(ProjectDir)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -133,7 +134,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)DX_Engine\Lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>call $(ProjectDir)..\post-build.bat $(OutDir) $(ProjectDir)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -165,7 +167,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)DX_Engine\Lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>call $(ProjectDir)..\post-build.bat $(OutDir) $(ProjectDir)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>
@@ -196,7 +199,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)DX_Engine\Lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>call $(ProjectDir)..\post-build.bat $(OutDir) $(ProjectDir)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>

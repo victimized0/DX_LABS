@@ -106,7 +106,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)DX_Engine\Lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>call $(ProjectDir)..\post-build.bat $(OutDir) $(ProjectDir)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -127,7 +128,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)DX_Engine\Lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>call $(ProjectDir)..\post-build.bat $(OutDir) $(ProjectDir)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -154,7 +156,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)DX_Engine\Lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>call $(ProjectDir)..\post-build.bat $(OutDir) $(ProjectDir)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -180,7 +183,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)DX_Engine\Lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>call $(ProjectDir)..\post-build.bat $(OutDir) $(ProjectDir)</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -2,9 +2,10 @@
 #define _CONST_BUFFER_H_
 
 enum class ConstBufferType : unsigned char {
-    PerFrame       = 0,
-    PerInstance    = 1,
-    PerMaterial    = 2,
+    PerFrame        = 0,
+    PerInstance     = 1,
+    PerMaterial     = 2,
+    PerLight        = 3,
     // <---- Add new types here
 
     Total
@@ -28,7 +29,6 @@ struct alignas(16) CBPerInstance {
 };
 
 struct alignas(16) CBPerMaterial {
-public:
     DirectX::SimpleMath::Vector4    AmbientColor;
     DirectX::SimpleMath::Vector4    DiffuseColor;
     DirectX::SimpleMath::Vector4    SpecularColor;
@@ -36,10 +36,22 @@ public:
     static const ConstBufferType    Slot = ConstBufferType::PerMaterial;
 };
 
+struct alignas(16) CBPerLight {
+    DirectX::SimpleMath::Vector4    Diffuse;
+    DirectX::SimpleMath::Vector4    Ambient;
+    DirectX::SimpleMath::Vector4    Attenuation;
+    DirectX::SimpleMath::Vector3    LightPos;
+    float                           LightRange;
+
+    static const ConstBufferType    Slot = ConstBufferType::PerLight;
+};
+
 template <typename T>
 class ConstBuffer {
 public:
-    ConstBuffer() = default;
+    ConstBuffer() : m_constBuffer(nullptr) {
+
+    }
 
     explicit ConstBuffer(IDevice* device) {
         Create(device);
@@ -58,7 +70,7 @@ public:
         desc.CPUAccessFlags     = D3D11_CPU_ACCESS_WRITE;
 
         ThrowIfFailed(
-            device->CreateBuffer(&desc, nullptr, m_constBuffer.ReleaseAndGetAddressOf())
+            device->CreateBuffer(&desc, nullptr, &m_constBuffer)
         );
     }
 

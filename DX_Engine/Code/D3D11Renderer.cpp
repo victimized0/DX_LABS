@@ -14,7 +14,6 @@ D3D11Renderer::D3D11Renderer()
 	, m_swapChain(nullptr)
 	, m_renderTargetView(nullptr)
 	, m_depthStencilView(nullptr)
-	, m_pDirLight(nullptr)
 {
 	m_backColour = { 0.0f, 0.0f, 0.0f };
 }
@@ -27,8 +26,9 @@ bool D3D11Renderer::Initialise() {
 	if (!CreateDevice()) {
 		return false;
 	}
-
-	m_cbPerFrame.Create(m_device.Get());
+	
+	Engine::GetPtr()->GetScene().Initialise( m_device.Get() );
+	m_shadersManager.Initialise( m_device.Get() );
 
 	D3D11_RASTERIZER_DESC rsDesc = {};
 	rsDesc.CullMode = D3D11_CULL_BACK;
@@ -38,45 +38,83 @@ bool D3D11Renderer::Initialise() {
 		m_device->CreateRasterizerState(&rsDesc, &m_defaultRSState)
 	);
 
+	D3D11_SAMPLER_DESC samplerDesc	= {};
+	samplerDesc.Filter				= D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU			= D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV			= D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW			= D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias			= 0.0f;
+	samplerDesc.MaxAnisotropy		= 4;
+	samplerDesc.ComparisonFunc		= D3D11_COMPARISON_NEVER;
+	samplerDesc.MinLOD				= -FLT_MAX;
+	samplerDesc.MaxLOD				= FLT_MAX;
+
+	ThrowIfFailed(gEnv.Renderer()->GetDevice()->CreateSamplerState(&samplerDesc, &m_defaultSampler));
+
 	m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 	return true;
 }
 
 void D3D11Renderer::ClearFrame() {
-	const float backCol[3] = { m_backColour[0], m_backColour[1], m_backColour[2] };
+	const float backCol[3]	= { m_backColour[0], m_backColour[1], m_backColour[2] };
+	const float black[3]	= { 0.f, 0.f, 0.f };
+
+	m_context->RSSetState(m_defaultRSState.Get());
 	m_context->ClearRenderTargetView(m_renderTargetView.Get(), backCol);
 	m_context->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+}
+
+void D3D11Renderer::ClearGBuffer() {
+	const float backCol[3] = { m_backColour[0], m_backColour[1], m_backColour[2] };
+	const float black[3] = { 0.f, 0.f, 0.f };
+
+	m_context->ClearRenderTargetView(m_diffuseAccRTV.Get(), backCol);
+	m_context->ClearRenderTargetView(m_specularAccRTV.Get(), black);
+	m_context->ClearRenderTargetView(m_normalAccRTV.Get(), black);
+	m_context->ClearRenderTargetView(m_positionAccRTV.Get(), black);
 }
 
 void D3D11Renderer::SetBackColor(float r, float g, float b) {
 	m_backColour = { r, g, b };
 }
 
-void D3D11Renderer::SetSunLight(DirLight* pDirLight) {
-	m_pDirLight = pDirLight;
-}
-
 void D3D11Renderer::Render() {
 	ClearFrame();
+	ClearGBuffer();
 
-	CBPerFrame cbpf = {};
-	cbpf.EyePos = DirectX::SimpleMath::Vector4(Engine::GetPtr()->GetScene().GetMainCamera()->GetPosition(), 1.0f);
+	IRenderTargetView* gbufferRTVs[4] = {
+		m_diffuseAccRTV.Get(),
+		m_specularAccRTV.Get(),
+		m_normalAccRTV.Get(),
+		m_positionAccRTV.Get()
+	};
 
-	if (m_pDirLight != nullptr) {
-		cbpf.LightCol = m_pDirLight->LightCol;
-		cbpf.LightAmb = m_pDirLight->LightAmb;
-		cbpf.LightDir = DirectX::SimpleMath::Vector4(m_pDirLight->LightDir, 0.0f);
-	}
+	// Geometry pass
+	m_context->OMSetDepthStencilState(m_defaultDSState.Get(), 1);
+	m_context->OMSetRenderTargets(4, gbufferRTVs, m_depthStencilView.Get());
+	Engine::GetPtr()->GetScene().RenderScene( m_context.Get(), RenderPass::Geometry );
 
-	m_cbPerFrame.SetData(m_context.Get(), cbpf);
-	IConstBuffer* cb = m_cbPerFrame.GetBuffer();
+	// Light pass
+	m_context->OMSetDepthStencilState(m_noDSState.Get(), 1);
+	m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
+	ClearFrame();
 
-	m_context->VSSetConstantBuffers((UINT)CBPerFrame::Slot, 1, &cb);
-	m_context->PSSetConstantBuffers((UINT)CBPerFrame::Slot, 1, &cb);
+	m_context->IASetInputLayout(nullptr);
+	m_context->IASetVertexBuffers(0, 0, nullptr, 0, 0);
+	m_context->VSSetShader(m_shadersManager.FullscreenQuadVS.GetShader(), nullptr, 0);
+	m_context->PSSetShader(m_shadersManager.BlinnPhongDeferredPS.GetShader(), nullptr, 0);
 
-	m_context->RSSetState(m_defaultRSState.Get());
+	IShaderResView* gbufferSRVs[4] = {
+		m_diffuseAccSRV.Get(),
+		m_specularAccSRV.Get(),
+		m_normalAccSRV.Get(),
+		m_positionAccSRV.Get()
+	};
 
-	Engine::GetPtr()->GetScene().RenderScene(m_context.Get());
+	m_context->PSSetShaderResources(0, 4, gbufferSRVs);
+	m_context->PSSetSamplers(0, 1, m_defaultSampler.GetAddressOf());
+
+	Engine::GetPtr()->GetScene().RenderScene( m_context.Get(), RenderPass::Light );
 
 	m_swapChain->Present(1, 0);
 }
@@ -115,18 +153,18 @@ bool D3D11Renderer::CreateDevice() {
 	D3D11_TEXTURE2D_DESC backBufferDesc = {};
 	backBuffer->GetDesc(&backBufferDesc);
 
-	CD3D11_TEXTURE2D_DESC depthStencilDesc = {};
-	depthStencilDesc.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.Width				= gEnv.Width;
-	depthStencilDesc.Height				= gEnv.Height;
-	depthStencilDesc.ArraySize			= 1;
-	depthStencilDesc.MipLevels			= 1;
-	depthStencilDesc.SampleDesc.Count	= 1;
-	depthStencilDesc.SampleDesc.Quality	= 0;
-	depthStencilDesc.BindFlags			= D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.Usage				= D3D11_USAGE_DEFAULT;
-	depthStencilDesc.CPUAccessFlags		= 0;
-	depthStencilDesc.MiscFlags			= 0;
+	CD3D11_TEXTURE2D_DESC depthStencilDesc	= {};
+	depthStencilDesc.Format					= DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.Width					= gEnv.Width;
+	depthStencilDesc.Height					= gEnv.Height;
+	depthStencilDesc.ArraySize				= 1;
+	depthStencilDesc.MipLevels				= 1;
+	depthStencilDesc.SampleDesc.Count		= 1;
+	depthStencilDesc.SampleDesc.Quality		= 0;
+	depthStencilDesc.BindFlags				= D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.Usage					= D3D11_USAGE_DEFAULT;
+	depthStencilDesc.CPUAccessFlags			= 0;
+	depthStencilDesc.MiscFlags				= 0;
 
 	ComPtr<ID3D11Texture2D> depthStencil;
 	ThrowIfFailed(m_device->CreateTexture2D(&depthStencilDesc, nullptr, &depthStencil));
@@ -140,6 +178,86 @@ bool D3D11Renderer::CreateDevice() {
 	m_viewport.MaxDepth = D3D11_MAX_DEPTH;
 	m_context->RSSetViewports(1, &m_viewport);
 
+	D3D11_TEXTURE2D_DESC textureDesc	= {};
+	textureDesc.Width					= gEnv.Width;
+	textureDesc.Height					= gEnv.Height;
+	textureDesc.MipLevels				= 1;
+	textureDesc.ArraySize				= 1;
+	textureDesc.Format					= DXGI_FORMAT_R16G16B16A16_UNORM;
+	textureDesc.SampleDesc.Count		= 1;
+	textureDesc.Usage					= D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags				= D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags			= 0;
+	textureDesc.MiscFlags				= 0;
+
+	ComPtr<ID3D11Texture2D>	diffuseTex;
+	ComPtr<ID3D11Texture2D>	specularTex;
+	ComPtr<ID3D11Texture2D>	normalTex;
+	ComPtr<ID3D11Texture2D>	positionTex;
+
+	if (m_device->CreateTexture2D(&textureDesc, nullptr, &diffuseTex)	!= S_OK) return false;
+	if (m_device->CreateTexture2D(&textureDesc, nullptr, &specularTex)	!= S_OK) return false;
+	if (m_device->CreateTexture2D(&textureDesc, nullptr, &normalTex)	!= S_OK) return false;
+	if (m_device->CreateTexture2D(&textureDesc, nullptr, &positionTex)	!= S_OK) return false;
+
+	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc	= {};
+	rtvDesc.Format							= textureDesc.Format;
+	rtvDesc.ViewDimension					= D3D11_RTV_DIMENSION_TEXTURE2D;
+	rtvDesc.Texture2D.MipSlice				= 0;
+
+	// Create the G-Buffer RTVs
+	if (m_device->CreateRenderTargetView(diffuseTex.Get(), &rtvDesc, &m_diffuseAccRTV)		!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(specularTex.Get(), &rtvDesc, &m_specularAccRTV)	!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(normalTex.Get(), &rtvDesc, &m_normalAccRTV)		!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(positionTex.Get(), &rtvDesc, &m_positionAccRTV)	!= S_OK) return false;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format							= textureDesc.Format;
+	srvDesc.ViewDimension					= D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip		= 0;
+	srvDesc.Texture2D.MipLevels				= 1;
+
+	if (m_device->CreateShaderResourceView(diffuseTex.Get(), &srvDesc, &m_diffuseAccSRV)	!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(specularTex.Get(), &srvDesc, &m_specularAccSRV)	!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(normalTex.Get(), &srvDesc, &m_normalAccSRV)		!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(positionTex.Get(), &srvDesc, &m_positionAccSRV)	!= S_OK) return false;
+	
+	D3D11_DEPTH_STENCIL_DESC dsDesc			= {};
+	dsDesc.DepthEnable						= true;
+	dsDesc.DepthWriteMask					= D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc						= D3D11_COMPARISON_LESS;
+	dsDesc.StencilEnable					= true;
+	dsDesc.StencilReadMask					= 0xFF;
+	dsDesc.StencilWriteMask					= 0xFF;
+	dsDesc.FrontFace.StencilFailOp			= D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilDepthFailOp		= D3D11_STENCIL_OP_INCR;
+	dsDesc.FrontFace.StencilPassOp			= D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
+	dsDesc.BackFace.StencilFailOp			= D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilDepthFailOp		= D3D11_STENCIL_OP_DECR;
+	dsDesc.BackFace.StencilPassOp			= D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilFunc				= D3D11_COMPARISON_ALWAYS;
+
+	if (m_device->CreateDepthStencilState(&dsDesc, &m_defaultDSState) != S_OK) return false;
+
+	D3D11_DEPTH_STENCIL_DESC noDSDesc		= {};
+	noDSDesc.DepthEnable					= false;
+	noDSDesc.DepthWriteMask					= D3D11_DEPTH_WRITE_MASK_ALL;
+	noDSDesc.DepthFunc						= D3D11_COMPARISON_LESS;
+	noDSDesc.StencilEnable					= true;
+	noDSDesc.StencilReadMask				= 0xFF;
+	noDSDesc.StencilWriteMask				= 0xFF;
+	noDSDesc.FrontFace.StencilFailOp		= D3D11_STENCIL_OP_KEEP;
+	noDSDesc.FrontFace.StencilDepthFailOp	= D3D11_STENCIL_OP_INCR;
+	noDSDesc.FrontFace.StencilPassOp		= D3D11_STENCIL_OP_KEEP;
+	noDSDesc.FrontFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
+	noDSDesc.BackFace.StencilFailOp			= D3D11_STENCIL_OP_KEEP;
+	noDSDesc.BackFace.StencilDepthFailOp	= D3D11_STENCIL_OP_DECR;
+	noDSDesc.BackFace.StencilPassOp			= D3D11_STENCIL_OP_KEEP;
+	noDSDesc.BackFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
+
+	if (m_device->CreateDepthStencilState(&noDSDesc, &m_noDSState) != S_OK) return false;
+	
 	return true;
 }
 
@@ -174,42 +292,4 @@ HRES D3D11Renderer::CreateBuffer(size_t size, size_t strideSize, const void* pDa
 	return m_device->CreateBuffer(&desc, &data, pBuffer);
 }
 
-HRES D3D11Renderer::CompileShader(const wchar_t* srcFile, const char* entryPoint, const char* profile, const std::vector<D3DShaderMacro>& macros, UINT flags, IBlob** ppBlob) {
-	if (srcFile == nullptr || entryPoint == nullptr || profile == nullptr)
-		return E_INVALIDARG;
-
-	std::wstring path(srcFile);
-	std::string projDir(SHADERS_DIR);
-	path = std::wstring(projDir.begin(), projDir.end()) + path;
-	ComPtr<ID3DBlob> errorBlob;
-
-	HRES hr = D3DCompileFromFile(	path.c_str(), macros.data(),
-									D3D_COMPILE_STANDARD_FILE_INCLUDE,
-									entryPoint, profile, flags, 0,
-									ppBlob, &errorBlob);
-
-	if (FAILED(hr)) {
-		if (errorBlob) {
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
-
-		if (*ppBlob)
-			(*ppBlob)->Release();
-	}
-
-	return hr;
-}
-
-HRES D3D11Renderer::CreateBlob(const char* path, IBlob** ppBlob) {
-	if (path == nullptr)
-		return E_INVALIDARG;
-
-	std::string sPath(path);
-	std::wstring wPath(sPath.begin(), sPath.end());
-	std::wstring fullPath = gEnv.WorkingPath + wPath;
-	
-	return D3DReadFileToBlob(fullPath.c_str(), ppBlob);
-}
-
-#endif //USE_DX
+#endif // USE_DX

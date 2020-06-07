@@ -5,7 +5,7 @@ Katamari::Katamari(const std::string& name, const DirectX::SimpleMath::Vector3& 
 	: GameObject::GameObject(name, position, modelPath, scale)
 	, Size(0)
 {
-
+	m_model.SetRenderFlags(RF_USE_LIGHT | RF_USE_TEXTURES | RF_DEFERRED);
 }
 
 void Katamari::Attach(GameObject* pickup) {

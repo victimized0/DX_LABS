@@ -8,11 +8,22 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
+Mesh::Mesh()
+	: Mesh("")
+{
+
+}
+
 Mesh::Mesh(const std::string& name)
 	: m_name(name)
 	, m_transform(Matrix::Identity)
+	, m_renderFlags(RF_DEFERRED)
 {
 
+}
+
+void Mesh::SetRenderFlags(int flags) {
+	m_renderFlags = flags;
 }
 
 void Mesh::SetColor(const Vector3& vCol) {
@@ -31,29 +42,7 @@ void Mesh::Initialise(IDevice* device) {
 	assert(m_vertices.size() > 0);
 	assert(m_indices.size() > 0);
 
-	IBlob* pVsBlob = nullptr;
-	IBlob* pPsBlob = nullptr;
-
 	m_constBuffer.Create(device);
-
-	UINT shaderFlags = 0;
-#ifdef _DEBUG
-	shaderFlags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#endif
-
-	if (m_renderInfo.pDiffuseView != nullptr) {
-		std::vector<D3DShaderMacro> macros = {
-			{ "USE_DIR_LIGHT", "1" },
-			{ NULL, NULL }
-		};
-
-		if (FAILED( gEnv.Renderer()->CompileShader(L"textured_vs.hlsl", "main", "vs_5_0", macros, shaderFlags, &pVsBlob) )) return;
-		if (FAILED( gEnv.Renderer()->CompileShader(L"textured_ps.hlsl", "main", "ps_5_0", macros, shaderFlags, &pPsBlob) )) return;
-	}
-	else {
-		if (FAILED(gEnv.Renderer()->CreateBlob("/Data/Shaders/standard_vs.cso", &pVsBlob))) return;
-		if (FAILED(gEnv.Renderer()->CreateBlob("/Data/Shaders/standard_ps.cso", &pPsBlob))) return;
-	}
 
 	ThrowIfFailed(
 		gEnv.Renderer()->CreateBuffer(m_vertices.size(), sizeof(Vertex), &m_vertices[0], D3DBindVertexBuffer, &m_renderInfo.pVertexBuffer)
@@ -63,17 +52,33 @@ void Mesh::Initialise(IDevice* device) {
 		gEnv.Renderer()->CreateBuffer(m_indices.size(), sizeof(UINT), &m_indices[0], D3DBindIndexBuffer, &m_renderInfo.pIndexBuffer)
 	);
 
-	ThrowIfFailed(
-		device->CreateVertexShader(pVsBlob->GetBufferPointer(), pVsBlob->GetBufferSize(), nullptr, &m_renderInfo.pVertexShader)
-	);
-
-	ThrowIfFailed(
-		device->CreatePixelShader(pPsBlob->GetBufferPointer(), pPsBlob->GetBufferSize(), nullptr, &m_renderInfo.pPixelShader)
-	);
-
-	device->CreateInputLayout(Vertex::InputElements, Vertex::ElementsCount,
-							  pVsBlob->GetBufferPointer(), pVsBlob->GetBufferSize(),
-							  &m_renderInfo.pInputLayout);
+	if (m_renderInfo.pVertexShader == nullptr) {
+		if ((m_renderFlags & (RF_USE_LIGHT | RF_USE_TEXTURES | RF_DEFERRED)) == (RF_USE_LIGHT | RF_USE_TEXTURES | RF_DEFERRED)) {
+			m_renderInfo.pVertexShader	= gEnv.Renderer()->GetShadersManager()->TexturedWithLightVS.GetShader();
+			m_renderInfo.pPixelShader	= gEnv.Renderer()->GetShadersManager()->DeferredTexturedWithLightPS.GetShader();
+			m_renderInfo.pInputLayout	= gEnv.Renderer()->GetShadersManager()->TexturedWithLightVS.GetVertexDecl();
+		}
+		else if ((m_renderFlags & (RF_USE_LIGHT | RF_USE_TEXTURES)) == (RF_USE_LIGHT | RF_USE_TEXTURES)) {
+			m_renderInfo.pVertexShader	= gEnv.Renderer()->GetShadersManager()->TexturedWithLightVS.GetShader();
+			m_renderInfo.pPixelShader	= gEnv.Renderer()->GetShadersManager()->TexturedWithLightPS.GetShader();
+			m_renderInfo.pInputLayout	= gEnv.Renderer()->GetShadersManager()->TexturedWithLightVS.GetVertexDecl();
+		}
+		else if (m_renderFlags & RF_USE_TEXTURES) {
+			m_renderInfo.pVertexShader	= gEnv.Renderer()->GetShadersManager()->TexturedNoLightVS.GetShader();
+			m_renderInfo.pPixelShader	= gEnv.Renderer()->GetShadersManager()->TexturedNoLightPS.GetShader();
+			m_renderInfo.pInputLayout	= gEnv.Renderer()->GetShadersManager()->TexturedNoLightVS.GetVertexDecl();
+		}
+		else if (m_renderFlags & RF_USE_LIGHT) {
+			m_renderInfo.pVertexShader	= gEnv.Renderer()->GetShadersManager()->StandardWithLightVS.GetShader();
+			m_renderInfo.pPixelShader	= gEnv.Renderer()->GetShadersManager()->StandardWithLightPS.GetShader();
+			m_renderInfo.pInputLayout	= gEnv.Renderer()->GetShadersManager()->StandardWithLightVS.GetVertexDecl();
+		}
+		else {
+			m_renderInfo.pVertexShader	= gEnv.Renderer()->GetShadersManager()->StandardNoLightVS.GetShader();
+			m_renderInfo.pPixelShader	= gEnv.Renderer()->GetShadersManager()->StandardNoLightPS.GetShader();
+			m_renderInfo.pInputLayout	= gEnv.Renderer()->GetShadersManager()->StandardNoLightVS.GetVertexDecl();
+		}
+	}
 }
 
 void Mesh::Draw(IDevCon* context) {
@@ -90,12 +95,12 @@ void Mesh::Draw(IDevCon* context) {
 	UINT offset = 0;
 
 	context->IASetPrimitiveTopology(m_renderInfo.Topology);
-	context->IASetInputLayout(m_renderInfo.pInputLayout.Get());
+	context->IASetInputLayout(m_renderInfo.pInputLayout);
 	context->IASetVertexBuffers(0, 1, m_renderInfo.pVertexBuffer.GetAddressOf(), &stride, &offset);
 	context->IASetIndexBuffer(m_renderInfo.pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, offset);
 
-	context->VSSetShader(m_renderInfo.pVertexShader.Get(), nullptr, 0);
-	context->PSSetShader(m_renderInfo.pPixelShader.Get(), nullptr, 0);
+	context->VSSetShader(m_renderInfo.pVertexShader, nullptr, 0);
+	context->PSSetShader(m_renderInfo.pPixelShader, nullptr, 0);
 	context->PSSetShaderResources(0, 1, m_renderInfo.pDiffuseView.GetAddressOf());
 	context->PSSetSamplers(0, 1, m_renderInfo.pSamplerState.GetAddressOf());
 
@@ -108,12 +113,12 @@ void Mesh::Draw(IDevCon* context) {
 
 	context->PSSetConstantBuffers((UINT)CBPerMaterial::Slot, 1, &cb);
 
-	if (m_renderInfo.pNormalView != nullptr) {
-		context->PSSetShaderResources(1, 1, m_renderInfo.pNormalView.GetAddressOf());
+	if (m_renderInfo.pSpecularView != nullptr) {
+		context->PSSetShaderResources(1, 1, m_renderInfo.pSpecularView.GetAddressOf());
 	}
 
-	if (m_renderInfo.pSpecularView != nullptr) {
-		context->PSSetShaderResources(2, 1, m_renderInfo.pSpecularView.GetAddressOf());
+	if (m_renderInfo.pNormalView != nullptr) {
+		context->PSSetShaderResources(2, 1, m_renderInfo.pNormalView.GetAddressOf());
 	}
 
 	if (m_renderInfo.pRSState != nullptr) {

@@ -58,6 +58,12 @@
     <ClCompile Include="Code\Mesh.cpp">
       <Filter>Code</Filter>
     </ClCompile>
+    <ClCompile Include="Code\SceneObjects\PointLight.cpp">
+      <Filter>Code\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Code\Managers\ShadersManager.cpp">
+      <Filter>Code\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\ConstBuffer.h">
@@ -138,6 +144,12 @@
     <ClInclude Include="Code\Mesh.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="Code\SceneObjects\PointLight.h">
+      <Filter>Code\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Managers\ShadersManager.h">
+      <Filter>Code\Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Code">
@@ -167,6 +179,9 @@
     <Filter Include="Code\System">
       <UniqueIdentifier>{531b1611-6c35-4389-adf2-eb99521b9370}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code\Managers">
+      <UniqueIdentifier>{f73e658f-fb37-4389-8dc9-b6e508b6e5fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\standard_vs.hlsl">
@@ -181,12 +196,18 @@
     <FxCompile Include="Shaders\textured_vs.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\deferred_textured_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Code\Math\SimpleMath.inl">
       <Filter>Code\Math</Filter>
     </None>
     <None Include="Shaders\common.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\deferred.hlsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

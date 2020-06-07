@@ -35,17 +35,31 @@ bool Game::Initialize(int iconId, int width, int height) {
 	m_mouse->SetWindow(gEnv.HWnd);
 	m_mouse->SetMode(Mouse::MODE_RELATIVE);
 
+	CreateLights();
+	CreateScene();
+
+	return true;
+}
+
+void Game::CreateLights() {
 	gEnv.Renderer()->SetBackColor(0.529f, 0.808f, 0.922f);
 
-	m_dirLight.LightCol = DirectX::SimpleMath::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	m_dirLight.LightAmb = DirectX::SimpleMath::Vector4(0.25f, 0.25f, 0.25f, 1.0f);
-	m_dirLight.LightDir = DirectX::SimpleMath::Vector3(-1.0f, -1.0f, -1.0f);
+	m_dirLight.LightCol = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_dirLight.LightAmb = Vector4(0.25f, 0.25f, 0.25f, 1.0f);
+	m_dirLight.LightDir = Vector3(-1.0f, -1.0f, -1.0f);
 
-	gEnv.Renderer()->SetSunLight(&m_dirLight);
+	m_scene.SetSunLight(&m_dirLight);
 	m_scene.GetMainCamera()->Rotate(0, -0.25f);
 
-	CreateScene();
-	return true;
+	PointLight lightData1;
+	lightData1.Ambient		= Vector4(0.3f, 0.3f, 0.3f, 1.0f);
+	lightData1.Diffuse		= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	lightData1.Attenuation	= Vector3(0.0f, 0.2f, 0.0f);
+	lightData1.Range		= 100.f;
+	lightData1.Position		= Vector3(0.f, 20.f, 10.f);
+
+	auto pointLight1 = std::make_unique<CPointLight>( lightData1 );
+	m_scene.AddLight( std::move(pointLight1) );
 }
 
 void Game::CreateScene() {
@@ -53,10 +67,10 @@ void Game::CreateScene() {
 
 	vector<VertexPosColNmlTex> groundVertices =
 	{
-		{ Vector3(-TERRAIN_SIZE, 0, -TERRAIN_SIZE),	Vector3::One, Vector3::One, Vector2::Zero },
-		{ Vector3(-TERRAIN_SIZE, 0, TERRAIN_SIZE),	Vector3::One, Vector3::One, Vector2::Zero },
-		{ Vector3(TERRAIN_SIZE, 0, TERRAIN_SIZE),	Vector3::One, Vector3::One, Vector2::Zero },
-		{ Vector3(TERRAIN_SIZE, 0, -TERRAIN_SIZE),	Vector3::One, Vector3::One, Vector2::Zero }
+		{ Vector3(-TERRAIN_SIZE, 0, -TERRAIN_SIZE),	Vector3(0.2f), Vector3(0.5f, 0.5f, 1.0f), Vector2::Zero },
+		{ Vector3(-TERRAIN_SIZE, 0, TERRAIN_SIZE),	Vector3(0.2f), Vector3(0.5f, 0.5f, 1.0f), Vector2::Zero },
+		{ Vector3(TERRAIN_SIZE, 0, TERRAIN_SIZE),	Vector3(0.2f), Vector3(0.5f, 0.5f, 1.0f), Vector2::Zero },
+		{ Vector3(TERRAIN_SIZE, 0, -TERRAIN_SIZE),	Vector3(0.2f), Vector3(0.5f, 0.5f, 1.0f), Vector2::Zero }
 	};
 
 	vector<UINT> groundIndices =
@@ -68,6 +82,7 @@ void Game::CreateScene() {
 	Mesh groundMesh("terrain");
 	groundMesh.CreateVertices(groundVertices);
 	groundMesh.CreateIndices(groundIndices);
+	groundMesh.SetRenderFlags(RF_USE_LIGHT | RF_DEFERRED);
 	ground->GetModel().AddMesh(groundMesh);
 
 	auto player = std::make_unique<Katamari>(NAME_PLAYER, Vector3(0, 7, 0), MeshesPath + "Apple.obj", 0.2f);
