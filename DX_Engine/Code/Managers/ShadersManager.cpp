@@ -15,6 +15,7 @@ ShadersManager::ShadersManager()
 	, DeferredTexturedNoLightPS("deferred_textured_ps")
 	, DeferredTexturedWithLightPS("deferred_textured_ps")
 	, BlinnPhongDeferredPS("deferred")
+	, HDRPostProcessPS("HDR")
 {
 
 }
@@ -33,7 +34,7 @@ void ShadersManager::Initialise(IDevice* device) {
 	StandardWithLightVS	.Create(device, "main", lightMacros);
 	TexturedNoLightVS	.Create(device, "main", emptyMacros);
 	TexturedWithLightVS	.Create(device, "main", lightMacros);
-	FullscreenQuadVS	.Create(device, "FullscreenQuadVS", emptyMacros);
+	FullscreenQuadVS	.Create(device, "FullscreenQuadVS", lightMacros);
 
 	StandardNoLightPS			.Create(device, "main", emptyMacros);
 	StandardWithLightPS			.Create(device, "main", lightMacros);
@@ -42,4 +43,5 @@ void ShadersManager::Initialise(IDevice* device) {
 	DeferredTexturedNoLightPS	.Create(device, "main", emptyMacros);
 	DeferredTexturedWithLightPS	.Create(device, "main", lightMacros);
 	BlinnPhongDeferredPS		.Create(device, "BlinnPhongDeferredPS", lightMacros);
+	HDRPostProcessPS			.Create(device, "HDRPostProcessPS", lightMacros);
 }

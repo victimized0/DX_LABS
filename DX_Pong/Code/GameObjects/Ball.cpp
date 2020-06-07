@@ -10,7 +10,7 @@ Ball::Ball(const std::string& name, const DirectX::SimpleMath::Vector3& m_positi
 	, m_speedX(DEFAULT_SPEED_X)
 	, m_speedY(DEFAULT_SPEED_Y)
 {
-
+	m_model.SetRenderFlags(0);
 }
 
 Ball::Ball(const std::string& name)

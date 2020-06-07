@@ -8,8 +8,8 @@
 GameObject::GameObject(const std::string& name, const Vector3& position, const std::string& modelPath, float scale, const Quaternion& rot)
 	: m_name(name)
 	, m_model(modelPath)
-	, Scale(scale)
 	, Position(position)
+	, Scale(scale)
 	, Rotation(rot)
 	, m_isInit(false)
 {

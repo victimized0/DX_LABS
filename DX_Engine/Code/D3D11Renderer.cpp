@@ -99,8 +99,7 @@ void D3D11Renderer::Render() {
 
 	// Light pass
 	m_context->OMSetDepthStencilState(m_noDSState.Get(), 1);
-	m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
-	ClearFrame();
+	m_context->OMSetRenderTargets(1, m_hdrRTV.GetAddressOf(), m_depthStencilView.Get());
 
 	gbufferSRVs[0] = m_diffuseAccSRV.Get();
 	gbufferSRVs[1] = m_specularAccSRV.Get();
@@ -115,6 +114,16 @@ void D3D11Renderer::Render() {
 	m_context->PSSetSamplers(0, 1, m_defaultSampler.GetAddressOf());
 
 	Engine::GetPtr()->GetScene().RenderScene( m_context.Get(), RenderPass::Light );
+	ClearFrame();
+
+	// Post process
+	m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
+	m_context->VSSetShader(m_shadersManager.FullscreenQuadVS.GetShader(), nullptr, 0);
+	m_context->PSSetShader(m_shadersManager.HDRPostProcessPS.GetShader(), nullptr, 0);
+	m_context->PSSetShaderResources(0, 1, m_hdrSRV.GetAddressOf());
+	m_context->PSSetSamplers(0, 1, m_defaultSampler.GetAddressOf());
+	m_context->Draw(3, 0);
+
 
 	m_swapChain->Present(1, 0);
 }
@@ -194,11 +203,13 @@ bool D3D11Renderer::CreateDevice() {
 	ComPtr<ID3D11Texture2D>	specularTex;
 	ComPtr<ID3D11Texture2D>	normalTex;
 	ComPtr<ID3D11Texture2D>	positionTex;
+	ComPtr<ID3D11Texture2D>	hdrTex;
 
 	if (m_device->CreateTexture2D(&textureDesc, nullptr, &diffuseTex)	!= S_OK) return false;
 	if (m_device->CreateTexture2D(&textureDesc, nullptr, &specularTex)	!= S_OK) return false;
 	if (m_device->CreateTexture2D(&textureDesc, nullptr, &normalTex)	!= S_OK) return false;
 	if (m_device->CreateTexture2D(&textureDesc, nullptr, &positionTex)	!= S_OK) return false;
+	if (m_device->CreateTexture2D(&textureDesc, nullptr, &hdrTex)		!= S_OK) return false;
 
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc	= {};
 	rtvDesc.Format							= textureDesc.Format;
@@ -210,6 +221,7 @@ bool D3D11Renderer::CreateDevice() {
 	if (m_device->CreateRenderTargetView(specularTex.Get(), &rtvDesc, &m_specularAccRTV)	!= S_OK) return false;
 	if (m_device->CreateRenderTargetView(normalTex.Get(), &rtvDesc, &m_normalAccRTV)		!= S_OK) return false;
 	if (m_device->CreateRenderTargetView(positionTex.Get(), &rtvDesc, &m_positionAccRTV)	!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(hdrTex.Get(), &rtvDesc, &m_hdrRTV)					!= S_OK) return false;
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format							= textureDesc.Format;
@@ -221,6 +233,7 @@ bool D3D11Renderer::CreateDevice() {
 	if (m_device->CreateShaderResourceView(specularTex.Get(), &srvDesc, &m_specularAccSRV)	!= S_OK) return false;
 	if (m_device->CreateShaderResourceView(normalTex.Get(), &srvDesc, &m_normalAccSRV)		!= S_OK) return false;
 	if (m_device->CreateShaderResourceView(positionTex.Get(), &srvDesc, &m_positionAccSRV)	!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(hdrTex.Get(), &srvDesc, &m_hdrSRV)				!= S_OK) return false;
 	
 	D3D11_DEPTH_STENCIL_DESC dsDesc			= {};
 	dsDesc.DepthEnable						= true;

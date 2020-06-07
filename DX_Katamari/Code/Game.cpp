@@ -53,13 +53,22 @@ void Game::CreateLights() {
 
 	PointLight lightData1;
 	lightData1.Ambient		= Vector4(0.3f, 0.3f, 0.3f, 1.0f);
-	lightData1.Diffuse		= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	lightData1.Attenuation	= Vector3(0.0f, 0.2f, 0.0f);
+	lightData1.Diffuse		= Vector4(20.0f, 10.0f, 30.0f, 1.0f);
+	lightData1.Attenuation	= Vector3(0.0f, 0.1f, 0.001f);
 	lightData1.Range		= 100.f;
-	lightData1.Position		= Vector3(0.f, 20.f, 10.f);
+	lightData1.Position		= Vector3(0.f, 30.f, 50.f);
 
 	auto pointLight1 = std::make_unique<CPointLight>( lightData1 );
+	lightData1.Diffuse  = Vector4(34.0f, 22.0f, 12.0f, 1.0f);
+	lightData1.Position = Vector3(55.f, 25.f, 70.f);
+	auto pointLight2 = std::make_unique<CPointLight>( lightData1 );
+	lightData1.Diffuse = Vector4(41.0f, 13.0f, 21.0f, 1.0f);
+	lightData1.Position = Vector3(-30.f, 35.f, -50.f);
+	auto pointLight3 = std::make_unique<CPointLight>( lightData1 );
+
 	m_scene.AddLight( std::move(pointLight1) );
+	m_scene.AddLight( std::move(pointLight2) );
+	m_scene.AddLight( std::move(pointLight3) );
 }
 
 void Game::CreateScene() {

@@ -13,9 +13,8 @@ enum class ConstBufferType : unsigned char {
 
 struct alignas(16) CBPerFrame {
     DirectX::SimpleMath::Vector4    EyePos;
-    DirectX::SimpleMath::Vector4    LightCol;
-    DirectX::SimpleMath::Vector4    LightAmb;
-    DirectX::SimpleMath::Vector4    LightDir;
+    DirLight                        DirLight;
+    PointLight                      PointLightsArr[3];
 
     static const ConstBufferType    Slot = ConstBufferType::PerFrame;
 };
@@ -36,15 +35,15 @@ struct alignas(16) CBPerMaterial {
     static const ConstBufferType    Slot = ConstBufferType::PerMaterial;
 };
 
-struct alignas(16) CBPerLight {
-    DirectX::SimpleMath::Vector4    Diffuse;
-    DirectX::SimpleMath::Vector4    Ambient;
-    DirectX::SimpleMath::Vector4    Attenuation;
-    DirectX::SimpleMath::Vector3    LightPos;
-    float                           LightRange;
-
-    static const ConstBufferType    Slot = ConstBufferType::PerLight;
-};
+//struct alignas(16) CBPerLight {
+//    DirectX::SimpleMath::Vector4    Diffuse;
+//    DirectX::SimpleMath::Vector4    Ambient;
+//    DirectX::SimpleMath::Vector4    Attenuation;
+//    DirectX::SimpleMath::Vector3    LightPos;
+//    float                           LightRange;
+//
+//    static const ConstBufferType    Slot = ConstBufferType::PerLight;
+//};
 
 template <typename T>
 class ConstBuffer {

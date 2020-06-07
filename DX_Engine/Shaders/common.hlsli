@@ -14,6 +14,32 @@
 
 #define REG_MIP_MIN_MAG_LINEAR	s0
 
+#define POINT_LIGHTS_COUNT		3
+
+/////////////////////// COMMON STRUCTURES
+
+struct Material {
+	float3 Ka;
+	float3 Kd;
+	float3 Ks;
+	float  A;
+};
+
+struct GBuffer {
+	float4 DiffuseAcc	: SV_Target0;
+	float4 SpecularAcc	: SV_Target1;
+	float4 NormalAcc	: SV_Target2;
+	float4 PositionAcc	: SV_Target3;
+};
+
+struct PointLight {
+	float4	Diffuse;
+	float4	Ambient;
+	float3	Position;
+	float	Range;
+	float3	Attenuation;
+};
+
 /////////////////////// CONSTANT BUFFERS
 
 cbuffer cbPerFrame : register(REG_CB_PER_FRAME) {
@@ -22,6 +48,7 @@ cbuffer cbPerFrame : register(REG_CB_PER_FRAME) {
 	float4	LightCol;
 	float4	LightAmb;
 	float3  LightDir;
+	PointLight PointLights[POINT_LIGHTS_COUNT];
 #endif
 }
 
@@ -39,22 +66,13 @@ cbuffer cbPerMaterial : register(REG_CB_PER_MATERIAL) {
 #endif
 }
 
-cbuffer cbPerLight : register(REG_CB_PER_LIGHT) {
-#ifdef USE_LIGHT
-	float4	LightDiffuse;
-	float4	LightAmbient;
-	float4	Attenuation;
-	float3	LightPosition;
-	float	LightRange;
-#endif
-}
-
 /////////////////////// TEXTURES
 
 Texture2D t_diffuse		: register(REG_TEX_DIFFUSE);
 Texture2D t_specular	: register(REG_TEX_SPECULAR);
 Texture2D t_normal		: register(REG_TEX_NORMAL);
 Texture2D t_position	: register(REG_TEX_POSITION);
+Texture2D t_hdr			: register(REG_TEX_DIFFUSE);
 
 /////////////////////// SAMPLER STATES
 
@@ -101,24 +119,10 @@ struct VS_PosColNmlTex {
 	float2 TexCoord	: TEXCOORD;
 };
 
-struct Material {
-	float3 Ka;
-	float3 Kd;
-	float3 Ks;
-	float  A;
-};
-
-struct GBuffer {
-	float4 DiffuseAcc	: SV_Target0;
-	float4 SpecularAcc	: SV_Target1;
-	float4 NormalAcc	: SV_Target2;
-	float4 PositionAcc	: SV_Target3;
-};
-
 //--------------------------------------------------------------------------------------
 // Blinn-Phong Lighting Reflection Model
 //--------------------------------------------------------------------------------------
-float4 calcBlinnPhongLighting(Material M, float4 LAmb, float4 LColor, float3 N, float3 L, float3 H)
+float4 calcBlinnPhongLighting(in Material M, float4 LAmb, float4 LColor, float3 N, float3 L, float3 H)
 {
 	float4 Ia = float4(M.Ka, 1.0f) * LAmb;
 	float4 Id = float4(M.Kd, 1.0f) * saturate(dot(N, L));

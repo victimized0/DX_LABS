@@ -5,6 +5,7 @@ VS_PosColNmlTex main(in IA_PosColNmlTex input) {
 
 	input.Position.w	= 1.0f;
 	output.Position		= mul(input.Position, worldViewProj);
+	output.WPos			= mul(input.Position, world).xyz;
 	output.Color		= input.Color;
 	output.Normal		= input.Normal.xyz;
 

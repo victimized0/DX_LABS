@@ -18,7 +18,6 @@ CPointLight::~CPointLight() {
 }
 
 void CPointLight::Initialise(IDevice* device) {
-	m_cbLight.Create( device );
 	m_cbInstance.Create( device );
 	m_lightSphere.Initialise( device );
 }

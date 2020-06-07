@@ -1,8 +1,8 @@
 #include "common.hlsli"
 
 struct QuadOut {
-    float4 Position : SV_Position;
-    float2 TexCoord : TEXCOORD;
+	float4 Position : SV_Position;
+	float2 TexCoord : TEXCOORD;
 };
 
 QuadOut FullscreenQuadVS(uint vertexID : SV_VertexID) {
@@ -24,8 +24,8 @@ float4 BlinnPhongDeferredPS(in QuadOut input) : SV_Target {
 	float3 position	= t_position.Sample(t_sampler, input.TexCoord.xy).xyz;
 
 	Material m;
-	m.Ka = 0;// diffuse;
-	m.Kd = diffuse;
+	m.Ka = 0.1f;
+	m.Kd = diffuse.rgb;
 	m.Ks = specular.rgb;
 	m.A  = specular.a;
 
@@ -36,6 +36,14 @@ float4 BlinnPhongDeferredPS(in QuadOut input) : SV_Target {
 
 	finalColor = calcBlinnPhongLighting(m, LightAmb, LightCol, n, -lDir, h);
 
+	for (int i = 0; i < POINT_LIGHTS_COUNT; ++i)
+	{
+		float3 lightDir = normalize(PointLights[i].Position - position);
+		float distance = length(PointLights[i].Position - position);
+		float attenuation = 1.0 / (PointLights[i].Attenuation.x + PointLights[i].Attenuation.y * distance + PointLights[i].Attenuation.z * (distance * distance));
+		finalColor.rgb += max( dot(n, lightDir), 0.0 ) * diffuse * PointLights[i].Diffuse * attenuation + m.Ka * PointLights[i].Ambient * attenuation;
+	}
 #endif
+
     return finalColor;
 }

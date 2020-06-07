@@ -25,6 +25,7 @@ public:
 	PixelShader		DeferredTexturedNoLightPS;
 	PixelShader		DeferredTexturedWithLightPS;
 	PixelShader		BlinnPhongDeferredPS;
+	PixelShader		HDRPostProcessPS;
 };
 
 #endif // _SHADERS_MANAGER_H_

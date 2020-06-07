@@ -199,6 +199,9 @@
     <FxCompile Include="Shaders\deferred_textured_ps.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\HDR.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Code\Math\SimpleMath.inl">

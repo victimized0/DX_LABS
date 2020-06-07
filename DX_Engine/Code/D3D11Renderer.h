@@ -41,11 +41,13 @@ public:
 	HRES									CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, IBuffer** pBuffer)final;
 
 protected:
+	ComPtr<IRenderTargetView>				m_hdrRTV;
 	ComPtr<IRenderTargetView>				m_diffuseAccRTV;
 	ComPtr<IRenderTargetView>				m_specularAccRTV;
 	ComPtr<IRenderTargetView>				m_normalAccRTV;
 	ComPtr<IRenderTargetView>				m_positionAccRTV;
 
+	ComPtr<IShaderResView>					m_hdrSRV;
 	ComPtr<IShaderResView>					m_diffuseAccSRV;
 	ComPtr<IShaderResView>					m_specularAccSRV;
 	ComPtr<IShaderResView>					m_normalAccSRV;

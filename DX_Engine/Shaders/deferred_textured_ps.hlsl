@@ -9,7 +9,7 @@ GBuffer main(in VS_PosColNmlTex input) {
 	OUT.SpecularAcc.a	= SpecularColor.a;
 #endif
 	OUT.NormalAcc		= float4(input.Normal, 1.0f);
-	OUT.PositionAcc		= input.Position;
+	OUT.PositionAcc		= float4(input.WPos, 1.0f);
 
 	return OUT;
 }

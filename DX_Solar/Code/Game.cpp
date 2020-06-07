@@ -48,6 +48,10 @@ void Game::CreateScene() {
 	earthMesh.SetColor( Vector3(0.0f, 0.0f, 1.0f) );
 	moonMesh.SetColor( Vector3(1.0f, 1.0f, 1.0f) );
 
+	sunMesh.SetRenderFlags(0);
+	earthMesh.SetRenderFlags(0);
+	moonMesh.SetRenderFlags(0);
+
 	sun->GetModel().AddMesh(sunMesh);
 	earth->GetModel().AddMesh(earthMesh);
 	moon->GetModel().AddMesh(moonMesh);

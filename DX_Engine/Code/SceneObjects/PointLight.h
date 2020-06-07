@@ -14,11 +14,11 @@ public:
 	void						Initialise(IDevice* device);
 	void						Update(float dt) final;
 	void						Draw(IDevCon* context, Matrix const& world = Matrix::Identity) final;
+	const PointLight&			GetData() const { return m_rLightData; }
 
 private:
 	PointLight					m_rLightData;
 	Mesh						m_lightSphere;
-	ConstBuffer<CBPerLight>		m_cbLight;
 	ConstBuffer<CBPerInstance>	m_cbInstance;
 
 };

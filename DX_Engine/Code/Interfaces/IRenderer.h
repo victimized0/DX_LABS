@@ -81,13 +81,13 @@ struct Material {
 	DirectX::SimpleMath::Vector4	SpecularColor;
 };
 
-struct DirLight {
+struct alignas(16) DirLight {
 	DirectX::SimpleMath::Vector4	LightCol;
 	DirectX::SimpleMath::Vector4	LightAmb;
 	DirectX::SimpleMath::Vector3	LightDir;
 };
 
-struct PointLight {
+struct alignas(16) PointLight {
 	DirectX::SimpleMath::Vector4	Diffuse;
 	DirectX::SimpleMath::Vector4	Ambient;
 	DirectX::SimpleMath::Vector3	Position;
@@ -114,7 +114,8 @@ struct RenderInfo {
 
 enum class RenderPass : unsigned char {
 	Geometry	= 0,
-	Light		= 1
+	Light		= 1,
+	PostProcess	= 2
 };
 
 #include "..\Managers\ShadersManager.h"
