@@ -77,9 +77,9 @@ void Scene::RenderScene(IDevCon* context, RenderPass pass) {
         cbpf.PointLightsArr[1] = m_vPointLights[1]->GetData();
         cbpf.PointLightsArr[2] = m_vPointLights[2]->GetData();
 
-        cbpf.PointLightsArr[0].Position = Vector3::Transform(cbpf.PointLightsArr[0].Position, m_vPointLights[0]->GetWorld());
-        cbpf.PointLightsArr[1].Position = Vector3::Transform(cbpf.PointLightsArr[1].Position, m_vPointLights[1]->GetWorld());
-        cbpf.PointLightsArr[2].Position = Vector3::Transform(cbpf.PointLightsArr[2].Position, m_vPointLights[2]->GetWorld());
+        //cbpf.PointLightsArr[0].Position = Vector3::Transform(cbpf.PointLightsArr[0].Position, m_vPointLights[0]->GetWorld());
+        //cbpf.PointLightsArr[1].Position = Vector3::Transform(cbpf.PointLightsArr[1].Position, m_vPointLights[1]->GetWorld());
+        //cbpf.PointLightsArr[2].Position = Vector3::Transform(cbpf.PointLightsArr[2].Position, m_vPointLights[2]->GetWorld());
 
         m_cbPerFrame.SetData(context, cbpf);
         IConstBuffer* cb = m_cbPerFrame.GetBuffer();
