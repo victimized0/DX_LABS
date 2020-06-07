@@ -82,7 +82,8 @@ void D3D11Renderer::Render() {
 	ClearFrame();
 	ClearGBuffer();
 
-	IRenderTargetView* gbufferRTVs[4] = {
+	std::vector<IShaderResView*> gbufferSRVs(4);
+	std::vector<IRenderTargetView*> gbufferRTVs = {
 		m_diffuseAccRTV.Get(),
 		m_specularAccRTV.Get(),
 		m_normalAccRTV.Get(),
@@ -90,8 +91,10 @@ void D3D11Renderer::Render() {
 	};
 
 	// Geometry pass
+	m_context->PSSetShaderResources(0, gbufferSRVs.size(), gbufferSRVs.data());
 	m_context->OMSetDepthStencilState(m_defaultDSState.Get(), 1);
-	m_context->OMSetRenderTargets(4, gbufferRTVs, m_depthStencilView.Get());
+	m_context->OMSetRenderTargets(4, gbufferRTVs.data(), m_depthStencilView.Get());
+
 	Engine::GetPtr()->GetScene().RenderScene( m_context.Get(), RenderPass::Geometry );
 
 	// Light pass
@@ -99,19 +102,16 @@ void D3D11Renderer::Render() {
 	m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 	ClearFrame();
 
+	gbufferSRVs[0] = m_diffuseAccSRV.Get();
+	gbufferSRVs[1] = m_specularAccSRV.Get();
+	gbufferSRVs[2] = m_normalAccSRV.Get();
+	gbufferSRVs[3] = m_positionAccSRV.Get();
+
 	m_context->IASetInputLayout(nullptr);
 	m_context->IASetVertexBuffers(0, 0, nullptr, 0, 0);
 	m_context->VSSetShader(m_shadersManager.FullscreenQuadVS.GetShader(), nullptr, 0);
 	m_context->PSSetShader(m_shadersManager.BlinnPhongDeferredPS.GetShader(), nullptr, 0);
-
-	IShaderResView* gbufferSRVs[4] = {
-		m_diffuseAccSRV.Get(),
-		m_specularAccSRV.Get(),
-		m_normalAccSRV.Get(),
-		m_positionAccSRV.Get()
-	};
-
-	m_context->PSSetShaderResources(0, 4, gbufferSRVs);
+	m_context->PSSetShaderResources(0, gbufferSRVs.size(), gbufferSRVs.data());
 	m_context->PSSetSamplers(0, 1, m_defaultSampler.GetAddressOf());
 
 	Engine::GetPtr()->GetScene().RenderScene( m_context.Get(), RenderPass::Light );
@@ -183,7 +183,7 @@ bool D3D11Renderer::CreateDevice() {
 	textureDesc.Height					= gEnv.Height;
 	textureDesc.MipLevels				= 1;
 	textureDesc.ArraySize				= 1;
-	textureDesc.Format					= DXGI_FORMAT_R16G16B16A16_UNORM;
+	textureDesc.Format					= DXGI_FORMAT_R16G16B16A16_FLOAT;
 	textureDesc.SampleDesc.Count		= 1;
 	textureDesc.Usage					= D3D11_USAGE_DEFAULT;
 	textureDesc.BindFlags				= D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
