@@ -115,7 +115,7 @@ struct RenderInfo {
 enum class RenderPass : unsigned char {
 	Geometry	= 0,
 	Light		= 1,
-	PostProcess	= 2
+	Bloom		= 2
 };
 
 #include "..\Managers\ShadersManager.h"

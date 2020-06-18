@@ -55,7 +55,7 @@ void Game::CreateLights() {
 	lightData1.Ambient		= Vector4(0.3f, 0.3f, 0.3f, 1.0f);
 	lightData1.Diffuse		= Vector4(20.0f, 10.0f, 30.0f, 1.0f);
 	lightData1.Attenuation	= Vector3(0.0f, 0.1f, 0.001f);
-	lightData1.Range		= 100.f;
+	lightData1.Range		= 500.f;
 	lightData1.Position		= Vector3(0.f, 30.f, 50.f);
 
 	auto pointLight1 = std::make_unique<CPointLight>( lightData1 );

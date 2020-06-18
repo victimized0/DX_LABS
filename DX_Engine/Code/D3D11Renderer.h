@@ -42,12 +42,16 @@ public:
 
 protected:
 	ComPtr<IRenderTargetView>				m_hdrRTV;
+	ComPtr<IRenderTargetView>				m_quadHdrRTV;
+	ComPtr<IRenderTargetView>				m_bloomRTV;
 	ComPtr<IRenderTargetView>				m_diffuseAccRTV;
 	ComPtr<IRenderTargetView>				m_specularAccRTV;
 	ComPtr<IRenderTargetView>				m_normalAccRTV;
 	ComPtr<IRenderTargetView>				m_positionAccRTV;
 
 	ComPtr<IShaderResView>					m_hdrSRV;
+	ComPtr<IShaderResView>					m_quadHdrSRV;
+	ComPtr<IShaderResView>					m_bloomSRV;
 	ComPtr<IShaderResView>					m_diffuseAccSRV;
 	ComPtr<IShaderResView>					m_specularAccSRV;
 	ComPtr<IShaderResView>					m_normalAccSRV;
@@ -55,6 +59,7 @@ protected:
 
 	std::array<float, 3>					m_backColour;
 	CViewport								m_viewport;
+	CViewport								m_quadViewport;
 	ComPtr<IDevice>							m_device;
 	ComPtr<IDevCon>							m_context;
 	ComPtr<ISwapChain>						m_swapChain;

@@ -49,7 +49,10 @@ cbuffer cbPerFrame : register(REG_CB_PER_FRAME) {
 	float4	LightAmb;
 	float3  LightDir;
 	PointLight PointLights[POINT_LIGHTS_COUNT];
-#endif
+#ifdef USE_BLOOM
+	float	BloomThreshold;
+#endif // USE_BLOOM
+#endif // USE_LIGHT
 }
 
 cbuffer cbPerInstance : register(REG_CB_PER_INSTANCE) {
@@ -63,7 +66,7 @@ cbuffer cbPerMaterial : register(REG_CB_PER_MATERIAL) {
 	float4	AmbientColor;
 	float4	DiffuseColor;
 	float4	SpecularColor;
-#endif
+#endif // USE_LIGHT
 }
 
 /////////////////////// TEXTURES
@@ -73,6 +76,8 @@ Texture2D t_specular	: register(REG_TEX_SPECULAR);
 Texture2D t_normal		: register(REG_TEX_NORMAL);
 Texture2D t_position	: register(REG_TEX_POSITION);
 Texture2D t_hdr			: register(REG_TEX_DIFFUSE);
+Texture2D t_quadHdr		: register(REG_TEX_DIFFUSE);
+Texture2D t_bloom		: register(REG_TEX_SPECULAR);
 
 /////////////////////// SAMPLER STATES
 

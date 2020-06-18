@@ -26,6 +26,9 @@ public:
 	PixelShader		DeferredTexturedWithLightPS;
 	PixelShader		BlinnPhongDeferredPS;
 	PixelShader		HDRPostProcessPS;
+	PixelShader		BloomPS;
+	PixelShader		HorizontalBlurPS;
+	PixelShader		VerticalBlurPS;
 };
 
 #endif // _SHADERS_MANAGER_H_

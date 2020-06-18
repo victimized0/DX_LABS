@@ -40,8 +40,12 @@ float4 BlinnPhongDeferredPS(in QuadOut input) : SV_Target {
 	{
 		float3 lightDir = normalize(PointLights[i].Position - position);
 		float distance = length(PointLights[i].Position - position);
-		float attenuation = 1.0 / (PointLights[i].Attenuation.x + PointLights[i].Attenuation.y * distance + PointLights[i].Attenuation.z * (distance * distance));
-		finalColor.rgb += max( dot(n, lightDir), 0.0 ) * diffuse * PointLights[i].Diffuse * attenuation + m.Ka * PointLights[i].Ambient * attenuation;
+		if (distance < PointLights[i].Range) {
+			float attenuation = 1 / (PointLights[i].Attenuation.x + PointLights[i].Attenuation.y * distance + PointLights[i].Attenuation.z * (distance * distance));
+			float3 diff = max(dot(n, lightDir), 0.0) * diffuse.rgb * PointLights[i].Diffuse.rgb;
+			float3 amb = diffuse.rgb * PointLights[i].Ambient.rgb;
+			finalColor.rgb += (diff + amb) * attenuation;
+		}
 	}
 #endif
 

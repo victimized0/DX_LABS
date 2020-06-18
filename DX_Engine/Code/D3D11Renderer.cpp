@@ -61,6 +61,9 @@ void D3D11Renderer::ClearFrame() {
 
 	m_context->RSSetState(m_defaultRSState.Get());
 	m_context->ClearRenderTargetView(m_renderTargetView.Get(), backCol);
+	//m_context->ClearRenderTargetView(m_hdrRTV.Get(), backCol);
+	//m_context->ClearRenderTargetView(m_quadHdrRTV.Get(), backCol);
+	//m_context->ClearRenderTargetView(m_bloomRTV.Get(), backCol);
 	m_context->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
@@ -116,14 +119,35 @@ void D3D11Renderer::Render() {
 	Engine::GetPtr()->GetScene().RenderScene( m_context.Get(), RenderPass::Light );
 	ClearFrame();
 
-	// Post process
+	// HDR -> QuadHDR; Blur
+	m_context->OMSetRenderTargets(1, m_quadHdrRTV.GetAddressOf(), nullptr);
+	m_context->VSSetShader(m_shadersManager.FullscreenQuadVS.GetShader(), nullptr, 0);
+	m_context->PSSetShader(m_shadersManager.HorizontalBlurPS.GetShader(), nullptr, 0);
+	m_context->PSSetShaderResources(0, 1, m_hdrSRV.GetAddressOf());
+	m_context->PSSetSamplers(0, 1, m_defaultSampler.GetAddressOf());
+	m_context->RSSetViewports(1, &m_quadViewport);
+	m_context->Draw(3, 0);
+	m_context->PSSetShader(m_shadersManager.VerticalBlurPS.GetShader(), nullptr, 0);
+	m_context->Draw(3, 0);
+
+	// Bloom
+	m_context->OMSetRenderTargets(1, m_bloomRTV.GetAddressOf(), nullptr);
+	m_context->VSSetShader(m_shadersManager.FullscreenQuadVS.GetShader(), nullptr, 0);
+	m_context->PSSetShader(m_shadersManager.BloomPS.GetShader(), nullptr, 0);
+	m_context->PSSetShaderResources(0, 1, m_quadHdrSRV.GetAddressOf());
+	m_context->PSSetSamplers(0, 1, m_defaultSampler.GetAddressOf());
+	m_context->RSSetViewports(1, &m_viewport);
+
+	Engine::GetPtr()->GetScene().RenderScene( m_context.Get(), RenderPass::Bloom );
+
+	// Tone map
 	m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 	m_context->VSSetShader(m_shadersManager.FullscreenQuadVS.GetShader(), nullptr, 0);
 	m_context->PSSetShader(m_shadersManager.HDRPostProcessPS.GetShader(), nullptr, 0);
 	m_context->PSSetShaderResources(0, 1, m_hdrSRV.GetAddressOf());
+	m_context->PSSetShaderResources(0, 2, m_bloomSRV.GetAddressOf());
 	m_context->PSSetSamplers(0, 1, m_defaultSampler.GetAddressOf());
 	m_context->Draw(3, 0);
-
 
 	m_swapChain->Present(1, 0);
 }
@@ -187,6 +211,13 @@ bool D3D11Renderer::CreateDevice() {
 	m_viewport.MaxDepth = D3D11_MAX_DEPTH;
 	m_context->RSSetViewports(1, &m_viewport);
 
+	m_quadViewport.TopLeftX = 0.0f;
+	m_quadViewport.TopLeftY = 0.0f;
+	m_quadViewport.Width	= static_cast<float>(backBufferDesc.Width / 4);
+	m_quadViewport.Height	= static_cast<float>(backBufferDesc.Height / 4);
+	m_quadViewport.MinDepth = D3D11_MIN_DEPTH;
+	m_quadViewport.MaxDepth = D3D11_MAX_DEPTH;
+
 	D3D11_TEXTURE2D_DESC textureDesc	= {};
 	textureDesc.Width					= gEnv.Width;
 	textureDesc.Height					= gEnv.Height;
@@ -199,17 +230,25 @@ bool D3D11Renderer::CreateDevice() {
 	textureDesc.CPUAccessFlags			= 0;
 	textureDesc.MiscFlags				= 0;
 
+	D3D11_TEXTURE2D_DESC quadTextDesc	= textureDesc;
+	quadTextDesc.Width					= textureDesc.Width / 4;
+	quadTextDesc.Height					= textureDesc.Height / 4;
+
 	ComPtr<ID3D11Texture2D>	diffuseTex;
 	ComPtr<ID3D11Texture2D>	specularTex;
 	ComPtr<ID3D11Texture2D>	normalTex;
 	ComPtr<ID3D11Texture2D>	positionTex;
 	ComPtr<ID3D11Texture2D>	hdrTex;
+	ComPtr<ID3D11Texture2D>	quadHdrTex;
+	ComPtr<ID3D11Texture2D>	bloomTex;
 
 	if (m_device->CreateTexture2D(&textureDesc, nullptr, &diffuseTex)	!= S_OK) return false;
 	if (m_device->CreateTexture2D(&textureDesc, nullptr, &specularTex)	!= S_OK) return false;
 	if (m_device->CreateTexture2D(&textureDesc, nullptr, &normalTex)	!= S_OK) return false;
 	if (m_device->CreateTexture2D(&textureDesc, nullptr, &positionTex)	!= S_OK) return false;
 	if (m_device->CreateTexture2D(&textureDesc, nullptr, &hdrTex)		!= S_OK) return false;
+	if (m_device->CreateTexture2D(&quadTextDesc, nullptr, &quadHdrTex)	!= S_OK) return false;
+	if (m_device->CreateTexture2D(&textureDesc, nullptr, &bloomTex)		!= S_OK) return false;
 
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc	= {};
 	rtvDesc.Format							= textureDesc.Format;
@@ -222,6 +261,8 @@ bool D3D11Renderer::CreateDevice() {
 	if (m_device->CreateRenderTargetView(normalTex.Get(), &rtvDesc, &m_normalAccRTV)		!= S_OK) return false;
 	if (m_device->CreateRenderTargetView(positionTex.Get(), &rtvDesc, &m_positionAccRTV)	!= S_OK) return false;
 	if (m_device->CreateRenderTargetView(hdrTex.Get(), &rtvDesc, &m_hdrRTV)					!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(quadHdrTex.Get(), &rtvDesc, &m_quadHdrRTV)			!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(bloomTex.Get(), &rtvDesc, &m_bloomRTV)				!= S_OK) return false;
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format							= textureDesc.Format;
@@ -234,6 +275,8 @@ bool D3D11Renderer::CreateDevice() {
 	if (m_device->CreateShaderResourceView(normalTex.Get(), &srvDesc, &m_normalAccSRV)		!= S_OK) return false;
 	if (m_device->CreateShaderResourceView(positionTex.Get(), &srvDesc, &m_positionAccSRV)	!= S_OK) return false;
 	if (m_device->CreateShaderResourceView(hdrTex.Get(), &srvDesc, &m_hdrSRV)				!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(quadHdrTex.Get(), &srvDesc, &m_quadHdrSRV)		!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(bloomTex.Get(), &srvDesc, &m_bloomSRV)			!= S_OK) return false;
 	
 	D3D11_DEPTH_STENCIL_DESC dsDesc			= {};
 	dsDesc.DepthEnable						= true;

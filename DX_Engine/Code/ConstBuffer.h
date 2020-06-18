@@ -15,6 +15,7 @@ struct alignas(16) CBPerFrame {
     DirectX::SimpleMath::Vector4    EyePos;
     DirLight                        DirLight;
     PointLight                      PointLightsArr[3];
+    float                           BloomThreshold;
 
     static const ConstBufferType    Slot = ConstBufferType::PerFrame;
 };

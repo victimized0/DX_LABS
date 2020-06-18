@@ -16,12 +16,21 @@ ShadersManager::ShadersManager()
 	, DeferredTexturedWithLightPS("deferred_textured_ps")
 	, BlinnPhongDeferredPS("deferred")
 	, HDRPostProcessPS("HDR")
+	, BloomPS("HDR")
+	, HorizontalBlurPS("HDR")
+	, VerticalBlurPS("HDR")
 {
 
 }
 
 void ShadersManager::Initialise(IDevice* device) {
 	std::vector<D3DShaderMacro> lightMacros = {
+		{ "USE_LIGHT", "1" },
+		{ NULL, NULL }
+	};
+
+	std::vector<D3DShaderMacro> bloomMacros = {
+		{ "USE_BLOOM", "1" },
 		{ "USE_LIGHT", "1" },
 		{ NULL, NULL }
 	};
@@ -44,4 +53,7 @@ void ShadersManager::Initialise(IDevice* device) {
 	DeferredTexturedWithLightPS	.Create(device, "main", lightMacros);
 	BlinnPhongDeferredPS		.Create(device, "BlinnPhongDeferredPS", lightMacros);
 	HDRPostProcessPS			.Create(device, "HDRPostProcessPS", lightMacros);
+	BloomPS						.Create(device, "BloomPS", bloomMacros);
+	HorizontalBlurPS			.Create(device, "HorizontalBlurPS", bloomMacros);
+	VerticalBlurPS				.Create(device, "VerticalBlurPS", bloomMacros);
 }
