@@ -1,10 +1,5 @@
 #include "common.hlsli"
 
-struct QuadOut {
-	float4 Position : SV_Position;
-	float2 TexCoord : TEXCOORD;
-};
-
 float3 GammaCorrection(in float3 color) {
 	return pow(color, 2.2f);
 }
@@ -24,20 +19,20 @@ float TonemapFilmic(float x) {
 float4 HDRPostProcessPS(in QuadOut input) : SV_Target {
 	float3 hdr			= t_hdr.Sample(t_sampler, input.TexCoord).rgb;
 	float3 cBloom		= t_bloom.Sample(t_sampler, input.TexCoord).rgb;
-	float bloomAmount	= t_bloom.Sample(t_sampler, input.TexCoord).a;
-	float3 bloom		= cBloom * bloomAmount;
+	//float bloomAmount	= t_bloom.Sample(t_sampler, input.TexCoord).a;
+	//float3 bloom		= cBloom * bloomAmount;
 
-	float3 ldr = TonemapFilmic(hdr + bloom);
-	return float4(GammaCorrection(ldr), 1.0f);
+	float3 ldr = TonemapFilmic(hdr + cBloom);
+	return float4(ldr, 1.0f);
 }
 
-float4 BloomPS(in QuadOut input) : SV_Target{
+float4 BloomPS(in QuadOut input) : SV_Target {
 	float4 vColor = 0;
 #ifdef USE_BLOOM
-	float4 hdr = t_hdr.Sample(t_sampler, input.TexCoord);
-	//if (hdr.rgb >= float3(BloomThreshold, BloomThreshold, BloomThreshold)) {
-		vColor = hdr;
-	//}
+	float4 hdr = t_quadHdr.Sample(t_sampler, input.TexCoord);
+	if (length(hdr.rgb) > 10.0f) {
+		vColor.rgb = hdr.rgb;
+	}
 #endif // USE_BLOOM
 	return vColor;
 }

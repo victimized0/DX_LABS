@@ -11,3 +11,8 @@ GBuffer main(in VS_PosColNmlTex input) {
 
 	return OUT;
 }
+
+float4 CopyTexToTexPS(in QuadOut input) : SV_Target {
+	float3 color = t_src.Sample(t_sampler, input.TexCoord).rgb;
+	return float4(color, 1.0f);
+}

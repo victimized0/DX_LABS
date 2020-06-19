@@ -124,17 +124,21 @@ class IRenderer {
 public:
 	static IRenderer*		Create();
 
-	virtual					~IRenderer()				{}
-	virtual bool			Initialise()				= 0;
-	virtual void			Render()					= 0;
+	virtual					~IRenderer()								{}
+	virtual bool			Initialise()								= 0;
+	virtual void			Render()									= 0;
 
-	virtual bool			CreateDevice()				= 0;
-	virtual bool			OnDeviceLost()				= 0;
+	virtual bool			CreateDevice()								= 0;
+	virtual bool			OnDeviceLost()								= 0;
 
-	virtual IDevice*		GetDevice()					= 0;
-	virtual IDevCon*		GetContext()				= 0;
-	virtual void			ClearFrame()				= 0;
-	virtual void			ClearGBuffer()				= 0;
+	virtual IDevice*		GetDevice()									= 0;
+	virtual IDevCon*		GetContext()								= 0;
+	virtual void			ClearFrame()								= 0;
+	virtual void			ClearGBuffer()								= 0;
+	virtual void			UnbindSRVs()								= 0;
+	virtual void			UnbindRTVs()								= 0;
+	virtual void			UpdateSRVs()								= 0;
+	virtual void			UpdateRTVs(IDepthStencilView* depthView)	= 0;
 
 	virtual ShadersManager* GetShadersManager()			= 0;
 	virtual void			SetBackColor(float r, float g, float b)		= 0;

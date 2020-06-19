@@ -29,6 +29,7 @@ public:
 	PixelShader		BloomPS;
 	PixelShader		HorizontalBlurPS;
 	PixelShader		VerticalBlurPS;
+	PixelShader		CopyTexToTexPS;
 };
 
 #endif // _SHADERS_MANAGER_H_

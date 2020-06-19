@@ -102,7 +102,7 @@ void Mesh::Draw(IDevCon* context) {
 	context->VSSetShader(m_renderInfo.pVertexShader, nullptr, 0);
 	context->PSSetShader(m_renderInfo.pPixelShader, nullptr, 0);
 	context->PSSetShaderResources(0, 1, m_renderInfo.pDiffuseView.GetAddressOf());
-	context->PSSetSamplers(0, 1, m_renderInfo.pSamplerState.GetAddressOf());
+	//context->PSSetSamplers(0, 1, m_renderInfo.pSamplerState.GetAddressOf());
 
 	CBPerMaterial cbPerMaterial = {};
 	cbPerMaterial.AmbientColor	= Vector4(m_material.AmbientColor, 0.0f);
@@ -135,7 +135,7 @@ void Mesh::SetMaterial(const Material& mat) {
 	std::wstring normalPath(mat.Normal.Path.begin(), mat.Normal.Path.end());
 	std::wstring specularPath(mat.Specular.Path.begin(), mat.Specular.Path.end());
 
-	if (FAILED(DirectX::CreateDDSTextureFromFile(gEnv.Renderer()->GetDevice(), diffusePath.c_str(), nullptr, &m_renderInfo.pDiffuseView))) return;
+	if (FAILED(DirectX::CreateDDSTextureFromFile(gEnv.Renderer()->GetDevice(), diffusePath.c_str(), nullptr, &m_renderInfo.pDiffuseView, true))) return;
 	DirectX::CreateDDSTextureFromFile(gEnv.Renderer()->GetDevice(), normalPath.c_str(), nullptr, &m_renderInfo.pNormalView);
 	DirectX::CreateDDSTextureFromFile(gEnv.Renderer()->GetDevice(), specularPath.c_str(), nullptr, &m_renderInfo.pSpecularView);
 

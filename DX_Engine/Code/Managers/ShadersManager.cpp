@@ -19,6 +19,7 @@ ShadersManager::ShadersManager()
 	, BloomPS("HDR")
 	, HorizontalBlurPS("HDR")
 	, VerticalBlurPS("HDR")
+	, CopyTexToTexPS("standard_ps")
 {
 
 }
@@ -56,4 +57,5 @@ void ShadersManager::Initialise(IDevice* device) {
 	BloomPS						.Create(device, "BloomPS", bloomMacros);
 	HorizontalBlurPS			.Create(device, "HorizontalBlurPS", bloomMacros);
 	VerticalBlurPS				.Create(device, "VerticalBlurPS", bloomMacros);
+	CopyTexToTexPS				.Create(device, "CopyTexToTexPS", emptyMacros);
 }

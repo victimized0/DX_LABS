@@ -40,6 +40,11 @@ struct PointLight {
 	float3	Attenuation;
 };
 
+struct QuadOut {
+	float4 Position : SV_Position;
+	float2 TexCoord : TEXCOORD;
+};
+
 /////////////////////// CONSTANT BUFFERS
 
 cbuffer cbPerFrame : register(REG_CB_PER_FRAME) {
@@ -78,6 +83,7 @@ Texture2D t_position	: register(REG_TEX_POSITION);
 Texture2D t_hdr			: register(REG_TEX_DIFFUSE);
 Texture2D t_quadHdr		: register(REG_TEX_DIFFUSE);
 Texture2D t_bloom		: register(REG_TEX_SPECULAR);
+Texture2D t_src			: register(REG_TEX_DIFFUSE);
 
 /////////////////////// SAMPLER STATES
 

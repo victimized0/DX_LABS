@@ -1,10 +1,5 @@
 #include "common.hlsli"
 
-struct QuadOut {
-	float4 Position : SV_Position;
-	float2 TexCoord : TEXCOORD;
-};
-
 QuadOut FullscreenQuadVS(uint vertexID : SV_VertexID) {
     QuadOut OUT = (QuadOut)0;
 

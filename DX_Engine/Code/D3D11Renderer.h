@@ -27,6 +27,10 @@ public:
 	void									Render()final;
 	void									ClearFrame()final;
 	void									ClearGBuffer()final;
+	void									UnbindRTVs()final;
+	void									UnbindSRVs()final;
+	void									UpdateSRVs()final;
+	void									UpdateRTVs(IDepthStencilView* depthView)final;
 
 	void									SetBackColor(float r, float g, float b)final;
 
@@ -57,9 +61,10 @@ protected:
 	ComPtr<IShaderResView>					m_normalAccSRV;
 	ComPtr<IShaderResView>					m_positionAccSRV;
 
-	std::array<float, 3>					m_backColour;
+	std::array<float, 4>					m_backColour;
 	CViewport								m_viewport;
 	CViewport								m_quadViewport;
+
 	ComPtr<IDevice>							m_device;
 	ComPtr<IDevCon>							m_context;
 	ComPtr<ISwapChain>						m_swapChain;
@@ -69,6 +74,8 @@ protected:
 	ComPtr<IDepthStencilState>				m_defaultDSState;
 	ComPtr<IRSState>						m_defaultRSState;
 	ComPtr<ISamplerState>					m_defaultSampler;
+	std::vector<IShaderResView*>			m_SRVs;
+	std::vector<IRenderTargetView*>			m_RTVs;
 
 	ShadersManager							m_shadersManager;
 };
