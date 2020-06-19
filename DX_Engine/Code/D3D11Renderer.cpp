@@ -136,7 +136,7 @@ void D3D11Renderer::Render() {
 	m_context->VSSetShader(m_shadersManager.FullscreenQuadVS.GetShader(), nullptr, 0);
 	m_context->PSSetShader(m_shadersManager.BlinnPhongDeferredPS.GetShader(), nullptr, 0);
 	UpdateSRVs();
-	UpdateRTVs(nullptr);
+	UpdateRTVs(m_depthStencilView.Get());
 	m_context->OMSetDepthStencilState(m_noDSState.Get(), 1);
 
 	Engine::GetPtr()->GetScene().RenderScene( m_context.Get(), RenderPass::Light );
