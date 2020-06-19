@@ -51,7 +51,7 @@ void Game::CreateLights() {
 	m_scene.SetSunLight(&m_dirLight);
 	m_scene.GetMainCamera()->Rotate(0, -0.25f);
 
-	PointLight lightData1;
+	PointLightData lightData1;
 	lightData1.Ambient		= Vector4(0.3f, 0.3f, 0.3f, 1.0f);
 	lightData1.Diffuse		= Vector4(20.0f, 10.0f, 30.0f, 1.0f);
 	lightData1.Attenuation	= Vector3(0.0f, 0.1f, 0.001f);

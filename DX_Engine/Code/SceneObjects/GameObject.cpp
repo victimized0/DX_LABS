@@ -75,7 +75,7 @@ void GameObject::Initialise() {
 	m_isInit = true;
 }
 
-void GameObject::Draw(IDevCon* context, const Matrix& parentTransfom) {
+void GameObject::Draw(IDevCon* context, const Matrix& parentTransfom, RenderPass pass) {
 	m_model.Draw(context, GetWorld() * parentTransfom);
 
 	for (size_t index = 0; index < m_children.size(); ++index) {

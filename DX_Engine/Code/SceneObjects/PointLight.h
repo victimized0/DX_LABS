@@ -8,18 +8,19 @@
 
 class CPointLight final : public GameObject {
 public:
-								CPointLight(PointLight const& pData);
+								CPointLight(PointLightData const& pData);
 	virtual						~CPointLight();
 
 	void						Initialise(IDevice* device);
 	void						Update(float dt) final;
-	void						Draw(IDevCon* context, Matrix const& world = Matrix::Identity) final;
-	const PointLight&			GetData() const { return m_rLightData; }
+	void						Draw(IDevCon* context, Matrix const& world = Matrix::Identity, RenderPass pass = RenderPass::Geometry) final;
+	const PointLightData&		GetData() const { return m_lightData; }
 
 private:
-	PointLight					m_rLightData;
+	PointLightData				m_lightData;
 	Mesh						m_lightSphere;
-	ConstBuffer<CBPerInstance>	m_cbInstance;
+	ConstBuffer<CBPerInstance>	m_cbPerInst;
+	ConstBuffer<CBPerLight>		m_cbPerLight;
 
 };
 

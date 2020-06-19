@@ -21,7 +21,7 @@ public:
 
 	virtual void								Initialise();
 	virtual void								Update(float dt);
-	virtual void								Draw(IDevCon* context, const Matrix& parentTransfom = Matrix::Identity);
+	virtual void								Draw(IDevCon* context, const Matrix& parentTransfom = Matrix::Identity, RenderPass pass = RenderPass::Geometry);
 
 	void										Rescale(float dScale);
 	void										Translate(const Vector3& dPos);

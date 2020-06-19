@@ -63,19 +63,12 @@ void Scene::Update(float dt) {
 void Scene::RenderScene(IDevCon* context, RenderPass pass) {
     if (pass == RenderPass::Geometry) {
         Root->Draw(context, DirectX::SimpleMath::Matrix::Identity);
-
-        for (auto& pointLight : m_vPointLights) {
-            pointLight->Draw(context);
-        }
     }
 
     if (pass == RenderPass::Light) {
         CBPerFrame cbpf         = {};
         cbpf.EyePos             = DirectX::SimpleMath::Vector4(GetMainCamera()->GetPosition(), 1.0f);
         cbpf.DirLight           = *m_pDirLight;
-        cbpf.PointLightsArr[0]  = m_vPointLights[0]->GetData();
-        cbpf.PointLightsArr[1]  = m_vPointLights[1]->GetData();
-        cbpf.PointLightsArr[2]  = m_vPointLights[2]->GetData();
 
         m_cbPerFrame.SetData(context, cbpf);
         IConstBuffer* cb = m_cbPerFrame.GetBuffer();
@@ -84,14 +77,7 @@ void Scene::RenderScene(IDevCon* context, RenderPass pass) {
         context->Draw(3, 0);
     }
 
-    if (pass == RenderPass::Bloom) {
-        CBPerFrame cbpf     = {};
-        cbpf.BloomThreshold = 0.65f;
-
-        m_cbPerFrame.SetData(context, cbpf);
-        IConstBuffer* cb = m_cbPerFrame.GetBuffer();
-
-        context->PSSetConstantBuffers((UINT)CBPerFrame::Slot, 1, &cb);
-        context->Draw(3, 0);
+    for (auto& pointLight : m_vPointLights) {
+        pointLight->Draw(context, Matrix::Identity, pass);
     }
 }

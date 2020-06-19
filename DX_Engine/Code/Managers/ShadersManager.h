@@ -25,6 +25,7 @@ public:
 	PixelShader		DeferredTexturedNoLightPS;
 	PixelShader		DeferredTexturedWithLightPS;
 	PixelShader		BlinnPhongDeferredPS;
+	PixelShader		PointLightPS;
 	PixelShader		HDRPostProcessPS;
 	PixelShader		BloomPS;
 	PixelShader		HorizontalBlurPS;

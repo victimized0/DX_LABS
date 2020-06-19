@@ -187,9 +187,7 @@ void D3D11Renderer::Render() {
 	m_context->PSSetShader(m_shadersManager.BloomPS.GetShader(), nullptr, 0);
 	UpdateSRVs();
 	UpdateRTVs(nullptr);
-
-	Engine::GetPtr()->GetScene().RenderScene( m_context.Get(), RenderPass::Bloom );
-
+	m_context->Draw(3, 0);
 	UnbindRTVs();
 	UnbindSRVs();
 

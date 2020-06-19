@@ -87,7 +87,7 @@ struct alignas(16) DirLight {
 	DirectX::SimpleMath::Vector3	LightDir;
 };
 
-struct alignas(16) PointLight {
+struct alignas(16) PointLightData {
 	DirectX::SimpleMath::Vector4	Diffuse;
 	DirectX::SimpleMath::Vector4	Ambient;
 	DirectX::SimpleMath::Vector3	Position;
@@ -114,8 +114,7 @@ struct RenderInfo {
 
 enum class RenderPass : unsigned char {
 	Geometry	= 0,
-	Light		= 1,
-	Bloom		= 2
+	Light		= 1
 };
 
 #include "..\Managers\ShadersManager.h"
