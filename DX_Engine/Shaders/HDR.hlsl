@@ -4,6 +4,11 @@ float3 GammaCorrection(in float3 color) {
 	return pow(color, 2.2f);
 }
 
+float3 ReinhardExtended(float3 v, float max_white) {
+	float3 numerator = v * (1.0f + (v / (max_white * max_white)));
+	return numerator / (1.0f + v);
+}
+
 float3 TonemapFilmic(float3 x) {
 	float3 X = max( float3(0.0f, 0.0f, 0.0f), x - 0.004f );
 	float3 result = (X * (6.2f * X + 0.5f)) / (X * (6.2f * X + 1.7f) + 0.06f);
@@ -22,7 +27,8 @@ float4 HDRPostProcessPS(in QuadOut input) : SV_Target {
 	//float bloomAmount	= t_bloom.Sample(t_sampler, input.TexCoord).a;
 	//float3 bloom		= cBloom * bloomAmount;
 
-	float3 ldr = TonemapFilmic(hdr + cBloom);
+	//float3 ldr = TonemapFilmic(hdr + cBloom);
+	float3 ldr = ReinhardExtended(hdr + cBloom, 10.0f);
 	return float4(ldr, 1.0f);
 }
 
