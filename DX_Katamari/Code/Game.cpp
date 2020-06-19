@@ -76,10 +76,10 @@ void Game::CreateScene() {
 
 	vector<VertexPosColNmlTex> groundVertices =
 	{
-		{ Vector3(-TERRAIN_SIZE, 0, -TERRAIN_SIZE),	Vector3(0.2f), Vector3(0.5f, 0.5f, 1.0f), Vector2::Zero },
-		{ Vector3(-TERRAIN_SIZE, 0, TERRAIN_SIZE),	Vector3(0.2f), Vector3(0.5f, 0.5f, 1.0f), Vector2::Zero },
-		{ Vector3(TERRAIN_SIZE, 0, TERRAIN_SIZE),	Vector3(0.2f), Vector3(0.5f, 0.5f, 1.0f), Vector2::Zero },
-		{ Vector3(TERRAIN_SIZE, 0, -TERRAIN_SIZE),	Vector3(0.2f), Vector3(0.5f, 0.5f, 1.0f), Vector2::Zero }
+		{ Vector3(-TERRAIN_SIZE, 0, -TERRAIN_SIZE),	Vector3(0.2f), Vector3::Up, Vector2::Zero },
+		{ Vector3(-TERRAIN_SIZE, 0, TERRAIN_SIZE),	Vector3(0.2f), Vector3::Up, Vector2::Zero },
+		{ Vector3(TERRAIN_SIZE, 0, TERRAIN_SIZE),	Vector3(0.2f), Vector3::Up, Vector2::Zero },
+		{ Vector3(TERRAIN_SIZE, 0, -TERRAIN_SIZE),	Vector3(0.2f), Vector3::Up, Vector2::Zero }
 	};
 
 	vector<UINT> groundIndices =
