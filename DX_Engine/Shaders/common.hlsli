@@ -53,6 +53,7 @@ cbuffer cbPerFrame : register(REG_CB_PER_FRAME) {
 	float4	LightAmb;
 	float3  LightDir;
 #endif // USE_LIGHT
+	float2	gScreenSize;
 }
 
 cbuffer cbPerInstance : register(REG_CB_PER_INSTANCE) {

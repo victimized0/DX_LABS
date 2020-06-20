@@ -8,6 +8,7 @@ VS_PosColNmlTex main(in IA_PosColNmlTex input) {
 	output.WPos			= mul(input.Position, world).xyz;
 	output.Color		= input.Color;
 	output.Normal		= input.Normal.xyz;
+	output.TexCoord		= input.TexCoord;
 
 	return output;
 }

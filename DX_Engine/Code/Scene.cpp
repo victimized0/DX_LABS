@@ -69,6 +69,7 @@ void Scene::RenderScene(IDevCon* context, RenderPass pass) {
         CBPerFrame cbpf         = {};
         cbpf.EyePos             = DirectX::SimpleMath::Vector4(GetMainCamera()->GetPosition(), 1.0f);
         cbpf.DirLight           = *m_pDirLight;
+        cbpf.ScreenSize         = gEnv.Renderer()->GetScreenSize();
 
         m_cbPerFrame.SetData(context, cbpf);
         IConstBuffer* cb = m_cbPerFrame.GetBuffer();

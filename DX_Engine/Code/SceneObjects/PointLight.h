@@ -19,6 +19,7 @@ public:
 private:
 	PointLightData				m_lightData;
 	Mesh						m_lightSphere;
+	Mesh						m_lightVolume;
 	ConstBuffer<CBPerInstance>	m_cbPerInst;
 	ConstBuffer<CBPerLight>		m_cbPerLight;
 

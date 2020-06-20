@@ -14,6 +14,7 @@ enum class ConstBufferType : unsigned char {
 struct alignas(16) CBPerFrame {
     DirectX::SimpleMath::Vector4    EyePos;
     DirLight                        DirLight;
+    DirectX::SimpleMath::Vector2    ScreenSize;
     //PointLight                      PointLightsArr[3];
     //float                           BloomThreshold;
 

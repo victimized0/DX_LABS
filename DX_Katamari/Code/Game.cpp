@@ -35,13 +35,20 @@ bool Game::Initialize(int iconId, int width, int height) {
 	m_mouse->SetWindow(gEnv.HWnd);
 	m_mouse->SetMode(Mouse::MODE_RELATIVE);
 
-	CreateLights();
+	SetupLight();
 	CreateScene();
 
 	return true;
 }
 
-void Game::CreateLights() {
+void Game::SetupLight() {
+	std::random_device dev;
+	std::mt19937 rng(dev());
+	std::uniform_real_distribution<float> XZdist(-50, 50);
+	std::uniform_real_distribution<float> Ydist(10, 20);
+	std::uniform_real_distribution<float> RangeDist(10, 50);
+	std::uniform_real_distribution<float> ColorDist(0.0f, 10.0f);
+
 	gEnv.Renderer()->SetBackColor(0.529f, 0.808f, 0.922f);
 
 	m_dirLight.LightCol = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -51,24 +58,18 @@ void Game::CreateLights() {
 	m_scene.SetSunLight(&m_dirLight);
 	m_scene.GetMainCamera()->Rotate(0, -0.25f);
 
-	PointLightData lightData1;
-	lightData1.Ambient		= Vector4(0.3f, 0.3f, 0.3f, 1.0f);
-	lightData1.Diffuse		= Vector4(20.0f, 10.0f, 30.0f, 1.0f);
-	lightData1.Attenuation	= Vector3(0.0f, 0.1f, 0.001f);
-	lightData1.Range		= 500.f;
-	lightData1.Position		= Vector3(0.f, 30.f, 50.f);
+	for (size_t i = 0; i < 10; ++i) {
+		PointLightData lightData = {};
 
-	auto pointLight1 = std::make_unique<CPointLight>( lightData1 );
-	lightData1.Diffuse  = Vector4(34.0f, 22.0f, 12.0f, 1.0f);
-	lightData1.Position = Vector3(55.f, 25.f, 70.f);
-	auto pointLight2 = std::make_unique<CPointLight>( lightData1 );
-	lightData1.Diffuse = Vector4(41.0f, 13.0f, 21.0f, 1.0f);
-	lightData1.Position = Vector3(-30.f, 35.f, -50.f);
-	auto pointLight3 = std::make_unique<CPointLight>( lightData1 );
+		lightData.Ambient		= Vector4(0.3f, 0.3f, 0.3f, 1.0f);
+		lightData.Diffuse		= Vector4(ColorDist(rng), ColorDist(rng), ColorDist(rng), 1.0f);
+		lightData.Attenuation	= Vector3(0.0f, 0.1f, 0.021f);
+		lightData.Range			= RangeDist(rng);
+		lightData.Position		= Vector3(XZdist(rng), Ydist(rng), XZdist(rng));
 
-	m_scene.AddLight( std::move(pointLight1) );
-	m_scene.AddLight( std::move(pointLight2) );
-	m_scene.AddLight( std::move(pointLight3) );
+		auto pointLight = std::make_unique<CPointLight>(lightData);
+		m_scene.AddLight(std::move(pointLight));
+	}
 }
 
 void Game::CreateScene() {

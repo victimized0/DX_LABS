@@ -6,7 +6,7 @@
 
 class Mesh {
 public:
-	using Vertex		= VertexPosColNmlTex;
+	using Vertex = VertexPosColNmlTex;
 
 public:
 									Mesh();
@@ -25,6 +25,8 @@ public:
 	RenderInfo&						GetRenderInfo() { return m_renderInfo; }
 	const RenderInfo&				GetRenderInfo()const { return m_renderInfo; }
 	void							SetRenderInfo(const RenderInfo& ri) { m_renderInfo = ri; }
+	void							SetVertexShader(const VertexShader& vs);
+	void							SetPixelShader(const PixelShader& ps);
 	void							SetMaterial(const Material& mat);
 
 	void							SetRenderFlags(int flags);

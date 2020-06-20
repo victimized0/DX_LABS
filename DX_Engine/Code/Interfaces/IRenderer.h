@@ -134,10 +134,13 @@ public:
 	virtual IDevCon*		GetContext()								= 0;
 	virtual void			ClearFrame()								= 0;
 	virtual void			ClearGBuffer()								= 0;
+
 	virtual void			UnbindSRVs()								= 0;
 	virtual void			UnbindRTVs()								= 0;
 	virtual void			UpdateSRVs()								= 0;
 	virtual void			UpdateRTVs(IDepthStencilView* depthView)	= 0;
+
+	virtual DirectX::SimpleMath::Vector2	GetScreenSize()				= 0;
 
 	virtual ShadersManager* GetShadersManager()			= 0;
 	virtual void			SetBackColor(float r, float g, float b)		= 0;
