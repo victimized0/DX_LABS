@@ -12,7 +12,7 @@ D3D11Renderer::D3D11Renderer()
 	: m_device(nullptr)
 	, m_context(nullptr)
 	, m_swapChain(nullptr)
-	, m_renderTargetView(nullptr)
+	, m_backBuffer(nullptr)
 	, m_depthStencilView(nullptr)
 	, m_SRVs(4)
 	, m_RTVs(4)
@@ -59,15 +59,19 @@ bool D3D11Renderer::Initialise() {
 	return true;
 }
 
+DirectX::SimpleMath::Vector2 D3D11Renderer::GetScreenSize() {
+	return DirectX::SimpleMath::Vector2(m_viewport.Width, m_viewport.Height);
+}
+
 void D3D11Renderer::ClearFrame() {
 	const float backCol[4] = { m_backColour[0], m_backColour[1], m_backColour[2], 0.0f };
 	const float black[4] = { 0.f, 0.f, 0.f, 0.0f };
 
 	m_context->RSSetState(m_defaultRSState.Get());
-	m_context->ClearRenderTargetView(m_renderTargetView.Get(), backCol);
-	//m_context->ClearRenderTargetView(m_hdrRTV.Get(), backCol);
-	//m_context->ClearRenderTargetView(m_quadHdrRTV.Get(), backCol);
-	//m_context->ClearRenderTargetView(m_bloomRTV.Get(), backCol);
+	m_context->ClearRenderTargetView(m_backBuffer.Get(), backCol);
+	m_context->ClearRenderTargetView(m_hdrRTV.Get(), black);
+	m_context->ClearRenderTargetView(m_quadHdrRTV.Get(), black);
+	m_context->ClearRenderTargetView(m_bloomRTV.Get(), black);
 	m_context->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
@@ -75,10 +79,10 @@ void D3D11Renderer::ClearGBuffer() {
 	const float backCol[4] = { m_backColour[0], m_backColour[1], m_backColour[2], 0.0f };
 	const float black[4] = { 0.f, 0.f, 0.f, 0.0f };
 
-	m_context->ClearRenderTargetView(m_diffuseAccRTV.Get(), backCol);
-	m_context->ClearRenderTargetView(m_specularAccRTV.Get(), black);
-	m_context->ClearRenderTargetView(m_normalAccRTV.Get(), black);
-	m_context->ClearRenderTargetView(m_positionAccRTV.Get(), black);
+	m_context->ClearRenderTargetView(m_sceneDiffuseAccRTV.Get(), backCol);
+	m_context->ClearRenderTargetView(m_sceneSpecularAccRTV.Get(), black);
+	m_context->ClearRenderTargetView(m_sceneNormalAccRTV.Get(), black);
+	m_context->ClearRenderTargetView(m_scenePositionAccRTV.Get(), black);
 }
 
 void D3D11Renderer::UnbindSRVs() {
@@ -114,10 +118,10 @@ void D3D11Renderer::Render() {
 	ClearGBuffer();
 
 	// Geometry pass
-	m_RTVs[0] = m_diffuseAccRTV.Get();
-	m_RTVs[1] = m_specularAccRTV.Get();
-	m_RTVs[2] = m_normalAccRTV.Get();
-	m_RTVs[3] = m_positionAccRTV.Get();
+	m_RTVs[0] = m_sceneDiffuseAccRTV.Get();
+	m_RTVs[1] = m_sceneSpecularAccRTV.Get();
+	m_RTVs[2] = m_sceneNormalAccRTV.Get();
+	m_RTVs[3] = m_scenePositionAccRTV.Get();
 
 	m_context->OMSetDepthStencilState(m_defaultDSState.Get(), 1);
 	UpdateRTVs(m_depthStencilView.Get());
@@ -125,10 +129,12 @@ void D3D11Renderer::Render() {
 	UnbindRTVs();
 
 	// Light pass
-	m_SRVs[0] = m_diffuseAccSRV.Get();
-	m_SRVs[1] = m_specularAccSRV.Get();
-	m_SRVs[2] = m_normalAccSRV.Get();
-	m_SRVs[3] = m_positionAccSRV.Get();
+	const float blendFactor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	m_SRVs[0] = m_sceneDiffuseSRV.Get();
+	m_SRVs[1] = m_sceneSpecularSRV.Get();
+	m_SRVs[2] = m_sceneNormalSRV.Get();
+	m_SRVs[3] = m_scenePositionSRV.Get();
 	m_RTVs[0] = m_hdrRTV.Get();
 
 	m_context->IASetInputLayout(nullptr);
@@ -136,43 +142,25 @@ void D3D11Renderer::Render() {
 	m_context->VSSetShader(m_shadersManager.FullscreenQuadVS.GetShader(), nullptr, 0);
 	m_context->PSSetShader(m_shadersManager.BlinnPhongDeferredPS.GetShader(), nullptr, 0);
 	UpdateSRVs();
-	UpdateRTVs(nullptr);
-	m_context->OMSetDepthStencilState(m_noDSState.Get(), 1);
+	UpdateRTVs(m_depthStencilView.Get());
+	m_context->OMSetDepthStencilState(m_readDSS.Get(), 1);
+	m_context->OMSetBlendState(m_oneAddBS.Get(), blendFactor, 0xffffffff);
 
 	Engine::GetPtr()->GetScene().RenderScene( m_context.Get(), RenderPass::Light );
-	ClearFrame();
+	//ClearFrame();
 	UnbindSRVs();
 	UnbindRTVs();
+
+	m_context->OMSetDepthStencilState(m_noDSState.Get(), 1);
+	m_context->OMSetBlendState(nullptr, 0, 0xffffffff);
 
 	// Copy hdr -> quadHdr
 	m_SRVs[0] = m_hdrSRV.Get();
 	m_RTVs[0] = m_quadHdrRTV.Get();
 
 	m_context->RSSetViewports(1, &m_quadViewport);
+	m_context->VSSetShader(m_shadersManager.FullscreenQuadVS.GetShader(), nullptr, 0);
 	m_context->PSSetShader(m_shadersManager.CopyTexToTexPS.GetShader(), nullptr, 0);
-	UpdateSRVs();
-	UpdateRTVs(nullptr);
-	m_context->Draw(3, 0);
-
-	UnbindRTVs();
-	UnbindSRVs();
-
-	// HDR -> QuadHDR; Blur
-	m_SRVs[0] = m_quadHdrSRV.Get();
-	m_RTVs[0] = m_bloomRTV.Get();
-
-	m_context->PSSetShader(m_shadersManager.HorizontalBlurPS.GetShader(), nullptr, 0);
-	UpdateSRVs();
-	UpdateRTVs(nullptr);
-	m_context->Draw(3, 0);
-
-	UnbindRTVs();
-	UnbindSRVs();
-
-	m_SRVs[0] = m_bloomSRV.Get();
-	m_RTVs[0] = m_quadHdrRTV.Get();
-
-	m_context->PSSetShader(m_shadersManager.VerticalBlurPS.GetShader(), nullptr, 0);
 	UpdateSRVs();
 	UpdateRTVs(nullptr);
 	m_context->Draw(3, 0);
@@ -187,8 +175,30 @@ void D3D11Renderer::Render() {
 	m_context->PSSetShader(m_shadersManager.BloomPS.GetShader(), nullptr, 0);
 	UpdateSRVs();
 	UpdateRTVs(nullptr);
+	m_context->Draw(3, 0);
+	UnbindRTVs();
+	UnbindSRVs();
 
-	Engine::GetPtr()->GetScene().RenderScene( m_context.Get(), RenderPass::Bloom );
+	// Bloom: Vertical blur
+	m_SRVs[0] = m_bloomSRV.Get();
+	m_RTVs[0] = m_quadHdrRTV.Get();
+
+	m_context->PSSetShader(m_shadersManager.VerticalBlurPS.GetShader(), nullptr, 0);
+	UpdateSRVs();
+	UpdateRTVs(nullptr);
+	m_context->Draw(3, 0);
+
+	UnbindRTVs();
+	UnbindSRVs();
+
+	// Bloom: Horizontal blur
+	m_SRVs[0] = m_quadHdrSRV.Get();
+	m_RTVs[0] = m_bloomRTV.Get();
+
+	m_context->PSSetShader(m_shadersManager.HorizontalBlurPS.GetShader(), nullptr, 0);
+	UpdateSRVs();
+	UpdateRTVs(nullptr);
+	m_context->Draw(3, 0);
 
 	UnbindRTVs();
 	UnbindSRVs();
@@ -196,7 +206,7 @@ void D3D11Renderer::Render() {
 	// Tone map
 	m_SRVs[0] = m_hdrSRV.Get();
 	m_SRVs[1] = m_bloomSRV.Get();
-	m_RTVs[0] = m_renderTargetView.Get();
+	m_RTVs[0] = m_backBuffer.Get();
 
 	m_context->RSSetViewports(1, &m_viewport);
 	m_context->PSSetShader(m_shadersManager.HDRPostProcessPS.GetShader(), nullptr, 0);
@@ -239,7 +249,7 @@ bool D3D11Renderer::CreateDevice() {
 
 	ComPtr<ID3D11Texture2D> backBuffer;
 	ThrowIfFailed(m_swapChain->GetBuffer(0, IID_PPV_ARGS(&backBuffer)));
-	ThrowIfFailed(m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, &m_renderTargetView));
+	ThrowIfFailed(m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, &m_backBuffer));
 
 	D3D11_TEXTURE2D_DESC backBufferDesc = {};
 	backBuffer->GetDesc(&backBufferDesc);
@@ -314,13 +324,13 @@ bool D3D11Renderer::CreateDevice() {
 	rtvDesc.Texture2D.MipSlice				= 0;
 
 	// Create the G-Buffer RTVs
-	if (m_device->CreateRenderTargetView(diffuseTex.Get(), &rtvDesc, &m_diffuseAccRTV)		!= S_OK) return false;
-	if (m_device->CreateRenderTargetView(specularTex.Get(), &rtvDesc, &m_specularAccRTV)	!= S_OK) return false;
-	if (m_device->CreateRenderTargetView(normalTex.Get(), &rtvDesc, &m_normalAccRTV)		!= S_OK) return false;
-	if (m_device->CreateRenderTargetView(positionTex.Get(), &rtvDesc, &m_positionAccRTV)	!= S_OK) return false;
-	if (m_device->CreateRenderTargetView(hdrTex.Get(), &rtvDesc, &m_hdrRTV)					!= S_OK) return false;
-	if (m_device->CreateRenderTargetView(quadHdrTex.Get(), &rtvDesc, &m_quadHdrRTV)			!= S_OK) return false;
-	if (m_device->CreateRenderTargetView(bloomTex.Get(), &rtvDesc, &m_bloomRTV)				!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(diffuseTex.Get(), &rtvDesc, &m_sceneDiffuseAccRTV)		!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(specularTex.Get(), &rtvDesc, &m_sceneSpecularAccRTV)	!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(normalTex.Get(), &rtvDesc, &m_sceneNormalAccRTV)		!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(positionTex.Get(), &rtvDesc, &m_scenePositionAccRTV)	!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(hdrTex.Get(), &rtvDesc, &m_hdrRTV)						!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(quadHdrTex.Get(), &rtvDesc, &m_quadHdrRTV)				!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(bloomTex.Get(), &rtvDesc, &m_bloomRTV)					!= S_OK) return false;
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format							= textureDesc.Format;
@@ -328,19 +338,19 @@ bool D3D11Renderer::CreateDevice() {
 	srvDesc.Texture2D.MostDetailedMip		= 0;
 	srvDesc.Texture2D.MipLevels				= 1;
 
-	if (m_device->CreateShaderResourceView(diffuseTex.Get(), &srvDesc, &m_diffuseAccSRV)	!= S_OK) return false;
-	if (m_device->CreateShaderResourceView(specularTex.Get(), &srvDesc, &m_specularAccSRV)	!= S_OK) return false;
-	if (m_device->CreateShaderResourceView(normalTex.Get(), &srvDesc, &m_normalAccSRV)		!= S_OK) return false;
-	if (m_device->CreateShaderResourceView(positionTex.Get(), &srvDesc, &m_positionAccSRV)	!= S_OK) return false;
-	if (m_device->CreateShaderResourceView(hdrTex.Get(), &srvDesc, &m_hdrSRV)				!= S_OK) return false;
-	if (m_device->CreateShaderResourceView(quadHdrTex.Get(), &srvDesc, &m_quadHdrSRV)		!= S_OK) return false;
-	if (m_device->CreateShaderResourceView(bloomTex.Get(), &srvDesc, &m_bloomSRV)			!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(diffuseTex.Get(), &srvDesc, &m_sceneDiffuseSRV)		!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(specularTex.Get(), &srvDesc, &m_sceneSpecularSRV)	!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(normalTex.Get(), &srvDesc, &m_sceneNormalSRV)		!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(positionTex.Get(), &srvDesc, &m_scenePositionSRV)	!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(hdrTex.Get(), &srvDesc, &m_hdrSRV)					!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(quadHdrTex.Get(), &srvDesc, &m_quadHdrSRV)			!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(bloomTex.Get(), &srvDesc, &m_bloomSRV)				!= S_OK) return false;
 	
 	D3D11_DEPTH_STENCIL_DESC dsDesc			= {};
 	dsDesc.DepthEnable						= true;
 	dsDesc.DepthWriteMask					= D3D11_DEPTH_WRITE_MASK_ALL;
 	dsDesc.DepthFunc						= D3D11_COMPARISON_LESS;
-	dsDesc.StencilEnable					= true;
+	dsDesc.StencilEnable					= false;
 	dsDesc.StencilReadMask					= 0xFF;
 	dsDesc.StencilWriteMask					= 0xFF;
 	dsDesc.FrontFace.StencilFailOp			= D3D11_STENCIL_OP_KEEP;
@@ -356,9 +366,9 @@ bool D3D11Renderer::CreateDevice() {
 
 	D3D11_DEPTH_STENCIL_DESC noDSDesc		= {};
 	noDSDesc.DepthEnable					= false;
-	noDSDesc.DepthWriteMask					= D3D11_DEPTH_WRITE_MASK_ALL;
+	noDSDesc.DepthWriteMask					= D3D11_DEPTH_WRITE_MASK_ZERO;
 	noDSDesc.DepthFunc						= D3D11_COMPARISON_LESS;
-	noDSDesc.StencilEnable					= true;
+	noDSDesc.StencilEnable					= false;
 	noDSDesc.StencilReadMask				= 0xFF;
 	noDSDesc.StencilWriteMask				= 0xFF;
 	noDSDesc.FrontFace.StencilFailOp		= D3D11_STENCIL_OP_KEEP;
@@ -371,13 +381,43 @@ bool D3D11Renderer::CreateDevice() {
 	noDSDesc.BackFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
 
 	if (m_device->CreateDepthStencilState(&noDSDesc, &m_noDSState) != S_OK) return false;
-	
+
+	D3D11_DEPTH_STENCIL_DESC readDSDesc		= {};
+	readDSDesc.DepthEnable					= true;
+	readDSDesc.DepthWriteMask				= D3D11_DEPTH_WRITE_MASK_ZERO;
+	readDSDesc.DepthFunc					= D3D11_COMPARISON_LESS;
+	readDSDesc.StencilEnable				= false;
+	readDSDesc.StencilReadMask				= 0xFF;
+	readDSDesc.StencilWriteMask				= 0xFF;
+	readDSDesc.FrontFace.StencilFailOp		= D3D11_STENCIL_OP_KEEP;
+	readDSDesc.FrontFace.StencilDepthFailOp	= D3D11_STENCIL_OP_INCR;
+	readDSDesc.FrontFace.StencilPassOp		= D3D11_STENCIL_OP_KEEP;
+	readDSDesc.FrontFace.StencilFunc		= D3D11_COMPARISON_ALWAYS;
+	readDSDesc.BackFace.StencilFailOp		= D3D11_STENCIL_OP_KEEP;
+	readDSDesc.BackFace.StencilDepthFailOp	= D3D11_STENCIL_OP_DECR;
+	readDSDesc.BackFace.StencilPassOp		= D3D11_STENCIL_OP_KEEP;
+	readDSDesc.BackFace.StencilFunc			= D3D11_COMPARISON_ALWAYS;
+
+	if (m_device->CreateDepthStencilState(&readDSDesc, &m_readDSS) != S_OK) return false;
+
+	D3D11_BLEND_DESC oneAddBlendDesc						= {};
+	oneAddBlendDesc.RenderTarget[0].BlendEnable				= true;
+	oneAddBlendDesc.RenderTarget[0].RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
+	oneAddBlendDesc.RenderTarget[0].BlendOp					= D3D11_BLEND_OP_ADD;
+	oneAddBlendDesc.RenderTarget[0].SrcBlend				= D3D11_BLEND_ONE;
+	oneAddBlendDesc.RenderTarget[0].DestBlend				= D3D11_BLEND_ONE;
+	oneAddBlendDesc.RenderTarget[0].BlendOpAlpha			= D3D11_BLEND_OP_ADD;
+	oneAddBlendDesc.RenderTarget[0].SrcBlendAlpha			= D3D11_BLEND_ONE;
+	oneAddBlendDesc.RenderTarget[0].DestBlendAlpha			= D3D11_BLEND_ZERO;
+
+	if (m_device->CreateBlendState(&oneAddBlendDesc, &m_oneAddBS) != S_OK) return false;
+
 	return true;
 }
 
 bool D3D11Renderer::OnDeviceLost() {
 	m_depthStencilView.Reset();
-	m_renderTargetView.Reset();
+	m_backBuffer.Reset();
 	m_swapChain.Reset();
 	m_context.Reset();
 	m_device.Reset();

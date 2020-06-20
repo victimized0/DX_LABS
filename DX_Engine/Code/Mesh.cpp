@@ -34,6 +34,15 @@ void Mesh::SetColor(const Vector3& vCol) {
 	}
 }
 
+void Mesh::SetVertexShader(const VertexShader& vs) {
+	m_renderInfo.pVertexShader = vs.GetShader();
+	m_renderInfo.pInputLayout = vs.GetVertexDecl();
+}
+
+void Mesh::SetPixelShader(const PixelShader& ps) {
+	m_renderInfo.pPixelShader = ps.GetShader();
+}
+
 Matrix Mesh::GetMatrix()const {
 	return m_transform;
 }
@@ -55,28 +64,38 @@ void Mesh::Initialise(IDevice* device) {
 	if (m_renderInfo.pVertexShader == nullptr) {
 		if ((m_renderFlags & (RF_USE_LIGHT | RF_USE_TEXTURES | RF_DEFERRED)) == (RF_USE_LIGHT | RF_USE_TEXTURES | RF_DEFERRED)) {
 			m_renderInfo.pVertexShader	= gEnv.Renderer()->GetShadersManager()->TexturedWithLightVS.GetShader();
-			m_renderInfo.pPixelShader	= gEnv.Renderer()->GetShadersManager()->DeferredTexturedWithLightPS.GetShader();
 			m_renderInfo.pInputLayout	= gEnv.Renderer()->GetShadersManager()->TexturedWithLightVS.GetVertexDecl();
+			if (m_renderInfo.pPixelShader == nullptr) {
+				m_renderInfo.pPixelShader = gEnv.Renderer()->GetShadersManager()->DeferredTexturedWithLightPS.GetShader();
+			}
 		}
 		else if ((m_renderFlags & (RF_USE_LIGHT | RF_USE_TEXTURES)) == (RF_USE_LIGHT | RF_USE_TEXTURES)) {
 			m_renderInfo.pVertexShader	= gEnv.Renderer()->GetShadersManager()->TexturedWithLightVS.GetShader();
-			m_renderInfo.pPixelShader	= gEnv.Renderer()->GetShadersManager()->TexturedWithLightPS.GetShader();
 			m_renderInfo.pInputLayout	= gEnv.Renderer()->GetShadersManager()->TexturedWithLightVS.GetVertexDecl();
+			if (m_renderInfo.pPixelShader == nullptr) {
+				m_renderInfo.pPixelShader = gEnv.Renderer()->GetShadersManager()->TexturedWithLightPS.GetShader();
+			}
 		}
 		else if (m_renderFlags & RF_USE_TEXTURES) {
 			m_renderInfo.pVertexShader	= gEnv.Renderer()->GetShadersManager()->TexturedNoLightVS.GetShader();
-			m_renderInfo.pPixelShader	= gEnv.Renderer()->GetShadersManager()->TexturedNoLightPS.GetShader();
 			m_renderInfo.pInputLayout	= gEnv.Renderer()->GetShadersManager()->TexturedNoLightVS.GetVertexDecl();
+			if (m_renderInfo.pPixelShader == nullptr) {
+				m_renderInfo.pPixelShader = gEnv.Renderer()->GetShadersManager()->TexturedNoLightPS.GetShader();
+			}
 		}
 		else if (m_renderFlags & RF_USE_LIGHT) {
 			m_renderInfo.pVertexShader	= gEnv.Renderer()->GetShadersManager()->StandardWithLightVS.GetShader();
-			m_renderInfo.pPixelShader	= gEnv.Renderer()->GetShadersManager()->StandardWithLightPS.GetShader();
 			m_renderInfo.pInputLayout	= gEnv.Renderer()->GetShadersManager()->StandardWithLightVS.GetVertexDecl();
+			if (m_renderInfo.pPixelShader == nullptr) {
+				m_renderInfo.pPixelShader = gEnv.Renderer()->GetShadersManager()->StandardWithLightPS.GetShader();
+			}
 		}
 		else {
 			m_renderInfo.pVertexShader	= gEnv.Renderer()->GetShadersManager()->StandardNoLightVS.GetShader();
-			m_renderInfo.pPixelShader	= gEnv.Renderer()->GetShadersManager()->StandardNoLightPS.GetShader();
 			m_renderInfo.pInputLayout	= gEnv.Renderer()->GetShadersManager()->StandardNoLightVS.GetVertexDecl();
+			if (m_renderInfo.pPixelShader == nullptr) {
+				m_renderInfo.pPixelShader = gEnv.Renderer()->GetShadersManager()->StandardNoLightPS.GetShader();
+			}
 		}
 	}
 }
@@ -101,8 +120,11 @@ void Mesh::Draw(IDevCon* context) {
 
 	context->VSSetShader(m_renderInfo.pVertexShader, nullptr, 0);
 	context->PSSetShader(m_renderInfo.pPixelShader, nullptr, 0);
-	context->PSSetShaderResources(0, 1, m_renderInfo.pDiffuseView.GetAddressOf());
-	//context->PSSetSamplers(0, 1, m_renderInfo.pSamplerState.GetAddressOf());
+
+	if (m_renderInfo.pDiffuseView.Get() != nullptr) {
+		context->PSSetShaderResources(0, 1, m_renderInfo.pDiffuseView.GetAddressOf());
+		//context->PSSetSamplers(0, 1, m_renderInfo.pSamplerState.GetAddressOf());
+	}
 
 	CBPerMaterial cbPerMaterial = {};
 	cbPerMaterial.AmbientColor	= Vector4(m_material.AmbientColor, 0.0f);

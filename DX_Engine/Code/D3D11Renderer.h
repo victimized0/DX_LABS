@@ -33,6 +33,7 @@ public:
 	void									UpdateRTVs(IDepthStencilView* depthView)final;
 
 	void									SetBackColor(float r, float g, float b)final;
+	DirectX::SimpleMath::Vector2			GetScreenSize()final;
 
 	bool									CreateDevice()final;
 	bool									OnDeviceLost()final;
@@ -48,18 +49,18 @@ protected:
 	ComPtr<IRenderTargetView>				m_hdrRTV;
 	ComPtr<IRenderTargetView>				m_quadHdrRTV;
 	ComPtr<IRenderTargetView>				m_bloomRTV;
-	ComPtr<IRenderTargetView>				m_diffuseAccRTV;
-	ComPtr<IRenderTargetView>				m_specularAccRTV;
-	ComPtr<IRenderTargetView>				m_normalAccRTV;
-	ComPtr<IRenderTargetView>				m_positionAccRTV;
+	ComPtr<IRenderTargetView>				m_sceneDiffuseAccRTV;
+	ComPtr<IRenderTargetView>				m_sceneSpecularAccRTV;
+	ComPtr<IRenderTargetView>				m_sceneNormalAccRTV;
+	ComPtr<IRenderTargetView>				m_scenePositionAccRTV;
 
 	ComPtr<IShaderResView>					m_hdrSRV;
 	ComPtr<IShaderResView>					m_quadHdrSRV;
 	ComPtr<IShaderResView>					m_bloomSRV;
-	ComPtr<IShaderResView>					m_diffuseAccSRV;
-	ComPtr<IShaderResView>					m_specularAccSRV;
-	ComPtr<IShaderResView>					m_normalAccSRV;
-	ComPtr<IShaderResView>					m_positionAccSRV;
+	ComPtr<IShaderResView>					m_sceneDiffuseSRV;
+	ComPtr<IShaderResView>					m_sceneSpecularSRV;
+	ComPtr<IShaderResView>					m_sceneNormalSRV;
+	ComPtr<IShaderResView>					m_scenePositionSRV;
 
 	std::array<float, 4>					m_backColour;
 	CViewport								m_viewport;
@@ -68,12 +69,18 @@ protected:
 	ComPtr<IDevice>							m_device;
 	ComPtr<IDevCon>							m_context;
 	ComPtr<ISwapChain>						m_swapChain;
-	ComPtr<IRenderTargetView>				m_renderTargetView;
+
+	ComPtr<IRenderTargetView>				m_backBuffer;
 	ComPtr<IDepthStencilView>				m_depthStencilView;
+
+	ComPtr<IDepthStencilState>				m_readDSS;
 	ComPtr<IDepthStencilState>				m_noDSState;
 	ComPtr<IDepthStencilState>				m_defaultDSState;
+
+	ComPtr<IBlendState>						m_oneAddBS;
 	ComPtr<IRSState>						m_defaultRSState;
 	ComPtr<ISamplerState>					m_defaultSampler;
+
 	std::vector<IShaderResView*>			m_SRVs;
 	std::vector<IRenderTargetView*>			m_RTVs;
 

@@ -35,7 +35,7 @@ public:
 	bool								Initialize(int iconId, int width, int height)final;
 
 private:
-	void								CreateLights();
+	void								SetupLight();
 	void								CreateScene();
 	void								GeneratePickups();
 	void								Update(float dt)final;

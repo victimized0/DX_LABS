@@ -33,11 +33,10 @@ struct GBuffer {
 };
 
 struct PointLight {
-	float4	Diffuse;
-	float4	Ambient;
-	float3	Position;
-	float	Range;
-	float3	Attenuation;
+	float4 Diffuse;
+	float4 Ambient;
+	float4 AttRange;
+	float3 Position;
 };
 
 struct QuadOut {
@@ -53,11 +52,8 @@ cbuffer cbPerFrame : register(REG_CB_PER_FRAME) {
 	float4	LightCol;
 	float4	LightAmb;
 	float3  LightDir;
-	PointLight PointLights[POINT_LIGHTS_COUNT];
-#ifdef USE_BLOOM
-	float	BloomThreshold;
-#endif // USE_BLOOM
 #endif // USE_LIGHT
+	float2	gScreenSize;
 }
 
 cbuffer cbPerInstance : register(REG_CB_PER_INSTANCE) {
@@ -71,6 +67,12 @@ cbuffer cbPerMaterial : register(REG_CB_PER_MATERIAL) {
 	float4	AmbientColor;
 	float4	DiffuseColor;
 	float4	SpecularColor;
+#endif // USE_LIGHT
+}
+
+cbuffer cbPerLight : register(REG_CB_PER_LIGHT) {
+#ifdef USE_LIGHT
+	PointLight LightSource;
 #endif // USE_LIGHT
 }
 

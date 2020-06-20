@@ -87,7 +87,7 @@ struct alignas(16) DirLight {
 	DirectX::SimpleMath::Vector3	LightDir;
 };
 
-struct alignas(16) PointLight {
+struct alignas(16) PointLightData {
 	DirectX::SimpleMath::Vector4	Diffuse;
 	DirectX::SimpleMath::Vector4	Ambient;
 	DirectX::SimpleMath::Vector3	Position;
@@ -114,8 +114,7 @@ struct RenderInfo {
 
 enum class RenderPass : unsigned char {
 	Geometry	= 0,
-	Light		= 1,
-	Bloom		= 2
+	Light		= 1
 };
 
 #include "..\Managers\ShadersManager.h"
@@ -135,10 +134,13 @@ public:
 	virtual IDevCon*		GetContext()								= 0;
 	virtual void			ClearFrame()								= 0;
 	virtual void			ClearGBuffer()								= 0;
+
 	virtual void			UnbindSRVs()								= 0;
 	virtual void			UnbindRTVs()								= 0;
 	virtual void			UpdateSRVs()								= 0;
 	virtual void			UpdateRTVs(IDepthStencilView* depthView)	= 0;
+
+	virtual DirectX::SimpleMath::Vector2	GetScreenSize()				= 0;
 
 	virtual ShadersManager* GetShadersManager()			= 0;
 	virtual void			SetBackColor(float r, float g, float b)		= 0;

@@ -15,6 +15,7 @@ ShadersManager::ShadersManager()
 	, DeferredTexturedNoLightPS("deferred_textured_ps")
 	, DeferredTexturedWithLightPS("deferred_textured_ps")
 	, BlinnPhongDeferredPS("deferred")
+	, PointLightPS("deferred")
 	, HDRPostProcessPS("HDR")
 	, BloomPS("HDR")
 	, HorizontalBlurPS("HDR")
@@ -53,6 +54,7 @@ void ShadersManager::Initialise(IDevice* device) {
 	DeferredTexturedNoLightPS	.Create(device, "main", emptyMacros);
 	DeferredTexturedWithLightPS	.Create(device, "main", lightMacros);
 	BlinnPhongDeferredPS		.Create(device, "BlinnPhongDeferredPS", lightMacros);
+	PointLightPS				.Create(device, "PointLightPS", lightMacros);
 	HDRPostProcessPS			.Create(device, "HDRPostProcessPS", lightMacros);
 	BloomPS						.Create(device, "BloomPS", bloomMacros);
 	HorizontalBlurPS			.Create(device, "HorizontalBlurPS", bloomMacros);
