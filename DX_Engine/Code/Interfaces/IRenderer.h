@@ -92,7 +92,6 @@ struct alignas(16) PointLightData {
 	DirectX::SimpleMath::Vector4	Ambient;
 	DirectX::SimpleMath::Vector3	Position;
 	float							Range;
-	DirectX::SimpleMath::Vector3	Attenuation;
 };
 
 struct RenderInfo {

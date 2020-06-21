@@ -35,8 +35,7 @@ struct GBuffer {
 struct PointLight {
 	float4 Diffuse;
 	float4 Ambient;
-	float4 AttRange;
-	float3 Position;
+	float4 PosRange;
 };
 
 struct QuadOut {

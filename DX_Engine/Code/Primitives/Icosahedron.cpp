@@ -58,8 +58,8 @@ Icosahedron::~Icosahedron() {
 }
 
 int Icosahedron::VertexForEdge(int vi1, int vi2) {
-    int a = min(vi1, vi2);
-    int b = max(vi1, vi2);
+    int a = std::min(vi1, vi2);
+    int b = std::max(vi1, vi2);
     std::pair<int, int> key(a, b);
 
     auto inserted = m_lookup.insert({ key, Vertices.size() });

@@ -52,9 +52,8 @@ void CPointLight::Draw(IDevCon* context, Matrix const& world, RenderPass pass) {
 		CBPerLight cbpl = {};
 
 		cbpl.Diffuse	= m_lightData.Diffuse;
-		cbpl.AttRange	= Vector4(m_lightData.Attenuation, m_lightData.Range);
 		cbpl.Ambient	= m_lightData.Ambient;
-		cbpl.Position	= m_lightData.Position;
+		cbpl.PosRange	= Vector4(m_lightData.Position, m_lightData.Range);
 
 		m_cbPerLight.SetData(context, cbpl);
 		IConstBuffer* pCbpl = m_cbPerLight.GetBuffer();

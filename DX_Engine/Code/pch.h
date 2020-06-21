@@ -2,7 +2,7 @@
 #define _PONG_PCH_H_
 
 #define WIN32_LEAN_AND_MEAN
-//#define NOMINMAX
+#define NOMINMAX
 #define NODRAWTEXT
 //#define NOGDI
 #define NOBITMAP
@@ -14,6 +14,12 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
+// Direct2D
+#include <d2d1.h>
+#include <d2d1helper.h>
+#include <dwrite.h>
+
+// Direct3D
 #include <d3d11_2.h>
 #include <DirectXMath.h>
 #include <DirectXCollision.h>

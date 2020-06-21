@@ -40,8 +40,7 @@ struct alignas(16) CBPerMaterial {
 struct alignas(16) CBPerLight {
     DirectX::SimpleMath::Vector4    Diffuse;
     DirectX::SimpleMath::Vector4    Ambient;
-    DirectX::SimpleMath::Vector4    AttRange;
-    DirectX::SimpleMath::Vector3    Position;
+    DirectX::SimpleMath::Vector4    PosRange;
 
     static const ConstBufferType    Slot = ConstBufferType::PerLight;
 };
