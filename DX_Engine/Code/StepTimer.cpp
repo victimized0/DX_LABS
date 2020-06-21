@@ -2,7 +2,7 @@
 #include "StepTimer.h"
 
 Timer::Timer()
-	: isPaused(false)
+	: m_isPaused(false)
 	, m_deltaTime(-1.0)
 	, m_secPerCount(0.0)
 	, m_prevTime(0)
@@ -21,7 +21,7 @@ float Timer::GetDeltaTime()const {
 }
 
 float Timer::GetTotalTime()const {
-	if (isPaused) {
+	if (m_isPaused) {
 		return static_cast<float>(((m_stopTime - m_pauseTime) - m_startTime) * m_secPerCount);
 	} else {
 		return static_cast<float>(((m_currTime - m_pauseTime) - m_startTime) * m_secPerCount);
@@ -29,7 +29,7 @@ float Timer::GetTotalTime()const {
 }
 
 void Timer::Tick() {
-	if (isPaused) {
+	if (m_isPaused) {
 		m_deltaTime = 0.0;
 		return;
 	}
@@ -44,31 +44,31 @@ void Timer::Tick() {
 }
 
 void Timer::Start() {
-	if (isPaused) {
+	if (m_isPaused) {
 		QueryPerformanceCounter((LARGE_INTEGER*)&m_currTime);
 
 		m_pauseTime += (m_stopTime - m_startTime);
 		m_prevTime = m_startTime;
 
 		m_stopTime = 0;
-		isPaused = false;
+		m_isPaused = false;
 	}
 }
 
 void Timer::Stop() {
-	if (!isPaused) {
+	if (!m_isPaused) {
 		QueryPerformanceCounter((LARGE_INTEGER*)&m_currTime);
 
 		m_stopTime = m_currTime;
-		isPaused = true;
+		m_isPaused = true;
 	}
 }
 
 void Timer::Reset() {
 	QueryPerformanceCounter((LARGE_INTEGER*)&m_currTime);
 
-	m_prevTime = m_currTime;
-	m_startTime = m_currTime;
-	m_stopTime = 0;
-	isPaused = false;
+	m_prevTime	= m_currTime;
+	m_startTime	= m_currTime;
+	m_stopTime	= 0;
+	m_isPaused	= false;
 }

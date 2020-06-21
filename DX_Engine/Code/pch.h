@@ -1,5 +1,5 @@
-#ifndef _PONG_PCH_H_
-#define _PONG_PCH_H_
+#ifndef _ENGINE_PCH_H_
+#define _ENGINE_PCH_H_
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
@@ -13,11 +13,6 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
-
-// Direct2D
-#include <d2d1.h>
-#include <d2d1helper.h>
-#include <dwrite.h>
 
 // Direct3D
 #include <d3d11_2.h>
@@ -35,7 +30,6 @@
 #include <vector>
 #include <fstream>
 #include <string>
-#include <memory>
 
 #include "VertexFormats.h"
 #include "Environment.h"
@@ -53,4 +47,4 @@ inline void ThrowIfFailed(HRESULT hr)
 #endif
 }
 
-#endif //_PONG_PCH_H_
+#endif // _ENGINE_PCH_H_

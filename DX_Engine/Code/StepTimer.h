@@ -3,26 +3,27 @@
 
 class Timer {
 public:
-	Timer();
+				Timer();
+				~Timer() = default;
 
-	float GetDeltaTime()const;
-	float GetTotalTime()const;
+	float		GetDeltaTime()const;
+	float		GetTotalTime()const;
 
-	void Tick();
-	void Start();
-	void Stop();
-	void Reset();
+	void		Tick();
+	void		Start();
+	void		Stop();
+	void		Reset();
 
 private:
-	bool isPaused;
-	double m_deltaTime;
-	double m_secPerCount;
+	bool		m_isPaused;
+	double		m_deltaTime;
+	double		m_secPerCount;
 
-	__int64 m_prevTime;
-	__int64 m_currTime;
-	__int64 m_startTime;
-	__int64 m_pauseTime;
-	__int64 m_stopTime;
+	__int64		m_prevTime;
+	__int64		m_currTime;
+	__int64		m_startTime;
+	__int64		m_pauseTime;
+	__int64		m_stopTime;
 
 };
 

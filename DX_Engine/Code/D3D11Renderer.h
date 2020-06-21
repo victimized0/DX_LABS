@@ -25,8 +25,11 @@ public:
 public:
 	bool									Initialise()final;
 	void									Render()final;
+	void									Present()final;
+
 	void									ClearFrame()final;
 	void									ClearGBuffer()final;
+
 	void									UnbindRTVs()final;
 	void									UnbindSRVs()final;
 	void									UpdateSRVs()final;
@@ -40,6 +43,7 @@ public:
 
 	IDevice*								GetDevice()final { return m_device.Get(); }
 	IDevCon*								GetContext()final { return m_context.Get(); }
+	IDXGISurface*							GetBackBuffer()final;
 	ShadersManager*							GetShadersManager()final { return &m_shadersManager; }
 
 public:

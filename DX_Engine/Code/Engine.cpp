@@ -46,6 +46,10 @@ bool Engine::Initialize(int iconId, int width, int height){
 			return false;
 		}
 
+		if (!gEnv.D2DRend()->Initialise()) {
+			return false;
+		}
+
 		m_isInit = true;
 		return true;
 	} else {
@@ -120,16 +124,36 @@ int Engine::Run() {
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+
 		} else {
 			m_timer.Tick();
 			float dt = m_timer.GetDeltaTime();
 			m_scene.Update(dt);
 			Update(dt);
+			UpdateFPS();
+
 			gEnv.Renderer()->Render();
+			gEnv.D2DRend()->DrawText("FPS: " + std::to_string(m_fps));
+			gEnv.Renderer()->Present();
 		}
 	}
 
 	return (int)msg.wParam;
+}
+
+void Engine::UpdateFPS() {
+	++m_framesCount;
+
+	// Compute averages over one second period.
+	if ((m_timer.GetTotalTime() - m_elapsedTime) >= 1.0f) {
+		//float fps = (float)m_framesPerSecond;
+		//float mspf = 1000.0f / fps;
+		m_fps = m_framesCount;
+
+		// Reset for next average.
+		m_framesCount = 0;
+		m_elapsedTime += 1.0f;
+	}
 }
 
 LRESULT Engine::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {

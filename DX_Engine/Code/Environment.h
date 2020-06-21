@@ -1,6 +1,7 @@
 #ifndef _ENVIRONMENT_H_
 #define _ENVIRONMENT_H_
 
+#include "D2DRenderer.h"
 #include "Interfaces/IRenderer.h"
 #include "Engine.h"
 
@@ -15,21 +16,24 @@ public:
 		, HWnd(nullptr)
 	{
 		m_renderer.reset(IRenderer::Create());
+		m_d2dRenderer = std::make_unique<D2DRenderer>();
 	}
 
-	IRenderer* Renderer() { return m_renderer.get(); }
+	IRenderer*						Renderer() { return m_renderer.get(); }
+	D2DRenderer*					D2DRend() { return m_d2dRenderer.get(); }
 
 public:
-	std::wstring				WorkingPath;
+	std::wstring					WorkingPath;
 
-	HINSTANCE					HInstance;
-	HWND						HWnd;
+	HINSTANCE						HInstance;
+	HWND							HWnd;
 
-	int							Width;
-	int							Height;
+	int								Width;
+	int								Height;
 
 private:
-	std::unique_ptr<IRenderer>	m_renderer;
+	std::unique_ptr<IRenderer>		m_renderer;
+	std::unique_ptr<D2DRenderer>	m_d2dRenderer;
 
 };
 

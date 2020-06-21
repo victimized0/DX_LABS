@@ -28,7 +28,7 @@ bool D3D11Renderer::Initialise() {
 	if (!CreateDevice()) {
 		return false;
 	}
-	
+		
 	Engine::GetPtr()->GetScene().Initialise( m_device.Get() );
 	m_shadersManager.Initialise( m_device.Get() );
 
@@ -216,7 +216,9 @@ void D3D11Renderer::Render() {
 
 	UnbindRTVs();
 	UnbindSRVs();
+}
 
+void D3D11Renderer::Present() {
 	m_swapChain->Present(1, 0);
 }
 
@@ -225,12 +227,15 @@ bool D3D11Renderer::CreateDevice() {
 #ifdef _DEBUG 
 	creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif // _DEBUG
+#ifdef _USE_D2D
+	creationFlags |= D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+#endif
 
 	DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 	swapChainDesc.BufferDesc.Width						= gEnv.Width;
 	swapChainDesc.BufferDesc.Height						= gEnv.Height;
 	swapChainDesc.BufferDesc.RefreshRate.Numerator		= 0;
-	swapChainDesc.BufferDesc.RefreshRate.Denominator	= 0;
+	swapChainDesc.BufferDesc.RefreshRate.Denominator	= 1;
 	swapChainDesc.BufferDesc.Format						= DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	swapChainDesc.BufferDesc.ScanlineOrdering			= DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	swapChainDesc.BufferDesc.Scaling					= DXGI_MODE_SCALING_UNSPECIFIED;
@@ -241,7 +246,7 @@ bool D3D11Renderer::CreateDevice() {
 	swapChainDesc.OutputWindow							= gEnv.HWnd;
 	swapChainDesc.Windowed								= true;
 	swapChainDesc.SwapEffect							= DXGI_SWAP_EFFECT_DISCARD;
-	swapChainDesc.Flags									= 0;
+	swapChainDesc.Flags									= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
 	ThrowIfFailed(
 		D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, creationFlags, nullptr, 0, D3D11_SDK_VERSION, &swapChainDesc, &m_swapChain, &m_device, nullptr, &m_context)
@@ -444,6 +449,12 @@ HRES D3D11Renderer::CreateBuffer(size_t size, size_t strideSize, const void* pDa
 	data.pSysMem = pData;
 
 	return m_device->CreateBuffer(&desc, &data, pBuffer);
+}
+
+IDXGISurface* D3D11Renderer::GetBackBuffer() {
+	IDXGISurface* pBackBuffer;
+	m_swapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
+	return pBackBuffer;
 }
 
 #endif // USE_DX

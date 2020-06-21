@@ -195,6 +195,7 @@
     <ClInclude Include="Code\VertexFormats.h" />
     <ClInclude Include="Code\Interfaces\IMeshLoader.h" />
     <ClInclude Include="Code\Interfaces\ICamera.h" />
+    <ClInclude Include="Code\D2DRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Code\DDSTextureLoader.cpp" />
@@ -223,6 +224,7 @@
     </ClCompile>
     <ClCompile Include="Code\System\AVLTree.cpp" />
     <ClCompile Include="Code\VertexFormats.cpp" />
+    <ClCompile Include="Code\D2DRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\deferred_textured_ps.hlsl">

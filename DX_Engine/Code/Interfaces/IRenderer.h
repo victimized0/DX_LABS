@@ -11,6 +11,7 @@
 #define IDevice						ID3D11Device
 #define IDevCon						ID3D11DeviceContext
 #define ISwapChain					IDXGISwapChain
+#define ID3DResource				ID3D11Resource
 #define ISamplerState				ID3D11SamplerState
 #define IShaderResView				ID3D11ShaderResourceView
 #define IRenderTargetView			ID3D11RenderTargetView
@@ -92,6 +93,8 @@ struct alignas(16) PointLightData {
 	DirectX::SimpleMath::Vector4	Ambient;
 	DirectX::SimpleMath::Vector3	Position;
 	float							Range;
+
+	PointLightData() : Range(0.0f) {}
 };
 
 struct RenderInfo {
@@ -125,12 +128,14 @@ public:
 	virtual					~IRenderer()								{}
 	virtual bool			Initialise()								= 0;
 	virtual void			Render()									= 0;
+	virtual void			Present()									= 0;
 
 	virtual bool			CreateDevice()								= 0;
 	virtual bool			OnDeviceLost()								= 0;
 
 	virtual IDevice*		GetDevice()									= 0;
 	virtual IDevCon*		GetContext()								= 0;
+	virtual IDXGISurface*	GetBackBuffer()								= 0;
 	virtual void			ClearFrame()								= 0;
 	virtual void			ClearGBuffer()								= 0;
 

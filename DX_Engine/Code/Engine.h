@@ -31,6 +31,9 @@ public:
 	LRESULT							WndProc(HWND, UINT, WPARAM, LPARAM);
 	Scene&							GetScene();
 
+private:
+	void							UpdateFPS();
+
 protected:
 	bool							InitializeWindow(int iconId, int width, int height);
 
@@ -42,6 +45,10 @@ protected:
 
 	Timer							m_timer;
 	Scene							m_scene;
+
+	int								m_fps;
+	int								m_framesCount;
+	float							m_elapsedTime;
 
 };
 

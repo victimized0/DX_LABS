@@ -58,7 +58,7 @@ void Game::SetupLight() {
 	m_scene.SetSunLight(&m_dirLight);
 	m_scene.GetMainCamera()->Rotate(0, -0.25f);
 
-	for (size_t i = 0; i < 10; ++i) {
+	for (size_t i = 0; i < 100; ++i) {
 		PointLightData lightData = {};
 
 		lightData.Ambient		= Vector4(0.3f, 0.3f, 0.3f, 1.0f);
