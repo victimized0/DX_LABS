@@ -49,6 +49,7 @@ protected:
 	ComPtr<IRenderTargetView>				m_hdrRTV;
 	ComPtr<IRenderTargetView>				m_quadHdrRTV;
 	ComPtr<IRenderTargetView>				m_bloomRTV;
+
 	ComPtr<IRenderTargetView>				m_sceneDiffuseAccRTV;
 	ComPtr<IRenderTargetView>				m_sceneSpecularAccRTV;
 	ComPtr<IRenderTargetView>				m_sceneNormalAccRTV;
@@ -57,6 +58,7 @@ protected:
 	ComPtr<IShaderResView>					m_hdrSRV;
 	ComPtr<IShaderResView>					m_quadHdrSRV;
 	ComPtr<IShaderResView>					m_bloomSRV;
+
 	ComPtr<IShaderResView>					m_sceneDiffuseSRV;
 	ComPtr<IShaderResView>					m_sceneSpecularSRV;
 	ComPtr<IShaderResView>					m_sceneNormalSRV;

@@ -48,11 +48,10 @@ float4 PointLightPS(in VS_PosColNmlTex input) : SV_Target {
 
 	float3 n		= normalize(normal.xyz);
 	float3 lightDir	= normalize(LightSource.Position - position);
-	//float distance	= length(LightSource.Position - position);
+	if (isnan(n).x) return float4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	float3 vDist = (LightSource.Position - position) / LightSource.AttRange.w;
+	float3 vDist = (LightSource.Position - position) / (LightSource.AttRange.w - 5.f);
 	float atten = saturate(1 - dot(vDist, vDist));
-	//float atten	= 1 / (LightSource.AttRange.x + LightSource.AttRange.y * distance + LightSource.AttRange.z * (distance * distance));
 	float3 diff	= max(dot(n, lightDir), 0.02f) * diffuse.rgb * LightSource.Diffuse.rgb;
 	float3 ambi	= diffuse.rgb * LightSource.Ambient.rgb;
 	finalColor.rgb = (diff + ambi) * atten;

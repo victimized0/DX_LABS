@@ -44,10 +44,10 @@ bool Game::Initialize(int iconId, int width, int height) {
 void Game::SetupLight() {
 	std::random_device dev;
 	std::mt19937 rng(dev());
-	std::uniform_real_distribution<float> XZdist(-50, 50);
-	std::uniform_real_distribution<float> Ydist(10, 20);
-	std::uniform_real_distribution<float> RangeDist(10, 50);
-	std::uniform_real_distribution<float> ColorDist(0.0f, 10.0f);
+	std::uniform_real_distribution<float> XZdist(-200, 200);
+	std::uniform_real_distribution<float> Ydist(10, 50);
+	std::uniform_real_distribution<float> RangeDist(50, 100);
+	std::uniform_real_distribution<float> ColorDist(0.0f, 6.0f);
 
 	gEnv.Renderer()->SetBackColor(0.529f, 0.808f, 0.922f);
 
@@ -77,10 +77,10 @@ void Game::CreateScene() {
 
 	vector<VertexPosColNmlTex> groundVertices =
 	{
-		{ Vector3(-TERRAIN_SIZE, 0, -TERRAIN_SIZE),	Vector3(0.2f), Vector3::Up, Vector2::Zero },
-		{ Vector3(-TERRAIN_SIZE, 0, TERRAIN_SIZE),	Vector3(0.2f), Vector3::Up, Vector2::Zero },
-		{ Vector3(TERRAIN_SIZE, 0, TERRAIN_SIZE),	Vector3(0.2f), Vector3::Up, Vector2::Zero },
-		{ Vector3(TERRAIN_SIZE, 0, -TERRAIN_SIZE),	Vector3(0.2f), Vector3::Up, Vector2::Zero }
+		{ Vector3(-TERRAIN_SIZE, 0, -TERRAIN_SIZE),	Vector3(0.03f), Vector3::Up, Vector2::Zero },
+		{ Vector3(-TERRAIN_SIZE, 0, TERRAIN_SIZE),	Vector3(0.03f), Vector3::Up, Vector2::Zero },
+		{ Vector3(TERRAIN_SIZE, 0, TERRAIN_SIZE),	Vector3(0.03f), Vector3::Up, Vector2::Zero },
+		{ Vector3(TERRAIN_SIZE, 0, -TERRAIN_SIZE),	Vector3(0.03f), Vector3::Up, Vector2::Zero }
 	};
 
 	vector<UINT> groundIndices =

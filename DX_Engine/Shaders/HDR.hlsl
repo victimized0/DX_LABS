@@ -24,8 +24,8 @@ float4 HDRPostProcessPS(in QuadOut input) : SV_Target {
 	//float bloomAmount	= t_bloom.Sample(t_sampler, input.TexCoord).a;
 	//float3 bloom		= cBloom * bloomAmount;
 
-	float3 ldr = TonemapFilmic(hdr + cBloom / 8.0f);
-	//float3 ldr = ReinhardExtended(hdr + cBloom / 8.0f, 10.0f);
+	float3 ldr = TonemapFilmic(hdr + cBloom);
+	//float3 ldr = ReinhardExtended(hdr + cBloom, 10.0f);
 	return float4(ldr, 1.0f);
 }
 
@@ -33,7 +33,7 @@ float4 BloomPS(in QuadOut input) : SV_Target {
 	float4 vColor = 0;
 #ifdef USE_BLOOM
 	float4 hdr = t_quadHdr.Sample(t_sampler, input.TexCoord);
-	if (length(hdr.rgb) > 10.0f) {
+	if (length(hdr.rgb) > 2.5f) {
 		vColor.rgb = hdr.rgb;
 	}
 #endif // USE_BLOOM
