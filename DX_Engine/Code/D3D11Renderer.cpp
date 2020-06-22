@@ -114,9 +114,6 @@ void D3D11Renderer::SetBackColor(float r, float g, float b) {
 }
 
 void D3D11Renderer::Render() {
-	ClearFrame();
-	ClearGBuffer();
-
 	// Geometry pass
 	m_RTVs[0] = m_sceneDiffuseAccRTV.Get();
 	m_RTVs[1] = m_sceneSpecularAccRTV.Get();
@@ -218,7 +215,12 @@ void D3D11Renderer::Render() {
 	UnbindSRVs();
 }
 
-void D3D11Renderer::Present() {
+void D3D11Renderer::BeginFrame() {
+	ClearFrame();
+	ClearGBuffer();
+}
+
+void D3D11Renderer::EndFrame() {
 	m_swapChain->Present(1, 0);
 }
 
@@ -303,9 +305,13 @@ bool D3D11Renderer::CreateDevice() {
 	textureDesc.CPUAccessFlags			= 0;
 	textureDesc.MiscFlags				= 0;
 
-	D3D11_TEXTURE2D_DESC quadTextDesc	= textureDesc;
-	quadTextDesc.Width					= textureDesc.Width / 4;
-	quadTextDesc.Height					= textureDesc.Height / 4;
+	D3D11_TEXTURE2D_DESC quadTexDesc	= textureDesc;
+	quadTexDesc.Width					= textureDesc.Width / 4;
+	quadTexDesc.Height					= textureDesc.Height / 4;
+
+	D3D11_TEXTURE2D_DESC shadowTexDesc	= textureDesc;
+	shadowTexDesc.Width					= 1024;
+	shadowTexDesc.Height				= 1024;
 
 	ComPtr<ID3D11Texture2D>	diffuseTex;
 	ComPtr<ID3D11Texture2D>	specularTex;
@@ -314,14 +320,16 @@ bool D3D11Renderer::CreateDevice() {
 	ComPtr<ID3D11Texture2D>	hdrTex;
 	ComPtr<ID3D11Texture2D>	quadHdrTex;
 	ComPtr<ID3D11Texture2D>	bloomTex;
+	ComPtr<ID3D11Texture2D>	shadowMapTex;
 
-	if (m_device->CreateTexture2D(&textureDesc, nullptr, &diffuseTex)	!= S_OK) return false;
-	if (m_device->CreateTexture2D(&textureDesc, nullptr, &specularTex)	!= S_OK) return false;
-	if (m_device->CreateTexture2D(&textureDesc, nullptr, &normalTex)	!= S_OK) return false;
-	if (m_device->CreateTexture2D(&textureDesc, nullptr, &positionTex)	!= S_OK) return false;
-	if (m_device->CreateTexture2D(&textureDesc, nullptr, &hdrTex)		!= S_OK) return false;
-	if (m_device->CreateTexture2D(&quadTextDesc, nullptr, &quadHdrTex)	!= S_OK) return false;
-	if (m_device->CreateTexture2D(&quadTextDesc, nullptr, &bloomTex)	!= S_OK) return false;
+	if (m_device->CreateTexture2D(&textureDesc, nullptr, &diffuseTex)		!= S_OK) return false;
+	if (m_device->CreateTexture2D(&textureDesc, nullptr, &specularTex)		!= S_OK) return false;
+	if (m_device->CreateTexture2D(&textureDesc, nullptr, &normalTex)		!= S_OK) return false;
+	if (m_device->CreateTexture2D(&textureDesc, nullptr, &positionTex)		!= S_OK) return false;
+	if (m_device->CreateTexture2D(&textureDesc, nullptr, &hdrTex)			!= S_OK) return false;
+	if (m_device->CreateTexture2D(&quadTexDesc, nullptr, &quadHdrTex)		!= S_OK) return false;
+	if (m_device->CreateTexture2D(&quadTexDesc, nullptr, &bloomTex)			!= S_OK) return false;
+	if (m_device->CreateTexture2D(&shadowTexDesc, nullptr, &shadowMapTex)	!= S_OK) return false;
 
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc	= {};
 	rtvDesc.Format							= textureDesc.Format;
@@ -336,6 +344,7 @@ bool D3D11Renderer::CreateDevice() {
 	if (m_device->CreateRenderTargetView(hdrTex.Get(), &rtvDesc, &m_hdrRTV)						!= S_OK) return false;
 	if (m_device->CreateRenderTargetView(quadHdrTex.Get(), &rtvDesc, &m_quadHdrRTV)				!= S_OK) return false;
 	if (m_device->CreateRenderTargetView(bloomTex.Get(), &rtvDesc, &m_bloomRTV)					!= S_OK) return false;
+	if (m_device->CreateRenderTargetView(shadowMapTex.Get(), &rtvDesc, &m_shadowMapRTV)			!= S_OK) return false;
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format							= textureDesc.Format;
@@ -350,6 +359,7 @@ bool D3D11Renderer::CreateDevice() {
 	if (m_device->CreateShaderResourceView(hdrTex.Get(), &srvDesc, &m_hdrSRV)					!= S_OK) return false;
 	if (m_device->CreateShaderResourceView(quadHdrTex.Get(), &srvDesc, &m_quadHdrSRV)			!= S_OK) return false;
 	if (m_device->CreateShaderResourceView(bloomTex.Get(), &srvDesc, &m_bloomSRV)				!= S_OK) return false;
+	if (m_device->CreateShaderResourceView(shadowMapTex.Get(), &srvDesc, &m_shadowMapSRV)		!= S_OK) return false;
 	
 	D3D11_DEPTH_STENCIL_DESC dsDesc			= {};
 	dsDesc.DepthEnable						= true;

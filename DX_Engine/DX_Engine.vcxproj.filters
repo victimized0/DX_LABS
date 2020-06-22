@@ -67,6 +67,9 @@
     <ClCompile Include="Code\D2DRenderer.cpp">
       <Filter>Code</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Techniques\ShadowMapping.cpp">
+      <Filter>Code\Techniques</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\ConstBuffer.h">
@@ -156,6 +159,12 @@
     <ClInclude Include="Code\D2DRenderer.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Interfaces\ITechnique.h">
+      <Filter>Code\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Code\Techniques\ShadowMapping.h">
+      <Filter>Code\Techniques</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Code">
@@ -188,6 +197,9 @@
     <Filter Include="Code\Managers">
       <UniqueIdentifier>{f73e658f-fb37-4389-8dc9-b6e508b6e5fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Code\Techniques">
+      <UniqueIdentifier>{d1c3987f-4dbc-4e03-8ca2-e3e71cf89526}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Code\Math\SimpleMath.inl">
@@ -199,11 +211,23 @@
     <None Include="Shaders\deferred.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\deferred_textured_ps.hlsl" />
-    <None Include="Shaders\standard_ps.hlsl" />
-    <None Include="Shaders\standard_vs.hlsl" />
-    <None Include="Shaders\textured_ps.hlsl" />
-    <None Include="Shaders\textured_vs.hlsl" />
-    <None Include="Shaders\HDR.hlsl" />
+    <None Include="Shaders\deferred_textured_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\HDR.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\standard_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\standard_vs.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\textured_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\textured_vs.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

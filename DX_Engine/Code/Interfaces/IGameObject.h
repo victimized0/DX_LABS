@@ -1,5 +1,6 @@
 #ifndef _INTERFACE_GAME_OBJECT_H_
 #define _INTERFACE_GAME_OBJECT_H_
+#pragma once
 
 class IGameObject {
 	virtual void Initialise() = 0;

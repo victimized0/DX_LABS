@@ -175,6 +175,7 @@
     <ClInclude Include="Code\Interfaces\IGameObject.h" />
     <ClInclude Include="Code\Interfaces\IRenderer.h" />
     <ClInclude Include="Code\D3D11Renderer.h" />
+    <ClInclude Include="Code\Interfaces\ITechnique.h" />
     <ClInclude Include="Code\Managers\ShadersManager.h" />
     <ClInclude Include="Code\Math\SimpleMath.h" />
     <ClInclude Include="Code\MeshLoaders\ObjLoader.h" />
@@ -192,6 +193,7 @@
     <ClInclude Include="Code\StepTimer.h" />
     <ClInclude Include="Code\pch.h" />
     <ClInclude Include="Code\System\AVLTree.h" />
+    <ClInclude Include="Code\Techniques\ShadowMapping.h" />
     <ClInclude Include="Code\VertexFormats.h" />
     <ClInclude Include="Code\Interfaces\IMeshLoader.h" />
     <ClInclude Include="Code\Interfaces\ICamera.h" />
@@ -223,6 +225,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Code\System\AVLTree.cpp" />
+    <ClCompile Include="Code\Techniques\ShadowMapping.cpp" />
     <ClCompile Include="Code\VertexFormats.cpp" />
     <ClCompile Include="Code\D2DRenderer.cpp" />
   </ItemGroup>

@@ -132,9 +132,10 @@ int Engine::Run() {
 			Update(dt);
 			UpdateFPS();
 
+			gEnv.Renderer()->BeginFrame();
 			gEnv.Renderer()->Render();
 			gEnv.D2DRend()->DrawText("FPS: " + std::to_string(m_fps));
-			gEnv.Renderer()->Present();
+			gEnv.Renderer()->EndFrame();
 		}
 	}
 

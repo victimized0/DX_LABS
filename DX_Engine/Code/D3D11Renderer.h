@@ -3,6 +3,7 @@
 
 #include "SceneObjects/Camera.h"
 #include "Interfaces/IRenderer.h"
+#include "Interfaces/ITechnique.h"
 
 #include <array>
 
@@ -24,8 +25,9 @@ public:
 
 public:
 	bool									Initialise()final;
+	void									BeginFrame()final;
 	void									Render()final;
-	void									Present()final;
+	void									EndFrame()final;
 
 	void									ClearFrame()final;
 	void									ClearGBuffer()final;
@@ -50,6 +52,8 @@ public:
 	HRES									CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, IBuffer** pBuffer)final;
 
 protected:
+	ComPtr<IRenderTargetView>				m_shadowMapRTV;
+
 	ComPtr<IRenderTargetView>				m_hdrRTV;
 	ComPtr<IRenderTargetView>				m_quadHdrRTV;
 	ComPtr<IRenderTargetView>				m_bloomRTV;
@@ -58,6 +62,8 @@ protected:
 	ComPtr<IRenderTargetView>				m_sceneSpecularAccRTV;
 	ComPtr<IRenderTargetView>				m_sceneNormalAccRTV;
 	ComPtr<IRenderTargetView>				m_scenePositionAccRTV;
+
+	ComPtr<IShaderResView>					m_shadowMapSRV;
 
 	ComPtr<IShaderResView>					m_hdrSRV;
 	ComPtr<IShaderResView>					m_quadHdrSRV;

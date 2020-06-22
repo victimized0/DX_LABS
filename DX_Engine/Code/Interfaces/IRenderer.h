@@ -13,6 +13,7 @@
 #define ISwapChain					IDXGISwapChain
 #define ID3DResource				ID3D11Resource
 #define ISamplerState				ID3D11SamplerState
+#define ITexture2D					ID3D11Texture2D
 #define IShaderResView				ID3D11ShaderResourceView
 #define IRenderTargetView			ID3D11RenderTargetView
 #define IDepthStencilState			ID3D11DepthStencilState
@@ -127,8 +128,9 @@ public:
 
 	virtual					~IRenderer()								{}
 	virtual bool			Initialise()								= 0;
+	virtual void			BeginFrame()								= 0;
 	virtual void			Render()									= 0;
-	virtual void			Present()									= 0;
+	virtual void			EndFrame()									= 0;
 
 	virtual bool			CreateDevice()								= 0;
 	virtual bool			OnDeviceLost()								= 0;
