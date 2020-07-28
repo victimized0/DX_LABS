@@ -70,6 +70,7 @@
     <ClCompile Include="Code\Techniques\ShadowMapping.cpp">
       <Filter>Code\Techniques</Filter>
     </ClCompile>
+    <ClCompile Include="Code\Techniques\Bloom.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Code\ConstBuffer.h">
@@ -165,6 +166,7 @@
     <ClInclude Include="Code\Techniques\ShadowMapping.h">
       <Filter>Code\Techniques</Filter>
     </ClInclude>
+    <ClInclude Include="Code\Techniques\Bloom.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Code">

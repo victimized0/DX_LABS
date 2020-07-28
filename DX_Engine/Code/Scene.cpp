@@ -8,6 +8,7 @@ Scene::Scene()
 {
     Root        = std::make_unique<GameObject>("Root", Vector3::Zero);
     m_camera    = std::make_unique<Camera>("Main Camera");
+    m_camera->Initialise();
 }
 
 Scene::~Scene() {
@@ -57,7 +58,7 @@ GameObject* Scene::GetSceneObject(const std::string& key)const {
 }
 
 void Scene::Update(float dt) {
-
+    m_camera->Update(dt);
 }
 
 void Scene::RenderScene(IDevCon* context, RenderPass pass) {

@@ -193,6 +193,7 @@
     <ClInclude Include="Code\StepTimer.h" />
     <ClInclude Include="Code\pch.h" />
     <ClInclude Include="Code\System\AVLTree.h" />
+    <ClInclude Include="Code\Techniques\Bloom.h" />
     <ClInclude Include="Code\Techniques\ShadowMapping.h" />
     <ClInclude Include="Code\VertexFormats.h" />
     <ClInclude Include="Code\Interfaces\IMeshLoader.h" />
@@ -225,6 +226,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Code\System\AVLTree.cpp" />
+    <ClCompile Include="Code\Techniques\Bloom.cpp" />
     <ClCompile Include="Code\Techniques\ShadowMapping.cpp" />
     <ClCompile Include="Code\VertexFormats.cpp" />
     <ClCompile Include="Code\D2DRenderer.cpp" />

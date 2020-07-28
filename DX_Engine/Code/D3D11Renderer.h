@@ -7,8 +7,16 @@
 
 #include <array>
 
-#define RES_SUCCESS	0
-#define RES_FAILED	-1
+#define RES_SUCCESS 0
+#define RES_FAILED -1
+
+#ifdef _DEBUG
+#define BEGIN_EVENT(eventName) if (this->m_annotations) this->m_annotations->BeginEvent(eventName);
+#define END_EVENT(eventName) if (this->m_annotations) this->m_annotations->EndEvent();
+#else
+#define BEGIN_EVENT(eventName)
+#define END_EVENT(eventName)
+#endif
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -37,6 +45,7 @@ public:
 	void									UpdateSRVs()final;
 	void									UpdateRTVs(IDepthStencilView* depthView)final;
 
+	void									SetRSState(RastState rs)final;
 	void									SetBackColor(float r, float g, float b)final;
 	DirectX::SimpleMath::Vector2			GetScreenSize()final;
 
@@ -52,6 +61,10 @@ public:
 	HRES									CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, IBuffer** pBuffer)final;
 
 protected:
+	std::array<float, 4>					m_backColour;
+	CViewport								m_viewport;
+	CViewport								m_quadViewport;
+
 	ComPtr<IRenderTargetView>				m_shadowMapRTV;
 
 	ComPtr<IRenderTargetView>				m_hdrRTV;
@@ -74,13 +87,12 @@ protected:
 	ComPtr<IShaderResView>					m_sceneNormalSRV;
 	ComPtr<IShaderResView>					m_scenePositionSRV;
 
-	std::array<float, 4>					m_backColour;
-	CViewport								m_viewport;
-	CViewport								m_quadViewport;
-
 	ComPtr<IDevice>							m_device;
 	ComPtr<IDevCon>							m_context;
 	ComPtr<ISwapChain>						m_swapChain;
+#ifdef _DEBUG
+	ComPtr<IAnnotations>					m_annotations;
+#endif
 
 	ComPtr<IRenderTargetView>				m_backBuffer;
 	ComPtr<IDepthStencilView>				m_depthStencilView;
@@ -90,7 +102,8 @@ protected:
 	ComPtr<IDepthStencilState>				m_defaultDSState;
 
 	ComPtr<IBlendState>						m_oneAddBS;
-	ComPtr<IRSState>						m_defaultRSState;
+	ComPtr<IRSState>						m_rsCullBack;
+	ComPtr<IRSState>						m_rsCullFront;
 	ComPtr<ISamplerState>					m_defaultSampler;
 
 	std::vector<IShaderResView*>			m_SRVs;

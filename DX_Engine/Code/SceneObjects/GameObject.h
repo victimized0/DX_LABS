@@ -47,10 +47,8 @@ public:
 protected:
 	virtual void								CreateBoundingBox();
 
-private:
-	bool										m_isInit;
-
 protected:
+	bool										m_isInit;
 	std::string									m_name;
 	DirectX::BoundingBox						m_boundingBox;
 	Model										m_model;

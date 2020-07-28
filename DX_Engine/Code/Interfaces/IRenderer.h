@@ -11,6 +11,7 @@
 #define IDevice						ID3D11Device
 #define IDevCon						ID3D11DeviceContext
 #define ISwapChain					IDXGISwapChain
+#define IAnnotations				ID3DUserDefinedAnnotation
 #define ID3DResource				ID3D11Resource
 #define ISamplerState				ID3D11SamplerState
 #define ITexture2D					ID3D11Texture2D
@@ -57,9 +58,11 @@
 
 #define MAX_BUFFERS_COUNT 512
 
-#define RF_USE_LIGHT	1 << 0
-#define RF_USE_TEXTURES	1 << 1
-#define RF_DEFERRED		1 << 2
+#define SET_BIT(n) (1 << n)
+
+#define RF_USE_LIGHT	SET_BIT(0)
+#define RF_USE_TEXTURES	SET_BIT(1)
+#define RF_DEFERRED		SET_BIT(2)
 
 #include "../Math/SimpleMath.h"
 typedef DirectX::SimpleMath::Vector2	Vector2;
@@ -67,6 +70,13 @@ typedef DirectX::SimpleMath::Vector3	Vector3;
 typedef DirectX::SimpleMath::Vector4	Vector4;
 typedef DirectX::SimpleMath::Matrix		Matrix;
 typedef DirectX::SimpleMath::Quaternion	Quaternion;
+
+enum class RastState : unsigned char {
+	CULL_BACK_SOLID			= 0,
+	CULL_FRONT_SOLID		= 1,
+	CULL_BACK_WIREFRAME		= 2,
+	CULL_FRONT_WIREFRAME	= 3
+};
 
 struct Texture {
 	int			Width;
@@ -116,8 +126,10 @@ struct RenderInfo {
 };
 
 enum class RenderPass : unsigned char {
-	Geometry	= 0,
-	Light		= 1
+	ZPass		= 0,
+	Geometry	= 1,
+	Light		= 2,
+	PostProcess = 3
 };
 
 #include "..\Managers\ShadersManager.h"
@@ -148,8 +160,9 @@ public:
 
 	virtual DirectX::SimpleMath::Vector2	GetScreenSize()				= 0;
 
-	virtual ShadersManager* GetShadersManager()			= 0;
+	virtual ShadersManager* GetShadersManager()							= 0;
 	virtual void			SetBackColor(float r, float g, float b)		= 0;
+	virtual void			SetRSState(RastState rs)					= 0;
 
 	virtual HRES			CreateBuffer(size_t size, size_t strideSize, const void* pData, D3DBindFlag bindFlag, IBuffer** pBuffer) = 0;
 };

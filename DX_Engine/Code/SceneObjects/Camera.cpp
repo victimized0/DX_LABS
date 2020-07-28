@@ -21,6 +21,21 @@ Camera::Camera(const std::string& name)
 
 }
 
+void Camera::Initialise()
+{
+	BoundingBox camBB	= {};
+	camBB.Center		= GetPosition();
+	camBB.Extents		= Vector3(Radius);
+	m_boundingBox		= camBB;
+	m_isInit			= true;
+}
+
+void Camera::Update(float dt)
+{
+	m_boundingBox.Center	= GetPosition();
+	m_boundingBox.Extents	= Vector3(Radius);
+}
+
 Matrix Camera::GetView()const {
 	return Matrix::CreateLookAt(GetPosition(), Target, Vector3::Up);
 }

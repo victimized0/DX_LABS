@@ -13,6 +13,8 @@ public:
 						Camera(const std::string& name);
 	virtual				~Camera() = default;
 
+	void				Initialise()override;
+	void				Update(float dt)override;
 	virtual void		Move(float d);
 	virtual void		Rotate(float angleX, float angleY);
 	virtual void		Zoom(float d);

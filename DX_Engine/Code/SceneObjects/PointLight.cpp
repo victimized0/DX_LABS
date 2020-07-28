@@ -48,13 +48,14 @@ void CPointLight::Draw(IDevCon* context, Matrix const& world, RenderPass pass) {
 
 	context->VSSetConstantBuffers((UINT)CBPerInstance::Slot, 1, &pCbpi);
 
-	if (pass == RenderPass::Light) {
+	if (pass == RenderPass::Light)
+	{
 		CBPerLight cbpl = {};
 
 		cbpl.Diffuse	= m_lightData.Diffuse;
 		cbpl.Ambient	= m_lightData.Ambient;
 		cbpl.PosRange	= Vector4(m_lightData.Position, m_lightData.Range);
-
+		
 		m_cbPerLight.SetData(context, cbpl);
 		IConstBuffer* pCbpl = m_cbPerLight.GetBuffer();
 

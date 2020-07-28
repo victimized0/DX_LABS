@@ -743,6 +743,19 @@ inline bool Vector3::operator != (const Vector3& V) const noexcept
 }
 
 //------------------------------------------------------------------------------
+// Vec3 and Float operators
+//------------------------------------------------------------------------------
+
+inline Vector3 Vector3::operator- (const float f) noexcept
+{
+    Vector3 vRes = *this;
+    vRes.x -= f;
+    vRes.y -= f;
+    vRes.z -= f;
+    return vRes;
+}
+
+//------------------------------------------------------------------------------
 // Assignment operators
 //------------------------------------------------------------------------------
 
